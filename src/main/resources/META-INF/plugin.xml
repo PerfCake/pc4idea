@@ -1,6 +1,6 @@
 <idea-plugin version="2">
-  <id>com.yourcompany.unique.plugin.id</id>
-  <name>My Test Plugin</name>
+  <id>org.prefcake</id>
+  <name>PerfCake Plugin</name>
   <version>1.0</version>
   <vendor email="kstanleykale@gmail.com">Stanislav Kaleta</vendor>
 
