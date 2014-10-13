@@ -6,7 +6,7 @@
 
     <groupId>org.perfcake</groupId>
     <artifactId>pc4idea</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -53,17 +53,24 @@
             <scope>provided</scope>
 
         </dependency>
+
+        <dependency>
+            <groupId>org.perfcake</groupId>
+            <artifactId>perfcake</artifactId>
+            <version>3.2</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <repositories>
         <repository>
-            <id>central1</id>
-            <!--<name>your custom repo</name>-->
+            <id>central</id>
+            <name>Maven Central Repository</name>
             <url>https://repo1.maven.org/maven2</url>
         </repository>
         <repository>
-            <id>central2</id>
-            <!--<name>your custom repo</name>-->
+            <id>bintray</id>
+            <name>Bintray Repository</name>
             <url>http://dl.bintray.com/infinitest/intellij</url>
         </repository>
     </repositories>
