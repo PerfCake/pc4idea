@@ -1,5 +1,5 @@
 <idea-plugin version="2">
-  <id>org.prefcake</id>
+  <id>org.perfcake</id>
   <name>PerfCake Plugin</name>
   <version>1.0</version>
   <vendor email="kstanleykale@gmail.com">Stanislav Kaleta</vendor>
@@ -23,8 +23,8 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-      <moduleType id="PERFCAKE_MODULE" implementationClass="org.perfcake.module.PCModuleType"/>
-      <fileEditorProvider implementation="org.perfcake.editor.PCFileEditorProvider"/>
+      <moduleType id="PERFCAKE_MODULE" implementationClass="org.perfcake.pc4idea.module.PCModuleType"/>
+      <fileEditorProvider implementation="org.perfcake.pc4idea.editor.PCFileEditorProvider"/>
   </extensions>
 
   <application-components>
@@ -36,7 +36,7 @@
   </project-components>
 
     <actions>
-        <action id="NewScenario" class="org.perfcake.actions.NewScenarioAction" text="PerfCake Scenario"
+        <action id="NewPCScenario" class="org.perfcake.pc4idea.actions.NewScenarioAction" text="PerfCake Scenario"
                 description="Action to start new scenario wizard">
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>
