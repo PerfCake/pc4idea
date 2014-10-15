@@ -1,17 +1,20 @@
 package org.perfcake.pc4idea.editor;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
+import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiManager;
+import com.intellij.ui.EditorTextField;
 import com.intellij.ui.JBSplitter;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.treeStructure.Tree;
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.components.*;
+import org.perfcake.pc4idea.editor.panels.*;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
@@ -25,7 +28,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,7 +46,7 @@ public class PCEditorGUI extends JPanel /*implements DataProvider, ModuleProvide
     private JTabbedPane tabbedPane;
     private JPanel panelDesigner;
     private JPanel panelSource;
-    private JTextArea textAreaForPanelSource; /*TODO*/
+    private EditorTextField/*JTextArea*/ textAreaForPanelSource; /*TODO*/
     private JBSplitter splitterForDesigner;
     private JPanel panelPCCompsMenu;
     private JScrollPane scrollPanePCCompsMenu;
@@ -52,12 +54,12 @@ public class PCEditorGUI extends JPanel /*implements DataProvider, ModuleProvide
     private JScrollPane scrollPanePCCompsDesigner;
     private JTree treePCcomponents;
 
-    private AbstractComponent generatorPanel;
-    private AbstractComponent senderPanel;
-    private AbstractComponent messagesPanel;
-    private AbstractComponent validationPanel;
-    private AbstractComponent reportingPanel;
-    private AbstractComponent propertiesPanel;
+    private AbstractPanel generatorPanel;
+    private AbstractPanel senderPanel;
+    private AbstractPanel messagesPanel;
+    private AbstractPanel validationPanel;
+    private AbstractPanel reportingPanel;
+    private AbstractPanel propertiesPanel;
 
 
 
@@ -81,17 +83,17 @@ public class PCEditorGUI extends JPanel /*implements DataProvider, ModuleProvide
         tabbedPane = new JTabbedPane();
         panelDesigner = new JPanel(new GridLayout(1,1));
         panelSource = new JPanel(new GridLayout(1,1));                         /*TODO problem with file -> try to get by path, xmlEdtiorProvider.getEditor?*/
-        textAreaForPanelSource = new JTextArea();//= new EditorTextField(PsiDocumentManager.getInstance(project).getDocument(PsiManager.getInstance(project).findFile(file)),project, StdFileTypes.XML);
+        textAreaForPanelSource = /*new JTextArea();*/ new EditorTextField(PsiDocumentManager.getInstance(project).getDocument(PsiManager.getInstance(project).findFile(file)),project, StdFileTypes.XML);
         splitterForDesigner = new JBSplitter(false);
         panelPCCompsMenu = new JPanel();
         panelPCCompsDesigner = new JPanel();
         treePCcomponents = new Tree(new DefaultTreeModel(new DefaultMutableTreeNode("root")));
-        generatorPanel = new GeneratorComponent(project);
-        senderPanel = new SenderComponent(project);
-        messagesPanel = new MessagesComponent(project);
-        validationPanel = new ValidationComponent(project);
-        reportingPanel = new ReportingComponent(project);
-        propertiesPanel = new PropertiesComponent(project);
+        generatorPanel = new GeneratorPanel(project);
+        senderPanel = new SenderPanel(project);
+        messagesPanel = new MessagesPanel(project);
+        validationPanel = new ValidationPanel(project);
+        reportingPanel = new ReportingPanel(project);
+        propertiesPanel = new PropertiesPanel(project);
 
 
         tabbedPane.addTab("Designer", panelDesigner);
@@ -100,17 +102,17 @@ public class PCEditorGUI extends JPanel /*implements DataProvider, ModuleProvide
 
         panelSource.add(textAreaForPanelSource);
         panelSource.setBackground(EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground());
-        ApplicationManager.getApplication().runReadAction(new Runnable() {
-            public void run() {
-                try {
-                    textAreaForPanelSource.setText(new String(file.contentsToByteArray()));
-                } catch (IOException e) {
-                    e.printStackTrace();  /*TODO log*/
-                }
-            }
-        });
-        textAreaForPanelSource.setEditable(false);
-        textAreaForPanelSource.setOpaque(false);
+//        ApplicationManager.getApplication().runReadAction(new Runnable() {
+//            public void run() {
+//                try {
+//                    textAreaForPanelSource.setText(new String(file.contentsToByteArray()));
+//                } catch (IOException e) {
+//                    e.printStackTrace();  /*TODO log*/
+//                }
+//            }
+//        });
+        //textAreaForPanelSource.setEditable(false);
+        //textAreaForPanelSource.setOpaque(false);
 
         panelDesigner.add(splitterForDesigner);
         scrollPanePCCompsDesigner = ScrollPaneFactory.createScrollPane(panelPCCompsDesigner);
@@ -159,7 +161,7 @@ public class PCEditorGUI extends JPanel /*implements DataProvider, ModuleProvide
         root.add(connections);
         treePCcomponents.expandRow(0);
         treePCcomponents.setRootVisible(false);
-        treePCcomponents.setDragEnabled(true);
+        //treePCcomponents.setDragEnabled(true);
         treePCcomponents.setOpaque(false);
 
 
@@ -183,10 +185,10 @@ public class PCEditorGUI extends JPanel /*implements DataProvider, ModuleProvide
                         .addComponent(senderPanel)
                         .addGroup(panelPCCompsDesignerLayout.createParallelGroup()
                                 .addGroup(panelPCCompsDesignerLayout.createSequentialGroup()
-                                        .addComponent(messagesPanel/*,GroupLayout.PREFERRED_SIZE,10,GroupLayout.PREFERRED_SIZE*/)/*TODO*/
-                                        .addComponent(validationPanel/*,GroupLayout.PREFERRED_SIZE,10,GroupLayout.PREFERRED_SIZE*/))/*TODO*/
-                                .addComponent(reportingPanel/*,GroupLayout.PREFERRED_SIZE,10,GroupLayout.PREFERRED_SIZE*/))/*TODO*/
-                        .addComponent(propertiesPanel/*,GroupLayout.PREFERRED_SIZE,10,GroupLayout.PREFERRED_SIZE*/)/*TODO*/
+                                        .addComponent(messagesPanel)
+                                        .addComponent(validationPanel))
+                                .addComponent(reportingPanel))
+                        .addComponent(propertiesPanel)
                         .addContainerGap(0, Short.MAX_VALUE) /*TODO decide*/
         );
     }
@@ -195,7 +197,8 @@ public class PCEditorGUI extends JPanel /*implements DataProvider, ModuleProvide
         try {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = schemaFactory.newSchema(getClass().getResource("/schemas/" + "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd"));
-            JAXBContext context = JAXBContext.newInstance(Scenario.class);
+
+            JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
             unmarshaller.setSchema(schema);
             scenarioModel = (org.perfcake.model.Scenario) unmarshaller.unmarshal(new File(file.getPath()));
@@ -207,6 +210,7 @@ public class PCEditorGUI extends JPanel /*implements DataProvider, ModuleProvide
         // upadate apanels
         generatorPanel.setComponent(scenarioModel.getGenerator());
         senderPanel.setComponent(scenarioModel.getSender());
+        reportingPanel.setComponent(scenarioModel.getReporting());
 
 
 
@@ -214,10 +218,10 @@ public class PCEditorGUI extends JPanel /*implements DataProvider, ModuleProvide
     }
 
     public JComponent getPreferredFocusedComponent() {
-        return tabbedPane;  /* TODO or? */
+        return tabbedPane;
     }
     public void dispose() {
-        /*TODO ? */
+        /*TODO */
     }
 
 
