@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.editor.components;
+package org.perfcake.pc4idea.editor.panels;
 
 import com.intellij.openapi.project.Project;
 
@@ -11,11 +11,12 @@ import java.awt.*;
  * Date: 28.9.2014
  * To change this template use File | Settings | File Templates.
  */
-public class PropertiesComponent extends AbstractComponent {
-    private Color panelColor = Color.getHSBColor(0/360f,0.2f,0.5f);
+public class MessagesPanel extends AbstractPanel {
+    private Color panelColor = Color.getHSBColor(40/360f,1f,0.75f);
     private JPanel panelEditor;
 
-    public PropertiesComponent(Project project){
+
+    public MessagesPanel(Project project){
         super(project);
         panelEditor = initPanelEditor();
 
@@ -27,13 +28,13 @@ public class PropertiesComponent extends AbstractComponent {
     }
 
     @Override
-    protected Color getColor() {
+   protected Color getColor() {
         return panelColor;
     }
 
     @Override
     protected String getEditorTitle() {
-        return "Properties Editor";
+        return "Messages Editor";
     }
 
     @Override

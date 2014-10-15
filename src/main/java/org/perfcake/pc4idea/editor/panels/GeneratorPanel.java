@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.editor.components;
+package org.perfcake.pc4idea.editor.panels;
 
 import com.intellij.openapi.project.Project;
 import org.perfcake.model.Scenario;
@@ -12,7 +12,7 @@ import java.awt.*;
  * Date: 28.9.2014
  * To change this template use File | Settings | File Templates.
  */
-public class GeneratorComponent extends AbstractComponent {
+public class GeneratorPanel extends AbstractPanel {
     private final String TITLE ="Generator Editor";
     private Color panelColor = Color.getHSBColor(120/360f,0.5f,0.75f);/* TODO default but able to change in settings*/
 
@@ -25,7 +25,7 @@ public class GeneratorComponent extends AbstractComponent {
 
 
 
-    public GeneratorComponent(Project project){
+    public GeneratorPanel(Project project){
         super(project);
         setMinimumSize(new Dimension(0,70));
         setMaximumSize(new Dimension(Integer.MAX_VALUE,70));
@@ -33,7 +33,6 @@ public class GeneratorComponent extends AbstractComponent {
 
         initComponents();
         panelEditor = initPanelEditor();
-
 
 
     }

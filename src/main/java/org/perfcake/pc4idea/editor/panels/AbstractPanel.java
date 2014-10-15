@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.editor.components;
+package org.perfcake.pc4idea.editor.panels;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -15,10 +15,10 @@ import java.awt.event.MouseEvent;
  * Date: 28.9.2014
  * To change this template use File | Settings | File Templates.
  */
-public abstract class AbstractComponent extends JPanel {
+public abstract class AbstractPanel extends JPanel {
     private final Project project;
 
-    public AbstractComponent(Project project) {
+    public AbstractPanel(Project project) {
         super();
         this.project = project;
         this.setOpaque(false);
@@ -51,9 +51,9 @@ public abstract class AbstractComponent extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        Graphics2D graphics = (Graphics2D) g;
-        graphics.setColor(getColor());
-        graphics.drawRoundRect(4, 4, this.getWidth() - 8, this.getHeight() - 8, 20, 20);
+        Graphics2D g2D = (Graphics2D) g;
+        g2D.setColor(getColor());
+        g2D.drawRoundRect(4, 4, this.getWidth() - 8, this.getHeight() - 8, 20, 20);
     }
 
 

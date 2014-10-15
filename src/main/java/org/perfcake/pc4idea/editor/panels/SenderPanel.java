@@ -1,8 +1,9 @@
-package org.perfcake.pc4idea.editor.components;
+package org.perfcake.pc4idea.editor.panels;
 
 import com.intellij.openapi.project.Project;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.editor.components.PropertyComponent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +14,7 @@ import java.awt.*;
  * Date: 28.9.2014
  * To change this template use File | Settings | File Templates.
  */
-public class SenderComponent extends AbstractComponent {
+public class SenderPanel extends AbstractPanel {
     private final String TITLE ="Sender Editor";
     private Color panelColor = Color.getHSBColor(220/360f,0.5f,0.75f);
     private final Project project;
@@ -27,10 +28,10 @@ public class SenderComponent extends AbstractComponent {
 
 
 
-    public SenderComponent(Project project){
+    public SenderPanel(Project project){
         super(project);
         this.project = project;
-        setMinimumSize(new Dimension(0,50));
+        setMinimumSize(new Dimension(0,50)); /*50 = 2*10gap+20title+10gap to panel*/
         setMaximumSize(new Dimension(Integer.MAX_VALUE,50));
 
         initComponents();
@@ -43,9 +44,9 @@ public class SenderComponent extends AbstractComponent {
         senderAttr.setForeground(panelColor);
 
         panelProperties = new JPanel();
-        panelProperties.setLayout(new BoxLayout(panelProperties,BoxLayout.X_AXIS));
-        panelProperties.setMinimumSize(new Dimension(380,40));
-        panelProperties.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        panelProperties.setLayout(new BoxLayout(panelProperties,BoxLayout.X_AXIS));/*TODO layout*/
+        panelProperties.setMinimumSize(new Dimension(370,0));
+        panelProperties.setMaximumSize(new Dimension(Integer.MAX_VALUE, 0));
         panelProperties.setOpaque(false);
 
 
@@ -97,22 +98,30 @@ public class SenderComponent extends AbstractComponent {
     @Override
     protected void applyChanges() {
         /*TODO ...*/
+        /*upravi sender + */
+        /*editor.save(){natiahne scen. + ulozi}*/
+
+        /*+ zarovnat (setComponent part -> align)*/
     }
 
     @Override
-    public void setComponent(Object component) {
+    public void setComponent(Object component) {  /*u xxxComp. maybe in constructor*/
         sender = (Scenario.Sender) component;
         senderAttr.setText(sender.getClazz());
 
-        /*TODO zarovnavat:akyLayout:podla sirky (min=400)*/
+        /*TODO zarovnavat:akyLayout:podla sirky (min=380)*/
         for (Property property : sender.getProperty()){
+            /*TODO ukladat zoznam prop.*/
             PropertyComponent propertyComponent = new PropertyComponent(project,panelColor);
             propertyComponent.setComponent(property);
             panelProperties.add(propertyComponent);
         }
-        /*TODO del*/ if (sender.getProperty().size() > 0) {
+        /*TODO*/ if (sender.getProperty().size() > 0) { /* TODO temp n=1*/
             setMinimumSize(new Dimension(0, 50 + 40));
             setMaximumSize(new Dimension(Integer.MAX_VALUE, 50 + 40)); /*TODO base=50 + 40*n n=number rows*/
+
+            panelProperties.setMinimumSize(new Dimension(370, 40));
+            panelProperties.setMaximumSize(new Dimension(Integer.MAX_VALUE,40));   /*TODO 0 or 40*n -//-*/
         }
         //panelProperties.validate();TODO if needed
     }

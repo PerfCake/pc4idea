@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.editor.components;
+package org.perfcake.pc4idea.editor.panels;
 
 import com.intellij.openapi.project.Project;
 
@@ -11,11 +11,11 @@ import java.awt.*;
  * Date: 28.9.2014
  * To change this template use File | Settings | File Templates.
  */
-public class ValidationComponent extends AbstractComponent {
-    private Color panelColor = Color.getHSBColor(340/360f,1f,0.75f);
+public class PropertiesPanel extends AbstractPanel {
+    private Color panelColor = Color.getHSBColor(0/360f,0.2f,0.5f);
     private JPanel panelEditor;
 
-    public ValidationComponent(Project project){
+    public PropertiesPanel(Project project){
         super(project);
         panelEditor = initPanelEditor();
 
@@ -33,7 +33,7 @@ public class ValidationComponent extends AbstractComponent {
 
     @Override
     protected String getEditorTitle() {
-        return "Validation Editor";
+        return "Properties Editor";
     }
 
     @Override
