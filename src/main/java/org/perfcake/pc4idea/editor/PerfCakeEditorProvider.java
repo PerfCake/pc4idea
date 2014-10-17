@@ -1,9 +1,8 @@
 package org.perfcake.pc4idea.editor;
 
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.fileEditor.FileEditorPolicy;
-import com.intellij.openapi.fileEditor.FileEditorProvider;
-import com.intellij.openapi.fileEditor.FileEditorState;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.DumbAware;
@@ -11,7 +10,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.LightVirtualFile;
-import com.intellij.util.ArrayUtil;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Document;
@@ -27,27 +25,30 @@ import java.io.IOException;
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
  * Date: 17.9.2014
- * To change this template use File | Settings | File Templates.
  */
-public class PCFileEditorProvider implements FileEditorProvider, DumbAware {
-    //private static final Logger LOG = Logger.getInstance("#main.java..PerfCakeEditorProvider");/*TODO*/
+public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
+    private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.editor.PerfCakeEditorProvider");
+    private final String EDITOR_TYPE_ID = "PerfCakeDesigner";
+
+    public static PerfCakeEditorProvider getInstance() {
+        return ApplicationManager.getApplication().getComponent(PerfCakeEditorProvider.class);
+    }
+
+    // accepting perfcake-scenario-3.0
     @Override
-    public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {  /*TODO z PC ns*/
+    public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
         boolean acceptCondition = false;
+
         if (virtualFile.getFileType() == StdFileTypes.XML && !StdFileTypes.XML.isBinary() &&
            (ModuleUtil.findModuleForFile(virtualFile, project) != null || virtualFile instanceof LightVirtualFile)){
             try {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); /*TODO maybe PC?*/
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
-                Document temp = builder.parse(virtualFile.getPath());  /*TODO maybe runReadAction*/
-
+                Document temp = builder.parse(virtualFile.getPath());
 
                 if (temp.getDocumentElement().getAttribute("xmlns").equals("urn:perfcake:scenario:3.0")) {
                     acceptCondition = true;
-                    /*TODO preco 2krat?*/
-                    //System.out.println(virtualFile.getName() + " | " + virtualFile.getFileType().getName()+ " | "+temp.getDocumentElement().getAttribute("xmlns"));
                 }
-
             } catch (ParserConfigurationException e) {
                 e.printStackTrace();
             } catch (SAXException e) {
@@ -55,16 +56,16 @@ public class PCFileEditorProvider implements FileEditorProvider, DumbAware {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
+
         return acceptCondition;
     }
 
     @NotNull
     @Override
     public FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile virtualFile) {
-        //LOG.assertTrue(accept(project, virtualFile));
-        return new PCFileEditor(project, virtualFile);
+        LOG.assertTrue(accept(project, virtualFile));
+        return new PerfCakeEditor(project, virtualFile);
     }
 
     @Override
@@ -75,24 +76,28 @@ public class PCFileEditorProvider implements FileEditorProvider, DumbAware {
     @NotNull
     @Override
     public FileEditorState readState(@NotNull Element element, @NotNull Project project, @NotNull VirtualFile virtualFile) {
-        /*TODO ...?, vyhladat*/
-        return new PCFileEditorState(-1, ArrayUtil.EMPTY_STRING_ARRAY);
+        return new FileEditorState() {
+            @Override
+            public boolean canBeMergedWith(FileEditorState fileEditorState, FileEditorStateLevel fileEditorStateLevel) {
+                return true;
+            }
+        };
     }
 
     @Override
     public void writeState(@NotNull FileEditorState fileEditorState, @NotNull Project project, @NotNull Element element) {
-        /*TODO ...?, vyhladat*/
+
     }
 
     @NotNull
     @Override
     public String getEditorTypeId() {
-        return "PerfCakeDesigner";
+        return EDITOR_TYPE_ID;
     }
 
     @NotNull
     @Override
     public FileEditorPolicy getPolicy() {
-        return FileEditorPolicy.HIDE_DEFAULT_EDITOR; /*TODO mozno podla ns*/
+        return FileEditorPolicy.HIDE_DEFAULT_EDITOR;
     }
 }
