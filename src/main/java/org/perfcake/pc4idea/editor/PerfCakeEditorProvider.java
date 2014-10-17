@@ -34,10 +34,10 @@ public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
         return ApplicationManager.getApplication().getComponent(PerfCakeEditorProvider.class);
     }
 
-    // accepting perfcake-scenario-3.0
+    // accepting perfcake-scenario-3.0 xml
     @Override
     public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
-        boolean acceptCondition = false;
+        String xmlnsAttr = "";
 
         if (virtualFile.getFileType() == StdFileTypes.XML && !StdFileTypes.XML.isBinary() &&
            (ModuleUtil.findModuleForFile(virtualFile, project) != null || virtualFile instanceof LightVirtualFile)){
@@ -46,19 +46,13 @@ public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 Document temp = builder.parse(virtualFile.getPath());
 
-                if (temp.getDocumentElement().getAttribute("xmlns").equals("urn:perfcake:scenario:3.0")) {
-                    acceptCondition = true;
-                }
-            } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-            } catch (SAXException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                xmlnsAttr = temp.getDocumentElement().getAttribute("xmlns");
+            } catch (ParserConfigurationException ignored) {}
+            catch (SAXException ignored) {}
+            catch (IOException ignored) {}
         }
 
-        return acceptCondition;
+        return xmlnsAttr.equals("urn:perfcake:scenario:3.0");
     }
 
     @NotNull
