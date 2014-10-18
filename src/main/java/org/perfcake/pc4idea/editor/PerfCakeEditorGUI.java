@@ -1,6 +1,5 @@
 package org.perfcake.pc4idea.editor;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
@@ -26,6 +25,8 @@ import org.perfcake.scenario.XMLFactory;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.xml.XMLConstants;
@@ -43,19 +44,19 @@ import java.io.File;
  * Date: 17.9.2014
  * To change this template use File | Settings | File Templates.
  */
-public class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider TODO ??? */{
+class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider TODO ??? */{
     private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.editor.PerfCakeEditorGUI");
 
     private final Project project;
     private final Module module;
-    @NotNull private /*final*/ VirtualFile file;
+    @NotNull private final VirtualFile file;
     private final ScenarioVirtualFileListener scenarioVirtualFileListener;
     private final Document document;
     private final ScenarioDocumentListener scenarioDocumentListener;
     private final FileEditor xmlEditor;
     private Scenario scenarioModel;
 
-    private boolean fileIsModified;/*TODO*/
+    private boolean documentWasModified;/*TODO*/
     private boolean isEditorValid;/*TODO*/
 
     private JTabbedPane tabbedPane;
@@ -78,7 +79,7 @@ public class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleP
 
 
 
-    public PerfCakeEditorGUI(Project project, @NotNull final Module module, @NotNull final VirtualFile file) {
+    PerfCakeEditorGUI(Project project, @NotNull final Module module, @NotNull final VirtualFile file) {
         LOG.assertTrue(file.isValid());
         this.project = project;
         this.module = module;
@@ -90,10 +91,10 @@ public class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleP
         scenarioDocumentListener = new ScenarioDocumentListener();
         document.addDocumentListener(scenarioDocumentListener);
 
-        xmlEditor = TextEditorProvider.getInstance().createEditor(project, this.file);
+        xmlEditor = TextEditorProvider.getInstance().createEditor(project, this.file);  /*TODO first assert accept then create*/
 
-        fileIsModified = false;
-//        isEditorValid = getEditorValid();   /*TODO*/
+        documentWasModified = false;
+//        isEditorValid = true   /*TODO*/
 //        LOG.assertTrue(isEditorValid);
 
         initComponents();
@@ -124,6 +125,20 @@ public class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleP
         tabbedPane.addTab("Designer", tabDesignerComponent);
         tabbedPane.addTab("Source", tabSourceComponent);
         tabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
+        tabbedPane.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                if (tabbedPane.getSelectedIndex() == 0){
+                    if (documentWasModified){
+                        FileDocumentManager.getInstance().saveDocument(document);
+                        loadScenario();
+                        documentWasModified = false;
+                    }
+                }
+                if (tabbedPane.getSelectedIndex() == 1){
+                    /*TODO save scenario from designer*/
+                }
+            }
+        });
 
         tabDesignerComponent.add(splitterDesigner);
         scrollPaneDesignerScenario = ScrollPaneFactory.createScrollPane(panelDesignerScenario);
@@ -225,10 +240,10 @@ public class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleP
     // private void saveScenario(){}
 
     public boolean isModified(){
-        return false; /*TODO save?*/
+        return false; /*TODO for save?*/
     }
     public boolean isEditorValid(){
-        return true; /*TODO non valid xml?*/
+        return true; /*TODO for not valid xml?*/
     }
     public JComponent getPreferredFocusedComponent() {
         return tabbedPane;
@@ -239,6 +254,7 @@ public class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleP
 //        editor.removeEditorMouseListener(myEditorMouseListener);
 
         /*TODO filewatcher?*/
+        /*TODO save before dispose */
         xmlEditor.dispose();
         EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
         file.getFileSystem().removeVirtualFileListener(scenarioVirtualFileListener);
@@ -246,36 +262,18 @@ public class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleP
     }
 
     private final class ScenarioDocumentListener extends DocumentAdapter {
-        private final Runnable updateRunnable;
-
-        public ScenarioDocumentListener() {
-            updateRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    //System.out.println("DocList.run");
-                    ApplicationManager.getApplication().saveAll();  /*TODO save only file or refresh/reload virtual file*/
-                    /*TODO test xml validation*/
-                    fileIsModified = true;
-
-                }
-            };
-        }
-
         @Override
         public void documentChanged(DocumentEvent e) {
-            //System.out.println("DocList.docCh.");
-            ApplicationManager.getApplication().invokeLater(updateRunnable);
+            /*TODO for testing purpose*/System.out.println("docChanged");
+            documentWasModified = true;
         }
     }
 
     private final class ScenarioVirtualFileListener extends VirtualFileAdapter {
         @Override
         public void contentsChanged(@NotNull VirtualFileEvent event){
-               //System.out.println("virtualFileChanged");
-            if (fileIsModified) {
-                loadScenario();
-                fileIsModified = false;
-            }
+            /*TODO for testing purpose*/System.out.println("virtualFileChanged");
+            /*TODO maybe loadScenario here - for external/other changes*/
 
         }
     }
