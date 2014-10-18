@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,10 +24,8 @@ import java.beans.PropertyChangeSupport;
  * Date: 17.9.2014
  * To change this template use File | Settings | File Templates.
  */
-public class PerfCakeEditor implements FileEditor {
-    private final PropertyChangeSupport propertyChangeSupport;
+class PerfCakeEditor implements FileEditor {
     private final PerfCakeEditorGUI editorGUI;
-
 
     PerfCakeEditor(final Project project, final VirtualFile virtualFile){
         final VirtualFile vf = virtualFile instanceof LightVirtualFile ? ((LightVirtualFile)virtualFile).getOriginalFile() : virtualFile;
@@ -36,7 +33,6 @@ public class PerfCakeEditor implements FileEditor {
         if (module == null) {
             throw new IllegalArgumentException("No module for file " + virtualFile + " in project " + project);
         }
-        propertyChangeSupport = new PropertyChangeSupport(this);
         editorGUI = new PerfCakeEditorGUI(project, module, virtualFile);
     }
 
