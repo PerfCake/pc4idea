@@ -101,6 +101,7 @@ public class ReportingPanel extends AbstractPanel {
     public void setComponent(Object component) {
         reporting = (Scenario.Reporting) component;
 
+        panelReporters.removeAll();
         /*TODO zarovnavat:akyLayout:podla sirky (min=200)*/
         for (Scenario.Reporting.Reporter reporter : reporting.getReporter()) {
             /*TODO ukladat zoznam rep.*/

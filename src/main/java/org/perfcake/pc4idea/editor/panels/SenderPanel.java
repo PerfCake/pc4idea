@@ -109,6 +109,7 @@ public class SenderPanel extends AbstractPanel {
         sender = (Scenario.Sender) component;
         senderAttr.setText(sender.getClazz());
 
+        panelProperties.removeAll();
         /*TODO zarovnavat:akyLayout:podla sirky (min=380)*/
         for (Property property : sender.getProperty()){
             /*TODO ukladat zoznam prop.*/
