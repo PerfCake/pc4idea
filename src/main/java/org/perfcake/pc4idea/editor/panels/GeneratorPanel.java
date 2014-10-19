@@ -2,6 +2,7 @@ package org.perfcake.pc4idea.editor.panels;
 
 import com.intellij.openapi.project.Project;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.editor.wizard.GeneratorEditor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,8 +22,6 @@ public class GeneratorPanel extends AbstractPanel {
 
     private JLabel generatorAttr;
     private JLabel generatorRunAttr;
-
-
 
 
     public GeneratorPanel(Project project){
@@ -81,7 +80,8 @@ public class GeneratorPanel extends AbstractPanel {
     }
 
     @Override
-    protected JPanel getPanelEditor() {
+    protected JPanel getEditorPanel() {
+        panelEditor = new GeneratorEditor(generator);
         return panelEditor;
     }
 
