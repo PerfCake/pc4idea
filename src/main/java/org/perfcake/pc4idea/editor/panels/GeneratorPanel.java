@@ -17,7 +17,7 @@ public class GeneratorPanel extends AbstractPanel {
     private final String TITLE ="Generator Editor";
     private Color panelColor = Color.getHSBColor(120/360f,0.5f,0.75f);/* TODO default but able to change in settings*/
 
-    private JPanel panelEditor;
+    private GeneratorEditor panelEditor;
     private Scenario.Generator generator;
 
     private JLabel generatorAttr;
@@ -31,7 +31,6 @@ public class GeneratorPanel extends AbstractPanel {
 
 
         initComponents();
-        panelEditor = initPanelEditor();
 
 
     }
@@ -61,14 +60,6 @@ public class GeneratorPanel extends AbstractPanel {
         layout.putConstraint(SpringLayout.NORTH, generatorRunAttr,8,SpringLayout.SOUTH, generatorAttr);
     }
 
-    private JPanel initPanelEditor(){
-        JPanel panel = new JPanel();
-        /*TODO same as wizard gen.e.*/
-//        panel.add(new JLabel("aaaaa"),0);
-//        panel.add(new JLabel("bbbbb"),1);
-
-        return panel;
-    }
     @Override
     protected Color getColor() {
         return panelColor;
@@ -81,13 +72,14 @@ public class GeneratorPanel extends AbstractPanel {
 
     @Override
     protected JPanel getEditorPanel() {
-        panelEditor = new GeneratorEditor(generator);
+        panelEditor = new GeneratorEditor();
+        panelEditor.setGenerator(generator);
         return panelEditor;
     }
 
     @Override
     protected void applyChanges() {
-        /*TODO ...*/
+        this.setComponent(panelEditor.getGenerator());
     }
     @Override
     public void setComponent(Object component){
