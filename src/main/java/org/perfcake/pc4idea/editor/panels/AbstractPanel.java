@@ -28,13 +28,16 @@ public abstract class AbstractPanel extends JPanel {
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getButton() == MouseEvent.BUTTON1) {
                     if (evt.getClickCount() == 2) {
-                        ComponentEditor editor = new ComponentEditor(getEditorTitle(),getPanelEditor());
+                        ComponentEditor editor = new ComponentEditor(getEditorTitle(), getEditorPanel());
                         editor.show();
                         if (editor.getExitCode() == 0) {
                             applyChanges();
                         }
+                        if (editor.getExitCode() == 1){
+                            /*TODO discard Changes?*/
+                        }
                     }
-                }
+                } /*TODO right click -> popup menu*/
             }
         });
 
@@ -42,7 +45,7 @@ public abstract class AbstractPanel extends JPanel {
 
     protected abstract Color getColor();
     protected abstract String getEditorTitle();
-    protected abstract JPanel getPanelEditor();
+    protected abstract JPanel getEditorPanel();
     protected abstract void applyChanges();
     public abstract void setComponent(Object component);
     public abstract Object getComponent();
@@ -58,23 +61,19 @@ public abstract class AbstractPanel extends JPanel {
 
 
     private class ComponentEditor extends DialogWrapper {
-        private JPanel background;
+        private JPanel centerPanel;
 
-        public ComponentEditor(String title, JPanel background){
-            super(project, false);
+        public ComponentEditor(String title, JPanel centerPanel){
+            super(project, false); /*TODO can be parent?*/
             setTitle(title);
-            this.background = background;
+            this.centerPanel = centerPanel;
             this.setResizable(true);
-//            setPreferredSize(new Dimension(200,200));
-//            setSize(200,200); /*TODO not working :D*/
-            this.setHorizontalStretch(4.0f); /*TODO size??*/
-            this.setVerticalStretch(4.0f);
             init();
         }
         @Nullable
         @Override
         protected JComponent createCenterPanel() {
-            return background;
+            return centerPanel;
         }
     }
 
