@@ -94,12 +94,15 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
         xmlEditor = TextEditorProvider.getInstance().createEditor(project, this.file);  /*TODO first assert accept then create*/
 
         documentWasModified = false;
+        loadScenario();
 //        isEditorValid = true   /*TODO*/
 //        LOG.assertTrue(isEditorValid);
 
         initComponents();
 
-        loadScenario();
+        setDesignerComponents();
+
+
 
         GridLayout layout = new GridLayout(1,1);
         this.setLayout(layout);
@@ -130,7 +133,8 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
                 if (tabbedPane.getSelectedIndex() == 0){
                     if (documentWasModified){
                         FileDocumentManager.getInstance().saveDocument(document);
-                        loadScenario();
+                        /*TODO overit validitu scenaria*/
+                        setDesignerComponents();
                         documentWasModified = false;
                     }
                 }
@@ -227,15 +231,19 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
             unmarshaller.setSchema(schema);
             scenarioModel = (org.perfcake.model.Scenario) unmarshaller.unmarshal(new File(file.getPath()));
         } catch (JAXBException e) {
-            e.printStackTrace();
+            e.printStackTrace(); /*TODO ???*/
         } catch (SAXException e) {
-            e.printStackTrace();
+            e.printStackTrace(); /*TODO nevalidne xml*/
         }
-        // upadate panels
+
+
+    }
+    private void setDesignerComponents(){
         panelGenerator.setComponent(scenarioModel.getGenerator());
         panelSender.setComponent(scenarioModel.getSender());
         panelReporting.setComponent(scenarioModel.getReporting());
 
+        /*TODO for testing purpose*/System.out.println("designerSet");/*LOG.info("designerSet");*/
     }
     // private void saveScenario(){}
 
@@ -243,7 +251,7 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
         return false; /*TODO for save?*/
     }
     public boolean isEditorValid(){
-        return true; /*TODO for not valid xml?*/
+        return true; /*TODO for not valid xml? skusit flase co to spravi*/
     }
     public JComponent getPreferredFocusedComponent() {
         return tabbedPane;
@@ -273,7 +281,10 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
         @Override
         public void contentsChanged(@NotNull VirtualFileEvent event){
             /*TODO for testing purpose*/System.out.println("virtualFileChanged");
-            /*TODO maybe loadScenario here - for external/other changes*/
+            if (documentWasModified) {
+                /*TODO for testing purpose*/System.out.println("scenarioLoaded");
+                loadScenario();
+            }
 
         }
     }
