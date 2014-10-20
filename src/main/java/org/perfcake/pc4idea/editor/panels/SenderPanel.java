@@ -91,7 +91,7 @@ public class SenderPanel extends AbstractPanel {
     }
 
     @Override
-    protected JPanel getPanelEditor() {
+    protected JPanel getEditorPanel() {
         return panelEditor;
     }
 

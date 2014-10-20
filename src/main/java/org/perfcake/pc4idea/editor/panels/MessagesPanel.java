@@ -38,7 +38,7 @@ public class MessagesPanel extends AbstractPanel {
     }
 
     @Override
-    protected JPanel getPanelEditor() {
+    protected JPanel getEditorPanel() {
         return panelEditor;
     }
 

@@ -37,7 +37,7 @@ public class ValidationPanel extends AbstractPanel {
     }
 
     @Override
-    protected JPanel getPanelEditor() {
+    protected JPanel getEditorPanel() {
         return panelEditor;
     }
 

@@ -114,12 +114,12 @@ public class PropertyComponent extends JComponent {
 
 
     private class ComponentEditor extends DialogWrapper {
-        private JPanel background;
+        private JPanel centerPanel;
 
-        public ComponentEditor(String title, JPanel background){
+        public ComponentEditor(String title, JPanel centerPanel){
             super(project, false);
             setTitle(title);
-            this.background = background;
+            this.centerPanel = centerPanel;
             this.setResizable(true);
 //            setPreferredSize(new Dimension(200,200));
 //            setSize(200,200); /*TODO not working :D*/
@@ -130,7 +130,7 @@ public class PropertyComponent extends JComponent {
         @Nullable
         @Override
         protected JComponent createCenterPanel() {
-            return background;
+            return centerPanel;
         }
     }
 }
