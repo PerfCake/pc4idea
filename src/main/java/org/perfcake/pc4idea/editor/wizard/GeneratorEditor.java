@@ -1,32 +1,30 @@
 package org.perfcake.pc4idea.editor.wizard;
 
+import com.intellij.openapi.ui.ComboBox;
 import org.perfcake.model.Scenario;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
  * Date: 19.10.2014
- * To change this template use File | Settings | File Templates.
  */
 public class GeneratorEditor extends JPanel {
     private JLabel labelGeneratorType;
     private JLabel labelRunType;
     private JLabel labelRunValue;
     private JLabel labelNumOfThreads;
-    private JSpinner spinnerGeneratorType;
-    private JSpinner spinnerRunType;
+    private ComboBox comboBoxGeneratorType;
+    private ComboBox comboBoxRunType;
     private JTextField textFieldRunValue;
     private JTextField textFieldNumOfThreads;
-    private JPanel panelProperties;
+    private PropertiesEditor panelProperties;
 
-    private Scenario.Generator generator;
-
-    public GeneratorEditor(Scenario.Generator generator){
-        this.generator = generator;
-        /*TODO find spinnerGenTypeValues values*/
+    public GeneratorEditor(){
         initComponents();
+        this.setPreferredSize(new Dimension(350,240));
     }
 
     private void initComponents(){
@@ -34,44 +32,60 @@ public class GeneratorEditor extends JPanel {
         labelRunType = new JLabel("Run type:");
         labelRunValue = new JLabel("Duration:");
         labelNumOfThreads = new JLabel("Number of threads:");
-        /*TODO*/spinnerGeneratorType = new JSpinner();
-        /*TODO*/spinnerRunType = new JSpinner();
+        comboBoxGeneratorType = new ComboBox();
+        comboBoxGeneratorType.addItem("DefaultMessageGenerator");
+        comboBoxGeneratorType.addItem("RampUpDownGenerator");
+        comboBoxRunType = new ComboBox();
+        comboBoxRunType.addItem("iteration");
+        comboBoxRunType.addItem("time");
+        comboBoxRunType.addItem("percentage");
         textFieldRunValue = new JTextField();
         textFieldNumOfThreads = new JTextField();
         panelProperties = new PropertiesEditor();
-
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(layout.createParallelGroup()
                     .addGroup(layout.createSequentialGroup()
-                            .addComponent(labelGeneratorType)
-                            .addComponent(spinnerGeneratorType))
+                            .addComponent(labelGeneratorType,GroupLayout.PREFERRED_SIZE,120,GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboBoxGeneratorType))
                     .addGroup(layout.createSequentialGroup()
-                            .addComponent(labelRunType)
-                            .addComponent(spinnerRunType))
+                            .addComponent(labelRunType,GroupLayout.PREFERRED_SIZE,120,GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboBoxRunType))
                     .addGroup(layout.createSequentialGroup()
-                            .addComponent(labelRunValue)
+                            .addComponent(labelRunValue,GroupLayout.PREFERRED_SIZE,120,GroupLayout.PREFERRED_SIZE)
                             .addComponent(textFieldRunValue))
                     .addGroup(layout.createSequentialGroup()
-                            .addComponent(labelNumOfThreads)
+                            .addComponent(labelNumOfThreads,GroupLayout.PREFERRED_SIZE,120,GroupLayout.PREFERRED_SIZE)
                             .addComponent(textFieldNumOfThreads))
                     .addComponent(panelProperties));
 
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup()
-                        .addComponent(labelGeneratorType)
-                        .addComponent(spinnerGeneratorType))
+                        .addComponent(labelGeneratorType, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(comboBoxGeneratorType, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+                .addGap(10)
                 .addGroup(layout.createParallelGroup()
-                        .addComponent(labelRunType)
-                        .addComponent(spinnerRunType))
+                        .addComponent(labelRunType, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(comboBoxRunType, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+                .addGap(10)
                 .addGroup(layout.createParallelGroup()
-                        .addComponent(labelRunValue)
-                        .addComponent(textFieldRunValue))
+                        .addComponent(labelRunValue, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(textFieldRunValue, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+                .addGap(10)
                 .addGroup(layout.createParallelGroup()
-                        .addComponent(labelNumOfThreads)
-                        .addComponent(textFieldNumOfThreads))
+                        .addComponent(labelNumOfThreads, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(textFieldNumOfThreads, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+                .addGap(10)
                 .addComponent(panelProperties));
+    }
+
+    public void setGenerator(Scenario.Generator generator){
+        comboBoxGeneratorType.setSelectedItem(generator.getClazz());
+        comboBoxRunType.setSelectedItem(generator.getRun().getType());
+        textFieldRunValue.setText(generator.getRun().getValue());
+        textFieldNumOfThreads.setText(generator.getThreads());
+        panelProperties.setProperties(generator.getProperty());
     }
 
     public boolean areInsertedValuesValid() {
@@ -80,7 +94,14 @@ public class GeneratorEditor extends JPanel {
         return true;
     }
     public Scenario.Generator getGenerator(){
-        /*TODO values to generator*/
-        return generator;
+        Scenario.Generator newGenerator = new Scenario.Generator();
+        newGenerator.setClazz((String)comboBoxGeneratorType.getSelectedItem());
+        newGenerator.setThreads(textFieldNumOfThreads.getText());
+        Scenario.Generator.Run newRun = new Scenario.Generator.Run();
+        newRun.setType((String)comboBoxRunType.getSelectedItem());
+        newRun.setValue(textFieldRunValue.getText());
+        newGenerator.setRun(newRun);
+        newGenerator.getProperty().addAll(panelProperties.getProperties());
+        return newGenerator;
     }
 }
