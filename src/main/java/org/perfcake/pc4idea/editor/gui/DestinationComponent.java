@@ -1,25 +1,21 @@
-package org.perfcake.pc4idea.editor.components;
+package org.perfcake.pc4idea.editor.gui;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import org.jetbrains.annotations.Nullable;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.editor.components.EnabledIndicator;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
  * Date: 15.10.2014
- * To change this template use File | Settings | File Templates.
  */
-public class DestinationComponent extends JComponent {
+public class DestinationComponent extends AbstractPanel {
     private final String TITLE ="Destination Editor";
     private final int HEIGHT = 40;
-    private final Color color;
+    private final Color componentColor;
     private final Project project;
 
     private JPanel panelEditor;
@@ -27,10 +23,12 @@ public class DestinationComponent extends JComponent {
 
     private int width;
     private JLabel destinationAttr;
+    private EnabledIndicator destinationEnabled;
 
-    public DestinationComponent(Project project, Color color){
+    public DestinationComponent(Project project, Color componentColor){
+        super(project);
         this.project = project;
-        this.color = color;
+        this.componentColor = componentColor;
 
         init();
 
@@ -41,53 +39,45 @@ public class DestinationComponent extends JComponent {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setFont(destinationAttr.getFont());
-        width = g.getFontMetrics().stringWidth(destinationAttr.getText()) + 30;
+        width = g.getFontMetrics().stringWidth(destinationAttr.getText()) + 25 + 20;
         setComponentSize();
 
         Graphics2D g2D = (Graphics2D) g;
-        g2D.setColor(color);
+        g2D.setColor(componentColor);
         g2D.drawRoundRect(4, 4, width - 8, HEIGHT - 8, 20, 20);
     }
 
     private void init(){
         destinationAttr = new JLabel("DestinationClass");
         destinationAttr.setFont(new Font(destinationAttr.getFont().getName(), 0, 15));
-        destinationAttr.setForeground(color);
-        repaint();/* test-skusit s.ite. na pocet*/
-
-        this.setOpaque(false);
-        this.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent evt) {
-                if (evt.getButton() == MouseEvent.BUTTON1) {
-                    if (evt.getClickCount() == 2) {
-                        ComponentEditor editor = new ComponentEditor(TITLE,panelEditor);
-                        editor.show();
-                        if (editor.getExitCode() == 0) {
-                            /*applyChanges();*/
-                        }
-                    }
-                }
-            }
-        });
+        destinationAttr.setForeground(componentColor);
+        destinationEnabled = new EnabledIndicator(componentColor);
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
         this.add(destinationAttr);
+        this.add(destinationEnabled);
+
+        layout.putConstraint(SpringLayout.NORTH, destinationEnabled,
+                10,
+                SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.WEST, destinationEnabled,
+                10,
+                SpringLayout.WEST, this);
 
         layout.putConstraint(SpringLayout.NORTH, destinationAttr,
                 10,
                 SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.WEST,destinationAttr,
+                5,
+                SpringLayout.EAST,destinationEnabled);
 
-        layout.putConstraint(SpringLayout.WEST, destinationAttr,
-                15,
-                SpringLayout.WEST, this);
+
     }
     private void setComponentSize(){
-        this.setSize(new Dimension(width,HEIGHT));          /*TODO ?*/
         this.setMinimumSize(new Dimension(width,HEIGHT));
-        this.setPreferredSize(new Dimension(width,HEIGHT));  /*TODO ?*/
+        this.setPreferredSize(new Dimension(width,HEIGHT));
         this.setMaximumSize(new Dimension(width,HEIGHT));
-        this.validate();
     }
 
     private JPanel initPanelEditor() {
@@ -96,39 +86,36 @@ public class DestinationComponent extends JComponent {
         return panel;
     }
 
-    private void applyChenges(){
+    @Override
+    protected Color getColor() {
+        return componentColor;
+    }
+
+    @Override
+    protected String getEditorTitle() {
+        return TITLE;
+    }
+
+    @Override
+    protected JPanel getEditorPanel() {
+        return panelEditor;
+    }
+
+    @Override
+    protected void applyChanges(){
         /*TODO*/
-        /*+ repaint?*/
     }
 
+    @Override
     public void setComponent(Object component) {
-        destination = (Scenario.Reporting.Reporter.Destination) component;
+        destination = (Scenario.Reporting.Reporter.Destination)component;
         destinationAttr.setText(destination.getClazz());
-        repaint();
+        destinationEnabled.setState(destination.isEnabled());
     }
+
+    @Override
     public Object getComponent() {
-        return destination;
+        return null/*TODO*/;
     }
 
-
-    private class ComponentEditor extends DialogWrapper {
-        private JPanel centerPanel;
-
-        public ComponentEditor(String title, JPanel centerPanel){
-            super(project, false);
-            setTitle(title);
-            this.centerPanel = centerPanel;
-            this.setResizable(true);
-//            setPreferredSize(new Dimension(200,200));
-//            setSize(200,200); /*TODO not working :D*/
-            this.setHorizontalStretch(4.0f); /*TODO size??*/
-            this.setVerticalStretch(4.0f);
-            init();
-        }
-        @Nullable
-        @Override
-        protected JComponent createCenterPanel() {
-            return centerPanel;
-        }
-    }
 }
