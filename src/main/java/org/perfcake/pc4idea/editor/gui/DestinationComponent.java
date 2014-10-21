@@ -3,6 +3,7 @@ package org.perfcake.pc4idea.editor.gui;
 import com.intellij.openapi.project.Project;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.components.EnabledIndicator;
+import org.perfcake.pc4idea.editor.wizard.DestinationEditor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,40 +15,22 @@ import java.awt.*;
  */
 public class DestinationComponent extends AbstractPanel {
     private final String TITLE ="Destination Editor";
-    private final int HEIGHT = 40;
     private final Color componentColor;
-    private final Project project;
 
     private JPanel panelEditor;
     private Scenario.Reporting.Reporter.Destination destination;
 
-    private int width;
     private JLabel destinationAttr;
     private EnabledIndicator destinationEnabled;
 
     public DestinationComponent(Project project, Color componentColor){
         super(project);
-        this.project = project;
         this.componentColor = componentColor;
 
-        init();
-
-        panelEditor = initPanelEditor();
+        initComponents();
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.setFont(destinationAttr.getFont());
-        width = g.getFontMetrics().stringWidth(destinationAttr.getText()) + 25 + 20;
-        setComponentSize();
-
-        Graphics2D g2D = (Graphics2D) g;
-        g2D.setColor(componentColor);
-        g2D.drawRoundRect(4, 4, width - 8, HEIGHT - 8, 20, 20);
-    }
-
-    private void init(){
+    private void initComponents(){
         destinationAttr = new JLabel("DestinationClass");
         destinationAttr.setFont(new Font(destinationAttr.getFont().getName(), 0, 15));
         destinationAttr.setForeground(componentColor);
@@ -71,19 +54,14 @@ public class DestinationComponent extends AbstractPanel {
         layout.putConstraint(SpringLayout.WEST,destinationAttr,
                 5,
                 SpringLayout.EAST,destinationEnabled);
-
-
     }
     private void setComponentSize(){
-        this.setMinimumSize(new Dimension(width,HEIGHT));
-        this.setPreferredSize(new Dimension(width,HEIGHT));
-        this.setMaximumSize(new Dimension(width,HEIGHT));
-    }
+        FontMetrics fontMetrics = destinationAttr.getFontMetrics(destinationAttr.getFont());
+        int width = fontMetrics.stringWidth(destinationAttr.getText()) + 25 + 20;
 
-    private JPanel initPanelEditor() {
-        JPanel panel = new JPanel();
-            /*TODO*/
-        return panel;
+        this.setMinimumSize(new Dimension(width,40));
+        this.setPreferredSize(new Dimension(width,40));
+        this.setMaximumSize(new Dimension(width,40));
     }
 
     @Override
@@ -98,12 +76,14 @@ public class DestinationComponent extends AbstractPanel {
 
     @Override
     protected JPanel getEditorPanel() {
+        panelEditor = new DestinationEditor();
+        panelEditor.setDestination(destination);
         return panelEditor;
     }
 
     @Override
     protected void applyChanges(){
-        /*TODO*/
+        this.setComponent(panelEditor.getDestination());
     }
 
     @Override
@@ -111,11 +91,14 @@ public class DestinationComponent extends AbstractPanel {
         destination = (Scenario.Reporting.Reporter.Destination)component;
         destinationAttr.setText(destination.getClazz());
         destinationEnabled.setState(destination.isEnabled());
+
+        setComponentSize();
     }
 
     @Override
     public Object getComponent() {
-        return null/*TODO*/;
+        /*TODO maybe not needed*/
+        return destination;
     }
 
 }
