@@ -1,9 +1,8 @@
-package org.perfcake.pc4idea.editor.panels;
+package org.perfcake.pc4idea.editor.gui;
 
 import com.intellij.openapi.project.Project;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.components.PropertyComponent;
 
 import javax.swing.*;
 import java.awt.*;

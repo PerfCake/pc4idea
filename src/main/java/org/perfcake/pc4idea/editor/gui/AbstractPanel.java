@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.editor.panels;
+package org.perfcake.pc4idea.editor.gui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -32,9 +32,6 @@ public abstract class AbstractPanel extends JPanel {
                         editor.show();
                         if (editor.getExitCode() == 0) {
                             applyChanges();
-                        }
-                        if (editor.getExitCode() == 1){
-                            /*TODO discard Changes?*/
                         }
                     }
                 } /*TODO right click -> popup menu*/
