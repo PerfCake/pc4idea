@@ -16,15 +16,15 @@ public class GeneratorEditor extends JPanel {
     private JLabel labelRunType;
     private JLabel labelRunValue;
     private JLabel labelNumOfThreads;
-    private ComboBox comboBoxGeneratorType;
-    private ComboBox comboBoxRunType;
+    private JComboBox comboBoxGeneratorType;
+    private JComboBox comboBoxRunType;
     private JTextField textFieldRunValue;
     private JTextField textFieldNumOfThreads;
     private PropertiesEditor panelProperties;
 
     public GeneratorEditor(){
         initComponents();
-        this.setPreferredSize(new Dimension(350,240));
+        this.setPreferredSize(new Dimension(350,0));
     }
 
     private void initComponents(){
@@ -59,7 +59,6 @@ public class GeneratorEditor extends JPanel {
                             .addComponent(labelNumOfThreads,GroupLayout.PREFERRED_SIZE,120,GroupLayout.PREFERRED_SIZE)
                             .addComponent(textFieldNumOfThreads))
                     .addComponent(panelProperties));
-
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup()
                         .addComponent(labelGeneratorType, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
@@ -93,6 +92,7 @@ public class GeneratorEditor extends JPanel {
         /*TODO check validity of inserted data - if false OK button disabled*/
         return true;
     }
+
     public Scenario.Generator getGenerator(){
         Scenario.Generator newGenerator = new Scenario.Generator();
         newGenerator.setClazz((String)comboBoxGeneratorType.getSelectedItem());
