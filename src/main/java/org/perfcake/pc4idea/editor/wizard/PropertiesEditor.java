@@ -19,9 +19,8 @@ import java.util.List;
  * Date: 19.10.2014
  */
 public class PropertiesEditor extends JPanel {
-    private JScrollPane scrollPaneTableProperties;
     private JTable tableProperties;
-    private JScrollPane scrollPaneTable;
+    private JScrollPane scrollPaneTableProperties;
     private JButton buttonAddProperty;
     private JButton buttonEditProperty;
     private JButton buttonDeleteProperty;
@@ -31,9 +30,8 @@ public class PropertiesEditor extends JPanel {
      }
 
     private void initComponents(){
-        scrollPaneTableProperties = ScrollPaneFactory.createScrollPane(tableProperties);
         tableProperties = new JBTable();
-        scrollPaneTable = ScrollPaneFactory.createScrollPane(tableProperties);
+        scrollPaneTableProperties = ScrollPaneFactory.createScrollPane(tableProperties);
         tableProperties.setModel(new PropertiesTableModel());
         tableProperties.addMouseListener(new MouseAdapter() {
             @Override
@@ -66,7 +64,7 @@ public class PropertiesEditor extends JPanel {
                     Property property = propertyEditor.getProperty();
                     ((PropertiesTableModel)tableProperties.getModel()).getProperties().add(property);
                     tableProperties.repaint();
-                    scrollPaneTable.revalidate();
+                    scrollPaneTableProperties.revalidate();
                 }
             }
         });
@@ -77,7 +75,6 @@ public class PropertiesEditor extends JPanel {
                 int selectedRow = tableProperties.getSelectedRow();
                 if (selectedRow >= 0) {
                     PropertyEditor propertyEditor = new PropertyEditor();
-
                     propertyEditor.setProperty(((PropertiesTableModel) tableProperties.getModel()).getProperties().get(selectedRow));
                     ComponentEditor editor = new ComponentEditor("Property Editor", propertyEditor);
                     editor.show();
@@ -96,7 +93,7 @@ public class PropertiesEditor extends JPanel {
                 if (selectedRow >= 0) {
                     ((PropertiesTableModel)tableProperties.getModel()).getProperties().remove(selectedRow);
                     tableProperties.repaint();
-                    scrollPaneTable.revalidate();
+                    scrollPaneTableProperties.revalidate();
                 }
             }
         });
@@ -104,14 +101,14 @@ public class PropertiesEditor extends JPanel {
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(layout.createSequentialGroup()
-                .addComponent(scrollPaneTable)
+                .addComponent(scrollPaneTableProperties)
                 .addGap(5)
                 .addGroup(layout.createParallelGroup()
                         .addComponent(buttonAddProperty, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)
                         .addComponent(buttonEditProperty, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)
                         .addComponent(buttonDeleteProperty, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)));
         layout.setVerticalGroup(layout.createParallelGroup()
-            .addComponent(scrollPaneTable)
+            .addComponent(scrollPaneTableProperties)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(buttonAddProperty)
                 .addComponent(buttonEditProperty)
