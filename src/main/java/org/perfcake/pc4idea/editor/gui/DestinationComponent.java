@@ -17,7 +17,7 @@ public class DestinationComponent extends AbstractPanel {
     private final String TITLE ="Destination Editor";
     private final Color componentColor;
 
-    private JPanel panelEditor;
+    private DestinationEditor panelEditor;
     private Scenario.Reporting.Reporter.Destination destination;
 
     private JLabel destinationAttr;
