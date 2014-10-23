@@ -3,6 +3,7 @@ package org.perfcake.pc4idea.editor.gui;
 import com.intellij.openapi.project.Project;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.editor.wizard.SenderEditor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,14 +12,13 @@ import java.awt.*;
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
  * Date: 28.9.2014
- * To change this template use File | Settings | File Templates.
  */
 public class SenderPanel extends AbstractPanel {
     private final String TITLE ="Sender Editor";
-    private Color panelColor = Color.getHSBColor(220/360f,0.5f,0.75f);
+    private Color senderColor = Color.getHSBColor(220/360f,0.5f,0.75f);
     private final Project project;
 
-    private JPanel panelEditor;
+    private SenderEditor panelEditor;
     private Scenario.Sender sender;
 
     private JLabel senderAttr;
@@ -34,20 +34,18 @@ public class SenderPanel extends AbstractPanel {
         setMaximumSize(new Dimension(Integer.MAX_VALUE,50));
 
         initComponents();
-        panelEditor = initPanelEditor();
-
     }
+
     private void initComponents() {
         senderAttr = new JLabel("SenderClass");
         senderAttr.setFont(new Font(senderAttr.getFont().getName(), 0, 15));
-        senderAttr.setForeground(panelColor);
+        senderAttr.setForeground(senderColor);
 
         panelProperties = new JPanel();
         panelProperties.setLayout(new BoxLayout(panelProperties,BoxLayout.X_AXIS));/*TODO layout*/
         panelProperties.setMinimumSize(new Dimension(370,0));
         panelProperties.setMaximumSize(new Dimension(Integer.MAX_VALUE, 0));
         panelProperties.setOpaque(false);
-
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -62,26 +60,20 @@ public class SenderPanel extends AbstractPanel {
                 SpringLayout.NORTH, this);
 
         layout.putConstraint(SpringLayout.WEST, panelProperties,
-                15,
+                10,
                 SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.EAST, this,
-                15,
+                10,
                 SpringLayout.EAST, panelProperties);
-        layout.putConstraint(SpringLayout.NORTH, panelProperties,8,SpringLayout.SOUTH, senderAttr);
+        layout.putConstraint(SpringLayout.NORTH, panelProperties,10,SpringLayout.SOUTH, senderAttr);
         layout.putConstraint(SpringLayout.SOUTH, this,
                 10,
                 SpringLayout.SOUTH,panelProperties);
     }
 
-    private JPanel initPanelEditor(){
-        JPanel panel = new JPanel();
-        /*TODO ...*/
-        return panel;
-    }
-
     @Override
     protected Color getColor() {
-        return panelColor;
+        return senderColor;
     }
 
     @Override
@@ -91,28 +83,27 @@ public class SenderPanel extends AbstractPanel {
 
     @Override
     protected JPanel getEditorPanel() {
+        panelEditor = new SenderEditor();
+        panelEditor.setSender(sender);
         return panelEditor;
     }
 
     @Override
     protected void applyChanges() {
-        /*TODO ...*/
-        /*upravi sender + */
-        /*editor.save(){natiahne scen. + ulozi}*/
-
-        /*+ zarovnat (setComponent part -> align)*/
+        this.setComponent(panelEditor.getSender());
     }
 
     @Override
-    public void setComponent(Object component) {  /*u xxxComp. maybe in constructor*/
+    public void setComponent(Object component) { /*TODO*/
         sender = (Scenario.Sender) component;
         senderAttr.setText(sender.getClazz());
 
         panelProperties.removeAll();
+        panelProperties.repaint();
         /*TODO zarovnavat:akyLayout:podla sirky (min=380)*/
         for (Property property : sender.getProperty()){
             /*TODO ukladat zoznam prop.*/
-            PropertyComponent propertyComponent = new PropertyComponent(project,panelColor);
+            PropertyComponent propertyComponent = new PropertyComponent(project, senderColor);
             propertyComponent.setComponent(property);
             panelProperties.add(propertyComponent);
         }
@@ -123,7 +114,9 @@ public class SenderPanel extends AbstractPanel {
             panelProperties.setMinimumSize(new Dimension(370, 40));
             panelProperties.setMaximumSize(new Dimension(Integer.MAX_VALUE,40));   /*TODO 0 or 40*n -//-*/
         }
-        //panelProperties.validate();TODO if needed
+        panelProperties.revalidate();
+        this.revalidate();
+
     }
 
     @Override
