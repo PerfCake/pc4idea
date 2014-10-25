@@ -5,8 +5,11 @@ import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.wizard.SenderEditor;
 
+import javax.accessibility.AccessibleContext;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,16 +25,16 @@ public class SenderPanel extends AbstractPanel {
     private Scenario.Sender sender;
 
     private JLabel senderAttr;
-    //private JScrollPane scrollPaneProperties;/*TODO*/
     private JPanel panelProperties;
 
-
+    private int propertiesRowCount;
+    private int widestPropertyWidth;
 
     public SenderPanel(Project project){
         super(project);
         this.project = project;
-        setMinimumSize(new Dimension(0,50)); /*50 = 2*10gap+20title+10gap to panel*/
-        setMaximumSize(new Dimension(Integer.MAX_VALUE,50));
+        propertiesRowCount = 0;
+        widestPropertyWidth = 0;
 
         initComponents();
     }
@@ -40,11 +43,8 @@ public class SenderPanel extends AbstractPanel {
         senderAttr = new JLabel("SenderClass");
         senderAttr.setFont(new Font(senderAttr.getFont().getName(), 0, 15));
         senderAttr.setForeground(senderColor);
-
         panelProperties = new JPanel();
-        panelProperties.setLayout(new BoxLayout(panelProperties,BoxLayout.X_AXIS));/*TODO layout*/
-        panelProperties.setMinimumSize(new Dimension(370,0));
-        panelProperties.setMaximumSize(new Dimension(Integer.MAX_VALUE, 0));
+        panelProperties.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
         panelProperties.setOpaque(false);
 
         SpringLayout layout = new SpringLayout();
@@ -62,13 +62,48 @@ public class SenderPanel extends AbstractPanel {
         layout.putConstraint(SpringLayout.WEST, panelProperties,
                 10,
                 SpringLayout.WEST, this);
-        layout.putConstraint(SpringLayout.EAST, this,
-                10,
-                SpringLayout.EAST, panelProperties);
-        layout.putConstraint(SpringLayout.NORTH, panelProperties,10,SpringLayout.SOUTH, senderAttr);
-        layout.putConstraint(SpringLayout.SOUTH, this,
-                10,
-                SpringLayout.SOUTH,panelProperties);
+        layout.putConstraint(SpringLayout.NORTH, panelProperties,8,SpringLayout.SOUTH, senderAttr);
+
+        this.addComponentListener( new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                if (widestPropertyWidth <  e.getComponent().getSize().width - 20) {
+                    panelProperties.setMinimumSize(new Dimension(e.getComponent().getSize().width - 20, panelProperties.getMinimumSize().height));
+                    panelProperties.setPreferredSize(new Dimension(e.getComponent().getSize().width - 20, panelProperties.getPreferredSize().height));
+                    panelProperties.setMaximumSize(new Dimension(e.getComponent().getSize().width - 20, panelProperties.getMaximumSize().height));
+                    panelProperties.revalidate();
+                }
+            }
+        });
+        panelProperties.addComponentListener( new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                if (propertiesRowCount > 0) {
+                    if (widestPropertyWidth <  panelProperties.getSize().width) {
+                        AccessibleContext ac = e.getComponent().getAccessibleContext();
+                        int controlSum = 0;
+                        int expectedRows = 1;
+                        for (int i = 0; i < ac.getAccessibleChildrenCount(); i++) {
+                            controlSum += ((PropertyComponent) ac.getAccessibleChild(i)).getSize().width;
+                            if (controlSum > SenderPanel.this.getSize().width - 20) {
+                                if (ac.getAccessibleChildrenCount() > expectedRows) {
+                                    i--;
+                                    controlSum = 0;
+                                    expectedRows++;
+                                }
+                            }
+                        }
+                        if (expectedRows != propertiesRowCount) {
+                            propertiesRowCount = expectedRows;
+                            panelProperties.setMinimumSize(new Dimension(panelProperties.getMinimumSize().width, panelProperties.getMinimumSize().height + 40));
+                            panelProperties.setPreferredSize(new Dimension(panelProperties.getPreferredSize().width, panelProperties.getPreferredSize().height + 40));
+                            panelProperties.setMaximumSize(new Dimension(panelProperties.getMaximumSize().width, panelProperties.getMaximumSize().height + 40));
+                            panelProperties.revalidate();
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -94,29 +129,30 @@ public class SenderPanel extends AbstractPanel {
     }
 
     @Override
-    public void setComponent(Object component) { /*TODO*/
+    public void setComponent(Object component) {
         sender = (Scenario.Sender) component;
         senderAttr.setText(sender.getClazz());
 
         panelProperties.removeAll();
         panelProperties.repaint();
-        /*TODO zarovnavat:akyLayout:podla sirky (min=380)*/
+
+        widestPropertyWidth = 0;
+        propertiesRowCount = 0;
         for (Property property : sender.getProperty()){
-            /*TODO ukladat zoznam prop.*/
             PropertyComponent propertyComponent = new PropertyComponent(project, senderColor);
             propertyComponent.setComponent(property);
             panelProperties.add(propertyComponent);
+            if (propertyComponent.getPreferredSize().width > widestPropertyWidth){
+                widestPropertyWidth = propertyComponent.getPreferredSize().width;
+            }
         }
-        /*TODO*/ if (sender.getProperty().size() > 0) { /* TODO temp n=1*/
-            setMinimumSize(new Dimension(0, 50 + 40));
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, 50 + 40)); /*TODO base=50 + 40*n n=number rows*/
-
-            panelProperties.setMinimumSize(new Dimension(370, 40));
-            panelProperties.setMaximumSize(new Dimension(Integer.MAX_VALUE,40));   /*TODO 0 or 40*n -//-*/
+        if (sender.getProperty().size() > 0) {
+            propertiesRowCount = 1;
+        } else {
+            propertiesRowCount = 0;
         }
         panelProperties.revalidate();
         this.revalidate();
-
     }
 
     @Override
@@ -124,5 +160,28 @@ public class SenderPanel extends AbstractPanel {
         return sender;
     }
 
+    @Override
+    public Dimension getMinimumSize(){
+        Dimension dimension = new Dimension();
+        dimension.width = widestPropertyWidth+20;
+        dimension.height = propertiesRowCount*40 + 50;
+        return dimension;
+    }
+
+    @Override
+    public Dimension getPreferredSize(){
+        Dimension dimension = new Dimension();
+        dimension.width = super.getPreferredSize().width;
+        dimension.height = propertiesRowCount*40 + 50;
+        return dimension;
+    }
+
+    @Override
+    public Dimension getMaximumSize(){
+        Dimension dimension = new Dimension();
+        dimension.width = super.getMaximumSize().width;
+        dimension.height = propertiesRowCount*40 + 50;
+        return dimension;
+    }
 
 }
