@@ -40,7 +40,7 @@ public class SenderEditor extends JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(layout.createParallelGroup()
             .addGroup(layout.createSequentialGroup()
-                .addComponent(labelSenderType,GroupLayout.PREFERRED_SIZE,50,GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelSenderType,GroupLayout.PREFERRED_SIZE,70,GroupLayout.PREFERRED_SIZE)
                 .addComponent(comboBoxSenderType))
             .addComponent(panelProperties));
         layout.setVerticalGroup(layout.createSequentialGroup()
