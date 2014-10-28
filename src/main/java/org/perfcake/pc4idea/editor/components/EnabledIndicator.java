@@ -38,5 +38,6 @@ public class EnabledIndicator extends JComponent {
 
     public void setState(boolean state){
         this.state = state;
+        repaint();
     }
 }

@@ -20,7 +20,7 @@ import com.intellij.ui.treeStructure.Tree;
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.panels.*;
+import org.perfcake.pc4idea.editor.gui.*;
 import org.perfcake.scenario.XMLFactory;
 import org.xml.sax.SAXException;
 
@@ -97,10 +97,11 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
         loadScenario();
 //        isEditorValid = true   /*TODO*/
 //        LOG.assertTrue(isEditorValid);
-
         initComponents();
 
+
         setDesignerComponents();
+
 
 
 
@@ -146,7 +147,7 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
 
         tabDesignerComponent.add(splitterDesigner);
         scrollPaneDesignerScenario = ScrollPaneFactory.createScrollPane(panelDesignerScenario);
-        scrollPaneDesignerScenario.setMinimumSize(new Dimension(400, 0));
+        /*TODO unc.*///scrollPaneDesignerScenario.setMinimumSize(new Dimension(400, 0));
         scrollPaneDesignerMenu = ScrollPaneFactory.createScrollPane(panelDesignerMenu);
         scrollPaneDesignerMenu.setMinimumSize(new Dimension(100, 0));
         splitterDesigner.setFirstComponent(scrollPaneDesignerMenu);
@@ -217,8 +218,9 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
                                         .addComponent(panelValidation))
                                 .addComponent(panelReporting))
                         .addComponent(panelProperties)
-                        .addContainerGap(0, Short.MAX_VALUE) /*TODO decide*/
+                        //.addContainerGap(0, Short.MAX_VALUE) /*TODO decide*/
         );
+
     }
 
     private void loadScenario(){
@@ -231,9 +233,9 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
             unmarshaller.setSchema(schema);
             scenarioModel = (org.perfcake.model.Scenario) unmarshaller.unmarshal(new File(file.getPath()));
         } catch (JAXBException e) {
-            e.printStackTrace(); /*TODO ???*/
+            System.out.println("ERROR:"+e.getClass().getName()); /*TODO ???*/ e.printStackTrace();
         } catch (SAXException e) {
-            e.printStackTrace(); /*TODO nevalidne xml*/
+            System.out.println("ERROR:"+e.getClass().getName()); /*TODO nevalidne xml*/ e.printStackTrace();
         }
 
 
@@ -242,7 +244,9 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
         panelGenerator.setComponent(scenarioModel.getGenerator());
         panelSender.setComponent(scenarioModel.getSender());
         panelReporting.setComponent(scenarioModel.getReporting());
-
+        panelMessages.setComponent(scenarioModel.getMessages());
+        panelValidation.setComponent(scenarioModel.getValidation());
+        panelProperties.setComponent(scenarioModel.getProperties());
         /*TODO for testing purpose*/System.out.println("designerSet");/*LOG.info("designerSet");*/
     }
     // private void saveScenario(){}
@@ -272,6 +276,10 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
     private final class ScenarioDocumentListener extends DocumentAdapter {
         @Override
         public void documentChanged(DocumentEvent e) {
+        /*TODO set modif.=true + rozdelit podla tabbedPane.getSelectedIndex()
+            - source:  > designer selected: save Doc. + loadS. + setDes. + modif.=false
+            - designer(=externa zmena?): TODO a) sklbit b) ignore c) desigerWasModif.(+listener): true=ignore false=saveDoc. >vfLisener(true,false) loadS.+setDes.*/
+
             /*TODO for testing purpose*/System.out.println("docChanged");
             documentWasModified = true;
         }

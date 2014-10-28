@@ -3,6 +3,7 @@ package org.perfcake.pc4idea.editor.wizard;
 import org.perfcake.model.Property;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,6 +18,7 @@ public class PropertyEditor extends JPanel {
 
     public PropertyEditor(){
         initComponents();
+        this.setPreferredSize(new Dimension(350,0));
     }
 
     private void initComponents(){

@@ -14,24 +14,26 @@ import java.awt.*;
  */
 public class PropertyComponent extends AbstractPanel {
     private final String TITLE ="Property Editor";
-    private final Color componentColor;
+    private final Color propertyColor;
 
-    private PropertyEditor panelEditor;
+    private PropertyEditor propertyEditor;
     private Property property;
 
     private JLabel propertyAttr;
+    private Dimension propertySize;
 
-    public PropertyComponent(Project project, Color componentColor){
+    public PropertyComponent(Project project, Color ancestorColor){
         super(project);
-        this.componentColor = componentColor;
+        this.propertyColor = ancestorColor;
 
         initComponents();
     }
 
     private void initComponents(){
-        propertyAttr = new JLabel("name : value");
+        propertyAttr = new JLabel("-");
         propertyAttr.setFont(new Font(propertyAttr.getFont().getName(), 0, 15));
-        propertyAttr.setForeground(componentColor);
+        propertyAttr.setForeground(propertyColor);
+        propertySize = new Dimension(40,40);
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -45,18 +47,10 @@ public class PropertyComponent extends AbstractPanel {
                 15,
                 SpringLayout.WEST, this);
     }
-    private void setComponentSize() {
-        FontMetrics fontMetrics = propertyAttr.getFontMetrics(propertyAttr.getFont());
-        int width = fontMetrics.stringWidth(propertyAttr.getText()) + 30;
-
-        this.setMinimumSize(new Dimension(width, 40));
-        this.setPreferredSize(new Dimension(width, 40));
-        this.setMaximumSize(new Dimension(width, 40));
-    }
 
     @Override
     protected Color getColor() {
-        return componentColor;
+        return propertyColor;
     }
 
     @Override
@@ -66,27 +60,41 @@ public class PropertyComponent extends AbstractPanel {
 
     @Override
     protected JPanel getEditorPanel() {
-        panelEditor = new PropertyEditor();
-        panelEditor.setProperty(property);
-        return panelEditor;
+        propertyEditor = new PropertyEditor();
+        propertyEditor.setProperty(property);
+        return propertyEditor;
     }
 
     @Override
     protected void applyChanges(){
-        this.setComponent(panelEditor.getProperty());
-    }
+        this.setComponent(propertyEditor.getProperty());
+    }      /*TODO po edit. sender prop. neuklada do sendra!!!*/
 
     @Override
     public void setComponent(Object component) {
         property = (Property) component;
         propertyAttr.setText(property.getName()+" : "+property.getValue());
-
-        setComponentSize();
+        FontMetrics fontMetrics = propertyAttr.getFontMetrics(propertyAttr.getFont());
+        propertySize.width = fontMetrics.stringWidth(propertyAttr.getText()) + 30;
     }
 
     @Override
     public Object getComponent() {
-        /*TODO maybe not needed*/
         return property;
+    }
+
+    @Override
+    public Dimension getMinimumSize(){
+        return propertySize;
+    }
+
+    @Override
+    public Dimension getPreferredSize(){
+        return propertySize;
+    }
+
+    @Override
+    public Dimension getMaximumSize(){
+        return propertySize;
     }
 }

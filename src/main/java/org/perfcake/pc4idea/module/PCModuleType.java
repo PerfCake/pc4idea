@@ -38,13 +38,13 @@ public class PCModuleType extends ModuleType<PCModuleBuilder> {
     @NotNull
     @Override
     public String getName() {
-        return "PerfCake Module"; /*TODO bundle*/
+        return "PerfCake Module";
     }
 
     @NotNull
     @Override
     public String getDescription() {
-        return "PerfCake Module Description";  /*TODO bundle*/
+        return "PerfCake Module Description";  /*TODO change*/
     }
 
     @Override

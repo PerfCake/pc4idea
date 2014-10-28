@@ -53,7 +53,7 @@ public class SenderEditor extends JPanel {
 
     public void setSender(Scenario.Sender sender){
         comboBoxSenderType.setSelectedItem(sender.getClazz());
-        panelProperties.setProperties(sender.getProperty());
+        panelProperties.setListProperties(sender.getProperty());
     }
 
     public boolean areInsertedValuesValid() {
@@ -65,7 +65,7 @@ public class SenderEditor extends JPanel {
     public Scenario.Sender getSender(){
         Scenario.Sender newSender = new Scenario.Sender();
         newSender.setClazz((String)comboBoxSenderType.getSelectedItem());
-        newSender.getProperty().addAll(panelProperties.getProperties());
+        newSender.getProperty().addAll(panelProperties.getListProperties());
         return newSender;
     }
 

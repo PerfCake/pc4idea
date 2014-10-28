@@ -73,5 +73,4 @@ public abstract class AbstractPanel extends JPanel {
             return centerPanel;
         }
     }
-
 }

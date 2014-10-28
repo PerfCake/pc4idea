@@ -64,7 +64,7 @@ public class DestinationEditor extends JPanel {
         comboBoxDestinationType.setSelectedItem(destination.getClazz());
         checkBoxEnabled.setSelected(destination.isEnabled());
         panelPeriods.setPeriods(destination.getPeriod());
-        panelProperties.setProperties(destination.getProperty());
+        panelProperties.setListProperties(destination.getProperty());
     }
 
     public boolean areInsertedValuesValid() {
@@ -78,7 +78,7 @@ public class DestinationEditor extends JPanel {
         newDestination.setClazz((String)comboBoxDestinationType.getSelectedItem());
         newDestination.setEnabled(checkBoxEnabled.isSelected());
         newDestination.getPeriod().addAll(panelPeriods.getPeriods());
-        newDestination.getProperty().addAll(panelProperties.getProperties());
+        newDestination.getProperty().addAll(panelProperties.getListProperties());
         return newDestination;
     }
 }

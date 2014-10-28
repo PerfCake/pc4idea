@@ -4,6 +4,7 @@ import com.intellij.openapi.ui.ComboBox;
 import org.perfcake.model.Scenario;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,6 +19,7 @@ public class PeriodEditor extends JPanel {
 
     public PeriodEditor() {
         initComponents();
+        this.setPreferredSize(new Dimension(350,0));
     }
 
     private void initComponents(){

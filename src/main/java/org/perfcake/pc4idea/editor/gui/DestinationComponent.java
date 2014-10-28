@@ -15,17 +15,17 @@ import java.awt.*;
  */
 public class DestinationComponent extends AbstractPanel {
     private final String TITLE ="Destination Editor";
-    private final Color componentColor;
+    private final Color destinationColor;
 
-    private DestinationEditor panelEditor;
+    private DestinationEditor destinationEditor;
     private Scenario.Reporting.Reporter.Destination destination;
 
     private JLabel destinationAttr;
     private EnabledIndicator destinationEnabled;
 
-    public DestinationComponent(Project project, Color componentColor){
+    public DestinationComponent(Project project, Color reporterColor){
         super(project);
-        this.componentColor = componentColor;
+        this.destinationColor = reporterColor;
 
         initComponents();
     }
@@ -33,8 +33,8 @@ public class DestinationComponent extends AbstractPanel {
     private void initComponents(){
         destinationAttr = new JLabel("DestinationClass");
         destinationAttr.setFont(new Font(destinationAttr.getFont().getName(), 0, 15));
-        destinationAttr.setForeground(componentColor);
-        destinationEnabled = new EnabledIndicator(componentColor);
+        destinationAttr.setForeground(destinationColor);
+        destinationEnabled = new EnabledIndicator(destinationColor);
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -66,7 +66,7 @@ public class DestinationComponent extends AbstractPanel {
 
     @Override
     protected Color getColor() {
-        return componentColor;
+        return destinationColor;
     }
 
     @Override
@@ -76,14 +76,14 @@ public class DestinationComponent extends AbstractPanel {
 
     @Override
     protected JPanel getEditorPanel() {
-        panelEditor = new DestinationEditor();
-        panelEditor.setDestination(destination);
-        return panelEditor;
+        destinationEditor = new DestinationEditor();
+        destinationEditor.setDestination(destination);
+        return destinationEditor;
     }
 
     @Override
     protected void applyChanges(){
-        this.setComponent(panelEditor.getDestination());
+        this.setComponent(destinationEditor.getDestination());
     }
 
     @Override
@@ -100,5 +100,4 @@ public class DestinationComponent extends AbstractPanel {
         /*TODO maybe not needed*/
         return destination;
     }
-
 }

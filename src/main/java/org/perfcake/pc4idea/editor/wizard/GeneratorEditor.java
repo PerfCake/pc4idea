@@ -84,7 +84,7 @@ public class GeneratorEditor extends JPanel {
         comboBoxRunType.setSelectedItem(generator.getRun().getType());
         textFieldRunValue.setText(generator.getRun().getValue());
         textFieldNumOfThreads.setText(generator.getThreads());
-        panelProperties.setProperties(generator.getProperty());
+        panelProperties.setListProperties(generator.getProperty());
     }
 
     public boolean areInsertedValuesValid() {
@@ -101,7 +101,7 @@ public class GeneratorEditor extends JPanel {
         newRun.setType((String)comboBoxRunType.getSelectedItem());
         newRun.setValue(textFieldRunValue.getText());
         newGenerator.setRun(newRun);
-        newGenerator.getProperty().addAll(panelProperties.getProperties());
+        newGenerator.getProperty().addAll(panelProperties.getListProperties());
         return newGenerator;
     }
 }
