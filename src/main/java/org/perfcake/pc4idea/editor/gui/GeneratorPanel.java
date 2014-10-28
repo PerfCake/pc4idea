@@ -11,36 +11,31 @@ import java.awt.*;
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
  * Date: 28.9.2014
- * To change this template use File | Settings | File Templates.
  */
 public class GeneratorPanel extends AbstractPanel {
     private final String TITLE ="Generator Editor";
-    private Color panelColor = Color.getHSBColor(120/360f,0.5f,0.75f);/* TODO default but able to change in settings*/
+    private Color generatorColor = Color.getHSBColor(120/360f,0.5f,0.75f);/* TODO default but able to change in settings*/
 
     private GeneratorEditor panelEditor;
     private Scenario.Generator generator;
 
     private JLabel generatorAttr;
     private JLabel generatorRunAttr;
-
+    private int minimumWidth = 0;
 
     public GeneratorPanel(Project project){
         super(project);
-        setMinimumSize(new Dimension(0,70));
-        setMaximumSize(new Dimension(Integer.MAX_VALUE,70));
-
 
         initComponents();
-
-
     }
+
     private void initComponents(){
-        generatorAttr = new JLabel("{g.class} ({g.threads})");
+        generatorAttr = new JLabel("-");
         generatorAttr.setFont(new Font(generatorAttr.getFont().getName(), 0, 15));
-        generatorAttr.setForeground(panelColor);
-        generatorRunAttr = new JLabel("{g.run.type} : {g.run.value}");
+        generatorAttr.setForeground(generatorColor);
+        generatorRunAttr = new JLabel("-");
         generatorRunAttr.setFont(new Font(generatorRunAttr.getFont().getName(), 0, 15));
-        generatorRunAttr.setForeground(panelColor);
+        generatorRunAttr.setForeground(generatorColor);
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -62,7 +57,7 @@ public class GeneratorPanel extends AbstractPanel {
 
     @Override
     protected Color getColor() {
-        return panelColor;
+        return generatorColor;
     }
 
     @Override
@@ -81,17 +76,37 @@ public class GeneratorPanel extends AbstractPanel {
     protected void applyChanges() {
         this.setComponent(panelEditor.getGenerator());
     }
+
     @Override
     public void setComponent(Object component){
         generator = (Scenario.Generator) component;
         generatorAttr.setText(generator.getClazz()+" ("+generator.getThreads()+")");
         generatorRunAttr.setText(generator.getRun().getType()+" : "+generator.getRun().getValue());
+
+        FontMetrics fontMetrics = generatorAttr.getFontMetrics(generatorAttr.getFont());
+        int gAttrWidth = fontMetrics.stringWidth(generatorAttr.getText()) + 30;
+        int gRunAttrWidth = fontMetrics.stringWidth(generatorRunAttr.getText()) + 30;
+        minimumWidth = (gAttrWidth > gRunAttrWidth) ? gAttrWidth : gRunAttrWidth;
     }
+
     @Override
     public Object getComponent(){
         return generator;
     }
 
+    @Override
+    public Dimension getMinimumSize(){
+        return new Dimension(minimumWidth,70);
+    }
 
+    @Override
+    public Dimension getPreferredSize(){
+        return new Dimension(super.getPreferredSize().width,70);
+    }
+
+    @Override
+    public Dimension getMaximumSize(){
+        return new Dimension(super.getMaximumSize().width,70);
+    }
 
 }
