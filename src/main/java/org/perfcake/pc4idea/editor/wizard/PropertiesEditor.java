@@ -5,11 +5,16 @@ import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.Nullable;
 import org.perfcake.model.Property;
+import org.perfcake.model.Scenario;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.event.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +30,9 @@ public class PropertiesEditor extends JPanel {
     private JButton buttonEditProperty;
     private JButton buttonDeleteProperty;
 
-     public PropertiesEditor(){
-         initComponents();
+    public PropertiesEditor(){
+        initComponents();
+        this.setPreferredSize(new Dimension(350,0));
      }
 
     private void initComponents(){
@@ -115,13 +121,25 @@ public class PropertiesEditor extends JPanel {
                 .addComponent(buttonDeleteProperty)));
     }
 
-    public void setProperties(List<Property> properties){
+    public void setObjProperties(Scenario.Properties properties){
+        PropertiesTableModel model = new PropertiesTableModel();
+        model.addProperties(properties.getProperty());
+        tableProperties.setModel(model);
+    }
+
+    public Scenario.Properties getObjProperties(){
+        Scenario.Properties newProperties = new Scenario.Properties();
+        newProperties.getProperty().addAll(((PropertiesTableModel)tableProperties.getModel()).getProperties());
+        return newProperties;
+    }
+
+    public void setListProperties(List<Property> properties){
         PropertiesTableModel model = new PropertiesTableModel();
         model.addProperties(properties);
         tableProperties.setModel(model);
     }
 
-    public List<Property> getProperties(){
+    public List<Property> getListProperties(){
         return ((PropertiesTableModel)tableProperties.getModel()).getProperties();
     }
 
