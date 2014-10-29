@@ -24,15 +24,15 @@
 
   <extensions defaultExtensionNs="com.intellij">
       <moduleType id="PERFCAKE_MODULE" implementationClass="org.perfcake.pc4idea.module.PCModuleType"/>
-      <fileEditorProvider implementation="org.perfcake.pc4idea.editor.PCFileEditorProvider"/>
+      <fileEditorProvider implementation="org.perfcake.pc4idea.editor.PerfCakeEditorProvider"/>
   </extensions>
 
   <application-components>
-    <!-- Add your application components here -->
+    <!-- Add your application comp here -->
   </application-components>
 
   <project-components>
-    <!-- Add your project components here -->
+    <!-- Add your project comp here -->
   </project-components>
 
     <actions>
