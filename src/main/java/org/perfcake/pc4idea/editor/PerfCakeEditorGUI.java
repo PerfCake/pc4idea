@@ -7,7 +7,6 @@ import com.intellij.openapi.editor.event.DocumentAdapter;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.fileEditor.impl.EditorHistoryManager;
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -21,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.gui.*;
-import org.perfcake.scenario.XMLFactory;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
@@ -226,7 +224,7 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
     private void loadScenario(){
         try {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = schemaFactory.newSchema(XMLFactory.class.getResource("/schemas/" + "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd"));
+            Schema schema = schemaFactory.newSchema(this.getClass().getResource("/schemas/" + "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd"));
 
             JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -241,6 +239,7 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
 
     }
     private void setDesignerComponents(){
+        /*TODO null pointer exc. if comp. isnt set in xml -> solve in Comps.*/
         panelGenerator.setComponent(scenarioModel.getGenerator());
         panelSender.setComponent(scenarioModel.getSender());
         panelReporting.setComponent(scenarioModel.getReporting());
@@ -268,7 +267,7 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
         /*TODO filewatcher?*/
         /*TODO save before dispose */
         xmlEditor.dispose();
-        EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
+        /*TODO maven can find method*///EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
         file.getFileSystem().removeVirtualFileListener(scenarioVirtualFileListener);
         document.removeDocumentListener(scenarioDocumentListener);
     }
