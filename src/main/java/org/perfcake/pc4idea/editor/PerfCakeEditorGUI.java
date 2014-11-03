@@ -38,6 +38,8 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
@@ -94,7 +96,6 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         LOG.assertTrue(document!=null);
         scenarioDocumentListener = new ScenarioDocumentListener();
         document.addDocumentListener(scenarioDocumentListener);
-
 
 
         xmlEditor = TextEditorProvider.getInstance().createEditor(project, this.file);  /*TODO first assert accept then create*/
@@ -198,9 +199,23 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         root.add(connections);
         treeAdditiveCompsForScenario.expandRow(0);
         treeAdditiveCompsForScenario.setRootVisible(false);
-        //treeAdditiveCompsForScenario.setDragEnabled(true);
         treeAdditiveCompsForScenario.setOpaque(false);
-
+        treeAdditiveCompsForScenario.setDragEnabled(true);
+        treeAdditiveCompsForScenario.setTransferHandler(new TransferHandler(){
+            @Override
+            public int getSourceActions(JComponent c) {
+                return COPY;
+            }
+            @Override
+            public Transferable createTransferable(JComponent c) {
+                DefaultMutableTreeNode node = ((DefaultMutableTreeNode)((JTree)c).getLastSelectedPathComponent());
+                if (!node.isLeaf()){
+                    return null;
+                } else {
+                    return new StringSelection(node.toString());
+                }
+            }
+        });
 
         panelDesignerScenario.setBackground(EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground());
         GroupLayout panelPCCompsDesignerLayout = new GroupLayout(panelDesignerScenario);
