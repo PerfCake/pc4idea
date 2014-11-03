@@ -2,6 +2,7 @@ package org.perfcake.pc4idea.editor.gui;
 
 import com.intellij.openapi.project.Project;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.wizard.GeneratorEditor;
 
 import javax.swing.*;
@@ -18,13 +19,16 @@ public class GeneratorPanel extends AbstractPanel {
 
     private GeneratorEditor panelEditor;
     private Scenario.Generator generator;
+    private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
 
     private JLabel generatorAttr;
     private JLabel generatorRunAttr;
     private int minimumWidth = 0;
 
-    public GeneratorPanel(Project project){
+
+    public GeneratorPanel(Project project, PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
         super(project);
+        this.scenarioEvent = scenarioEvent;
 
         initComponents();
     }
@@ -75,6 +79,7 @@ public class GeneratorPanel extends AbstractPanel {
     @Override
     protected void applyChanges() {
         this.setComponent(panelEditor.getGenerator());
+        scenarioEvent.saveGenerator();
     }
 
     @Override
