@@ -4,14 +4,20 @@ import com.intellij.openapi.project.Project;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
+import org.perfcake.pc4idea.editor.components.ComponentEditor;
+import org.perfcake.pc4idea.editor.wizard.PropertyEditor;
 import org.perfcake.pc4idea.editor.wizard.SenderEditor;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,10 +57,6 @@ public class SenderPanel extends AbstractPanel {
 
         panelProperties = new PanelProperties();
 
-        panelProperties = new PanelProperties();
-        //panelProperties.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
-        /*panelProperties.setBackground(Color.cyan);*///panelProperties.setOpaque(false);
-
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
         this.add(labelSenderClass);
@@ -77,6 +79,44 @@ public class SenderPanel extends AbstractPanel {
             public void componentResized(ComponentEvent e) {
                 e.getComponent().revalidate();
                 e.getComponent().repaint();
+            }
+        });
+
+        this.setTransferHandler(new TransferHandler(){
+            @Override
+            public boolean canImport(TransferHandler.TransferSupport support){
+                support.setDropAction(COPY);
+                return support.isDataFlavorSupported(DataFlavor.stringFlavor);
+            }
+            @Override
+            public boolean importData(TransferHandler.TransferSupport support){
+                if (!canImport(support)) {
+                    return false;
+                }
+                Transferable t = support.getTransferable();
+                String transferredData = "";
+                try {
+                    transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
+                } catch (UnsupportedFlavorException e) {
+                    e.printStackTrace();   /*TODO log*/
+                } catch (IOException e) {
+                    e.printStackTrace();   /*TODO log*/
+                }
+                switch (transferredData){
+                    case "Property": {
+                        PropertyEditor propertyEditor = new PropertyEditor();
+                        ComponentEditor editor = new ComponentEditor("Property Editor",propertyEditor);
+                        editor.show();
+                        if (editor.getExitCode() == 0) {
+                            sender.getProperty().add(propertyEditor.getProperty());
+                            setComponent(sender);
+                            scenarioEvent.saveSender();
+                        }
+                        break;
+                    }
+                    default: break;
+                }
+                return true;
             }
         });
     }
@@ -159,6 +199,7 @@ public class SenderPanel extends AbstractPanel {
             propertiesRowCount = 0;
             this.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
             this.addMouseListener(new DragListener());
+            this.setOpaque(false);
         }
 
         private void setProperties(List<Property> properties){
@@ -331,4 +372,5 @@ public class SenderPanel extends AbstractPanel {
             }
         }
     }
+
 }
