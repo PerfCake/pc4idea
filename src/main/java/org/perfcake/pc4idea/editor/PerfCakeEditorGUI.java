@@ -1,5 +1,8 @@
 package org.perfcake.pc4idea.editor;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.CommandProcessor;
+import com.intellij.openapi.command.UndoConfirmationPolicy;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
@@ -30,10 +33,13 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 
 /**
@@ -42,7 +48,7 @@ import java.io.File;
  * Date: 17.9.2014
  * To change this template use File | Settings | File Templates.
  */
-class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider TODO ??? */{
+public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider TODO ??? */{
     private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.editor.PerfCakeEditorGUI");
 
     private final Project project;
@@ -89,6 +95,8 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
         scenarioDocumentListener = new ScenarioDocumentListener();
         document.addDocumentListener(scenarioDocumentListener);
 
+
+
         xmlEditor = TextEditorProvider.getInstance().createEditor(project, this.file);  /*TODO first assert accept then create*/
 
         documentWasModified = false;
@@ -106,6 +114,7 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
         GridLayout layout = new GridLayout(1,1);
         this.setLayout(layout);
         this.add(tabbedPane,new GridLayout(1,1));
+
     }
 
     private void initComponents() {
@@ -116,8 +125,8 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
         panelDesignerMenu = new JPanel();
         panelDesignerScenario = new JPanel();
         treeAdditiveCompsForScenario = new Tree(new DefaultTreeModel(new DefaultMutableTreeNode("root")));
-        panelGenerator = new GeneratorPanel(project);
-        panelSender = new SenderPanel(project);
+        panelGenerator = new GeneratorPanel(project,new ScenarioEvent());
+        panelSender = new SenderPanel(project,new ScenarioEvent());
         panelMessages = new MessagesPanel(project);
         panelValidation = new ValidationPanel(project);
         panelReporting = new ReportingPanel(project);
@@ -139,6 +148,7 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
                 }
                 if (tabbedPane.getSelectedIndex() == 1){
                     /*TODO save scenario from designer*/
+
                 }
             }
         });
@@ -248,7 +258,6 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
         panelProperties.setComponent(scenarioModel.getProperties());
         /*TODO for testing purpose*/System.out.println("designerSet");/*LOG.info("designerSet");*/
     }
-    // private void saveScenario(){}
 
     public boolean isModified(){
         return false; /*TODO for save?*/
@@ -294,6 +303,57 @@ class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider
             }
 
         }
+    }
+
+    public final class ScenarioEvent {
+
+        public void saveGenerator(){
+            scenarioModel.setGenerator((Scenario.Generator)panelGenerator.getComponent());
+            System.out.println("SAVE " + scenarioModel.getGenerator().getClazz().toString());
+            saveScenario();
+        }
+        public void saveSender(){
+            scenarioModel.setSender((Scenario.Sender)panelSender.getComponent());
+            System.out.println("SAVE " + scenarioModel.getSender().getClazz().toString());
+            saveScenario();
+        }
+
+        private void saveScenario(){
+                 /*TODO undo*/
+                //final Document doc = PsiDocumentManager.getInstance(project).getCachedDocument(psiFile);
+                /*TODO psi rewrte - to doc or doc change*/
+
+
+                ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        CommandProcessor.getInstance().executeCommand(project,new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+                                    Schema schema = schemaFactory.newSchema(this.getClass().getResource("/schemas/" + "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd"));
+
+                                    JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
+                                    Marshaller marshaller = context.createMarshaller();
+                                    marshaller.setSchema(schema);
+                                    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                                    marshaller.marshal(scenarioModel, new File(file.getPath()));
+                                    file.refresh(false,false);
+                                } catch (JAXBException e) {
+                                    System.out.println("ERROR:"+e.getClass().getName()); /*TODO ???*/ e.printStackTrace();
+                                } catch (SAXException e) {
+                                    System.out.println("ERROR:"+e.getClass().getName()); /*TODO nevalidne xml*/ e.printStackTrace();
+                                }
+                            }
+                        },"string",this, UndoConfirmationPolicy.DEFAULT);/*doc?*/
+                    }
+                });
+
+
+
+        }
+
     }
 
 }
