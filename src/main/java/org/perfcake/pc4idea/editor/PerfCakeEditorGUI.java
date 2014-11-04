@@ -40,8 +40,6 @@ import javax.xml.validation.SchemaFactory;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.io.File;
 
 /**
@@ -59,6 +57,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
     private final ScenarioVirtualFileListener scenarioVirtualFileListener;
     private final Document document;
     private final ScenarioDocumentListener scenarioDocumentListener;
+//    private PsiFile psiFile;
     private final FileEditor xmlEditor;
     private Scenario scenarioModel;
 
@@ -97,6 +96,8 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         scenarioDocumentListener = new ScenarioDocumentListener();
         document.addDocumentListener(scenarioDocumentListener);
 
+        //psiFile = PsiManager.getInstance(project).findFile(file);
+
 
         xmlEditor = TextEditorProvider.getInstance().createEditor(project, this.file);  /*TODO first assert accept then create*/
 
@@ -131,7 +132,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         panelMessages = new MessagesPanel(project);
         panelValidation = new ValidationPanel(project);
         panelReporting = new ReportingPanel(project);
-        panelProperties = new PropertiesPanel(project);
+        panelProperties = new PropertiesPanel(project,new ScenarioEvent());
 
 
         tabbedPane.addTab("Designer", tabDesignerComponent);
@@ -243,7 +244,6 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                         .addComponent(panelProperties)
                         //.addContainerGap(0, Short.MAX_VALUE) /*TODO decide*/
         );
-
     }
 
     private void loadScenario(){
@@ -278,7 +278,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         return false; /*TODO for save?*/
     }
     public boolean isEditorValid(){
-        return true; /*TODO for not valid xml? skusit flase co to spravi*/
+        return true; /*TODO for not valid xml? skusit false*/
     }
     public JComponent getPreferredFocusedComponent() {
         return tabbedPane;
@@ -287,11 +287,13 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
 //
 //        myConnection.disconnect();
 //        editor.removeEditorMouseListener(myEditorMouseListener);
-
+        System.out.println(Thread.activeCount()+" "+
+                 Thread.currentThread().getName());
+        /*TODO threadIntrpted exc.(dispose in porgress?)*/
         /*TODO filewatcher?*/
-        /*TODO save before dispose */
+        /*TODO save before dispose <- not needed maybe*/
         xmlEditor.dispose();
-        /*TODO maven can find method*///EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
+        /*TODO maven cant find method*///EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
         file.getFileSystem().removeVirtualFileListener(scenarioVirtualFileListener);
         document.removeDocumentListener(scenarioDocumentListener);
     }
@@ -324,12 +326,17 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
 
         public void saveGenerator(){
             scenarioModel.setGenerator((Scenario.Generator)panelGenerator.getComponent());
-            System.out.println("SAVE " + scenarioModel.getGenerator().getClazz().toString());
+            System.out.println("SAVE: " + scenarioModel.getGenerator().getClazz().toString());
             saveScenario();
         }
         public void saveSender(){
             scenarioModel.setSender((Scenario.Sender)panelSender.getComponent());
-            System.out.println("SAVE " + scenarioModel.getSender().getClazz().toString());
+            System.out.println("SAVE: " + scenarioModel.getSender().getClazz().toString());
+            saveScenario();
+        }
+        public void saveProperties(){
+            scenarioModel.setProperties((Scenario.Properties)panelProperties.getComponent());
+            System.out.println("SAVE: " + scenarioModel.getProperties().getProperty().size()+". properties");
             saveScenario();
         }
 
