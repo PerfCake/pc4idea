@@ -5,6 +5,8 @@ import org.perfcake.pc4idea.editor.components.ComponentEditor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -15,11 +17,32 @@ import java.awt.event.MouseEvent;
  */
 public abstract class AbstractPanel extends JPanel {
     private final Project project;
+    private JPopupMenu popupMenu;
+    private JMenuItem popupOpenEditor;
 
     public AbstractPanel(Project project) {
         super();
         this.project = project;
         this.setOpaque(false);
+
+        popupOpenEditor = new JMenuItem();
+        popupOpenEditor.setText("Open Editor");
+        popupOpenEditor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ComponentEditor editor = new ComponentEditor(getEditorTitle(), getEditorPanel());
+                editor.show();
+                if (editor.getExitCode() == 0) {
+                    applyChanges();
+                }
+            }
+        });
+
+        popupMenu = new JPopupMenu();
+        popupMenu.add(popupOpenEditor);
+        popupMenu.add(new JPopupMenu.Separator());
+        /*TODO dalsie?*/
+
 
         this.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
@@ -33,7 +56,7 @@ public abstract class AbstractPanel extends JPanel {
                     }
                 }
                 if (evt.getButton() == MouseEvent.BUTTON3) {
-                     /*TODO right click -> popup menu*/
+                     popupMenu.show(AbstractPanel.this, evt.getX(), evt.getY());
                 }
             }
         });
