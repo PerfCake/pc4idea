@@ -1,9 +1,8 @@
-package org.perfcake.pc4idea.editor.gui;
+package org.perfcake.pc4idea.editor.components;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import org.jetbrains.annotations.Nullable;
 import org.perfcake.model.Property;
+import org.perfcake.pc4idea.editor.gui.PropertiesPanel;
+import org.perfcake.pc4idea.editor.gui.SenderPanel;
 import org.perfcake.pc4idea.editor.wizard.PropertyEditor;
 
 import javax.swing.*;
@@ -18,22 +17,33 @@ import java.awt.event.MouseEvent;
  */
 public class PropertyComponent extends JPanel {
     private final String TITLE ="Property Editor";
-    private final Project project;
     private final Color propertyColor;
     private final int id;
 
     private PropertyEditor propertyEditor;
     private Property property;
     private SenderPanel.PanelProperties.SenderEvent senderEvent;
+    PropertiesPanel.PanelProperties.PropertiesEvent propertiesEvent;
 
     private JLabel propertyAttr;
     private Dimension propertySize;
 
-    public PropertyComponent(Project project, Color ancestorColor, int id, SenderPanel.PanelProperties.SenderEvent senderEvent){
-        this.project = project;
+    public PropertyComponent(Color ancestorColor, int id, SenderPanel.PanelProperties.SenderEvent senderEvent){
+
         this.propertyColor = ancestorColor;
         this.id = id;
         this.senderEvent = senderEvent;
+        propertiesEvent = null;
+
+        initComponents();
+    }
+
+    public PropertyComponent(Color ancestorColor, int id, PropertiesPanel.PanelProperties.PropertiesEvent propertiesEvent){
+
+        this.propertyColor = ancestorColor;
+        this.id = id;
+        this.senderEvent = null;
+        this.propertiesEvent = propertiesEvent;
 
         initComponents();
     }
@@ -43,6 +53,8 @@ public class PropertyComponent extends JPanel {
         propertyAttr.setFont(new Font(propertyAttr.getFont().getName(), 0, 15));
         propertyAttr.setForeground(propertyColor);
         propertySize = new Dimension(40, 40);
+
+        this.setOpaque(false);
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -66,10 +78,14 @@ public class PropertyComponent extends JPanel {
                         editor.show();
                         if (editor.getExitCode() == 0) {
                             setProperty(propertyEditor.getProperty());
-                            senderEvent.saveProperty(id);
+                            if (senderEvent != null) {senderEvent.saveProperty(id);}
+                            if (propertiesEvent != null) {propertiesEvent.saveProperty(id);}
                         }
                     }
-                } /*TODO right click -> popup menu*/
+                }
+                if (event.getButton() == MouseEvent.BUTTON3) {
+                     /*TODO right click -> popup menu*/
+                }
             }
             @Override
             public void mousePressed(MouseEvent e) {
@@ -127,22 +143,5 @@ public class PropertyComponent extends JPanel {
     @Override
     public Dimension getMaximumSize(){
         return propertySize;
-    }
-
-    private class ComponentEditor extends DialogWrapper {
-        private JPanel centerPanel;
-
-        public ComponentEditor(String title, JPanel centerPanel){
-            super(project, false);
-            setTitle(title);
-            this.centerPanel = centerPanel;
-            this.setResizable(true);
-            init();
-        }
-        @Nullable
-        @Override
-        protected JComponent createCenterPanel() {
-            return centerPanel;
-        }
     }
 }
