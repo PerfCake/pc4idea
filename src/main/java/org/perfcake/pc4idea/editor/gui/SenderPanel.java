@@ -5,6 +5,7 @@ import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.components.ComponentEditor;
+import org.perfcake.pc4idea.editor.components.PropertyComponent;
 import org.perfcake.pc4idea.editor.wizard.PropertyEditor;
 import org.perfcake.pc4idea.editor.wizard.SenderEditor;
 
@@ -140,7 +141,7 @@ public class SenderPanel extends AbstractPanel {
 
     @Override
     protected void applyChanges() {
-        this.setComponent(senderEditor.getSender());
+        setComponent(senderEditor.getSender());
         scenarioEvent.saveSender();
     }
 
@@ -205,18 +206,14 @@ public class SenderPanel extends AbstractPanel {
         private void setProperties(List<Property> properties){
             propertiesList.clear();
             propertiesList.addAll(properties);
-            setUpProperties();
-        }
-        private void setUpProperties(){
             propertyComponentList.clear();
             this.removeAll();
             this.repaint();
 
-
             widestPropertyWidth = 0;
             int propertyId = 0;
             for (Property property : propertiesList) {
-                PropertyComponent propertyComponent = new PropertyComponent(project, senderColor,propertyId,new SenderEvent());
+                PropertyComponent propertyComponent = new PropertyComponent(senderColor,propertyId,new SenderEvent());
                 propertyComponent.setProperty(property);
                 propertyComponentList.add(propertyComponent);
                 this.add(propertyComponent);
@@ -225,6 +222,7 @@ public class SenderPanel extends AbstractPanel {
                 }
                 propertyId++;
             }
+            countPropertiesRowCount();
 
             this.revalidate();
         }
@@ -234,6 +232,27 @@ public class SenderPanel extends AbstractPanel {
         }
         private int getPropertiesRowCount(){
             return propertiesRowCount;
+        }
+        private void countPropertiesRowCount(){
+            int thisPanelWidth = SenderPanel.this.getSize().width-20;
+            thisPanelWidth = (thisPanelWidth < 0) ? Integer.MAX_VALUE : thisPanelWidth;
+
+            if (widestPropertyWidth <= thisPanelWidth) {
+                int controlSum = 0;
+                int expectedRows = 0;
+                for (int i = 0; i < propertyComponentList.size(); i++) {
+                    if (i == 0) {
+                        expectedRows = 1;
+                    }
+                    controlSum += propertyComponentList.get(i).getPreferredSize().width;
+                    if (controlSum > thisPanelWidth) {
+                        i--;
+                        controlSum = 0;
+                        expectedRows++;
+                    }
+                }
+                propertiesRowCount = (expectedRows != propertiesRowCount) ? expectedRows : propertiesRowCount;
+            }
         }
 
         @Override
@@ -246,20 +265,7 @@ public class SenderPanel extends AbstractPanel {
 
         @Override
         public Dimension getPreferredSize(){
-            int controlSum = 0;
-            int expectedRows = 0;
-            for (int i = 0; i < propertyComponentList.size(); i++) {
-                if (i == 0) {
-                    expectedRows = 1;
-                }
-                controlSum += propertyComponentList.get(i).getPreferredSize().width;
-                if (controlSum > SenderPanel.this.getSize().width-20) {
-                    i--;
-                    controlSum = 0;
-                    expectedRows++;
-                }
-            }
-            propertiesRowCount = (expectedRows != propertiesRowCount) ? expectedRows : propertiesRowCount;
+            countPropertiesRowCount();
 
             Dimension dimension = new Dimension();
             dimension.width = SenderPanel.this.getSize().width-20;
@@ -283,7 +289,7 @@ public class SenderPanel extends AbstractPanel {
 
                         sender.getProperty().clear();
                         sender.getProperty().addAll(propertiesList);
-                        setComponent(sender);
+                        SenderPanel.this.setComponent(sender);
                         scenarioEvent.saveSender();
                     }
                 }
@@ -293,7 +299,6 @@ public class SenderPanel extends AbstractPanel {
 
         private class DragListener extends MouseInputAdapter {
             private boolean mousePressed;
-            private Point startPoint;
             private int selectedComponent;
             private int expectedReleaseComponent;
 
@@ -306,8 +311,6 @@ public class SenderPanel extends AbstractPanel {
                 if (e.getComponent() instanceof PropertyComponent){
                     for (int i = 0;i< propertyComponentList.size();i++){
                         if (e.getComponent().equals(propertyComponentList.get(i))){
-                            startPoint = panelProperties.getComponent(i).getLocation();
-                            startPoint.setLocation(startPoint.getX()+e.getX(),startPoint.getY()+e.getY());
                             selectedComponent = i;
                             expectedReleaseComponent = i;
                             mousePressed = true;
@@ -339,7 +342,7 @@ public class SenderPanel extends AbstractPanel {
                             if (selectedComponent < expectedReleaseComponent) {
                                 for (int i = 0; i < propertiesList.size(); i++) {
                                     if (i < selectedComponent) {
-                                        //do nothing
+                                        // do nothing
                                     } else {
                                         if (i < expectedReleaseComponent) {
                                             Collections.swap(propertiesList, i, i + 1);
@@ -358,7 +361,7 @@ public class SenderPanel extends AbstractPanel {
                             }
                             sender.getProperty().clear();
                             sender.getProperty().addAll(propertiesList);
-                            setComponent(sender);
+                            SenderPanel.this.setComponent(sender);
                             scenarioEvent.saveSender();
                         }
                         mousePressed = false;
