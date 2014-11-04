@@ -290,6 +290,18 @@ public class PropertiesPanel extends AbstractPanel {
                     }
                 }
             }
+            public void deleteProperty(int propertyId){
+                for (int i = 0; i<propertyComponentList.size();i++){
+                    if (propertyComponentList.get(i).getId() == propertyId){
+                        propertiesList.remove(i);
+
+                        properties.getProperty().clear();
+                        properties.getProperty().addAll(propertiesList);
+                        PropertiesPanel.this.setComponent(properties);
+                        scenarioEvent.saveProperties();
+                    }
+                }
+            }
         }
 
         private class DragListener extends MouseInputAdapter {
@@ -366,7 +378,8 @@ public class PropertiesPanel extends AbstractPanel {
 
             @Override
             public void mouseClicked(MouseEvent e){
-                ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
+                MouseEvent wrappedEvent = new MouseEvent((Component)e.getSource(),e.getID(),e.getWhen(),e.getModifiers(),e.getX()+10,e.getY()+40,e.getClickCount(),e.isPopupTrigger(),e.getButton());
+                ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(wrappedEvent);
             }
         }
     }
