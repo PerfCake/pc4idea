@@ -1,6 +1,5 @@
 package org.perfcake.pc4idea.editor.gui;
 
-import com.intellij.openapi.project.Project;
 import org.perfcake.pc4idea.editor.components.ComponentEditor;
 
 import javax.swing.*;
@@ -16,13 +15,10 @@ import java.awt.event.MouseEvent;
  * Date: 28.9.2014
  */
 public abstract class AbstractPanel extends JPanel {
-    private final Project project;
     private JPopupMenu popupMenu;
     private JMenuItem popupOpenEditor;
 
-    public AbstractPanel(Project project) {
-        super();
-        this.project = project;
+    public AbstractPanel() {
         this.setOpaque(false);
 
         popupOpenEditor = new JMenuItem();
