@@ -1,6 +1,5 @@
 package org.perfcake.pc4idea.editor.gui;
 
-import com.intellij.openapi.project.Project;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
@@ -31,20 +30,17 @@ import java.util.List;
 public class SenderPanel extends AbstractPanel {
     private final String TITLE ="Sender Editor";
     private Color senderColor = Color.getHSBColor(220/360f,0.5f,0.75f);
-    private final Project project;
 
     private SenderEditor senderEditor;
     private Scenario.Sender sender;
-    PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
+    private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
 
     private JLabel labelSenderClass;
     private PanelProperties panelProperties;
 
     private int labelSenderClassWidth;
 
-    public SenderPanel(Project project, PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
-        super(project);
-        this.project = project;
+    public SenderPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
         this.scenarioEvent = scenarioEvent;
         labelSenderClassWidth = 0;
 
@@ -103,19 +99,15 @@ public class SenderPanel extends AbstractPanel {
                 } catch (IOException e) {
                     e.printStackTrace();   /*TODO log*/
                 }
-                switch (transferredData){
-                    case "Property": {
-                        PropertyEditor propertyEditor = new PropertyEditor();
-                        ComponentEditor editor = new ComponentEditor("Property Editor",propertyEditor);
-                        editor.show();
-                        if (editor.getExitCode() == 0) {
-                            sender.getProperty().add(propertyEditor.getProperty());
-                            setComponent(sender);
-                            scenarioEvent.saveSender();
-                        }
-                        break;
+                if (transferredData.equals("Property")) {
+                    PropertyEditor propertyEditor = new PropertyEditor();
+                    ComponentEditor editor = new ComponentEditor("Property Editor", propertyEditor);
+                    editor.show();
+                    if (editor.getExitCode() == 0) {
+                        sender.getProperty().add(propertyEditor.getProperty());
+                        setComponent(sender);
+                        scenarioEvent.saveSender();
                     }
-                    default: break;
                 }
                 return true;
             }
@@ -167,7 +159,7 @@ public class SenderPanel extends AbstractPanel {
         Dimension dimension = new Dimension();
         int widestPropertyWidth = panelProperties.getWidestPropertyWidth();
         dimension.width = (widestPropertyWidth+20 > labelSenderClassWidth+30) ? widestPropertyWidth+20 : labelSenderClassWidth+30;
-        dimension.height = 50;
+        dimension.height = panelProperties.getPropertiesRowCount()*40 + 50;
         return dimension;
     }
 
@@ -259,7 +251,7 @@ public class SenderPanel extends AbstractPanel {
         public Dimension getMinimumSize(){
             Dimension dimension = new Dimension();
             dimension.width = widestPropertyWidth;
-            dimension.height = 20;
+            dimension.height = propertiesRowCount*40;
             return dimension;
         }
 
@@ -277,7 +269,7 @@ public class SenderPanel extends AbstractPanel {
         public Dimension getMaximumSize(){
             Dimension dimension = new Dimension();
             dimension.width = SenderPanel.this.getSize().width-20;
-            dimension.height = Integer.MAX_VALUE;
+            dimension.height = propertiesRowCount*40;
             return dimension;
         }
 
@@ -339,45 +331,41 @@ public class SenderPanel extends AbstractPanel {
                             expectedReleaseComponent = i;
                         }
                     }
-                } else {
-                    expectedReleaseComponent = -1;
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e){
-                if(mousePressed){
-                    if (expectedReleaseComponent >= 0) {
-                        if (selectedComponent == expectedReleaseComponent) {
-                            // do nothing
-                        } else {
-                            if (selectedComponent < expectedReleaseComponent) {
-                                for (int i = 0; i < propertiesList.size(); i++) {
-                                    if (i < selectedComponent) {
-                                        // do nothing
-                                    } else {
-                                        if (i < expectedReleaseComponent) {
-                                            Collections.swap(propertiesList, i, i + 1);
-                                        }
+                if(mousePressed) {
+                    if (selectedComponent == expectedReleaseComponent) {
+                        // do nothing
+                    } else {
+                        if (selectedComponent < expectedReleaseComponent) {
+                            for (int i = 0; i < propertiesList.size(); i++) {
+                                if (i < selectedComponent) {
+                                    // do nothing
+                                } else {
+                                    if (i < expectedReleaseComponent) {
+                                        Collections.swap(propertiesList, i, i + 1);
                                     }
                                 }
                             }
-                            if (selectedComponent > expectedReleaseComponent) {
-                                for (int i = propertiesList.size() - 1; 0 <= i; i--) {
-                                    if (i < selectedComponent) {
-                                        if (i >= expectedReleaseComponent) {
-                                            Collections.swap(propertiesList, i, i + 1);
-                                        }
-                                    }
-                                }
-                            }
-                            sender.getProperty().clear();
-                            sender.getProperty().addAll(propertiesList);
-                            SenderPanel.this.setComponent(sender);
-                            scenarioEvent.saveSender();
                         }
-                        mousePressed = false;
+                        if (selectedComponent > expectedReleaseComponent) {
+                            for (int i = propertiesList.size() - 1; 0 <= i; i--) {
+                                if (i < selectedComponent) {
+                                    if (i >= expectedReleaseComponent) {
+                                        Collections.swap(propertiesList, i, i + 1);
+                                    }
+                                }
+                            }
+                        }
+                        sender.getProperty().clear();
+                        sender.getProperty().addAll(propertiesList);
+                        SenderPanel.this.setComponent(sender);
+                        scenarioEvent.saveSender();
                     }
+                    mousePressed = false;
                 }
             }
 
