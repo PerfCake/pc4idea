@@ -7,6 +7,8 @@ import org.perfcake.pc4idea.editor.wizard.PropertyEditor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -23,17 +25,22 @@ public class PropertyComponent extends JPanel {
     private PropertyEditor propertyEditor;
     private Property property;
     private SenderPanel.PanelProperties.SenderEvent senderEvent;
-    PropertiesPanel.PanelProperties.PropertiesEvent propertiesEvent;
+    private PropertiesPanel.PanelProperties.PropertiesEvent propertiesEvent;
 
     private JLabel propertyAttr;
+    private JPopupMenu popupMenu;
+    private JMenuItem popupOpenEditor;
+    private JMenuItem popupDelete;
+
     private Dimension propertySize;
 
     public PropertyComponent(Color ancestorColor, int id, SenderPanel.PanelProperties.SenderEvent senderEvent){
-
         this.propertyColor = ancestorColor;
         this.id = id;
         this.senderEvent = senderEvent;
         propertiesEvent = null;
+
+        this.setOpaque(false);
 
         initComponents();
     }
@@ -45,6 +52,8 @@ public class PropertyComponent extends JPanel {
         this.senderEvent = null;
         this.propertiesEvent = propertiesEvent;
 
+        this.setOpaque(false);
+
         initComponents();
     }
 
@@ -54,7 +63,35 @@ public class PropertyComponent extends JPanel {
         propertyAttr.setForeground(propertyColor);
         propertySize = new Dimension(40, 40);
 
-        this.setOpaque(false);
+        popupOpenEditor = new JMenuItem("Open Editor");
+        popupOpenEditor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                propertyEditor = new PropertyEditor();
+                propertyEditor.setProperty(property);
+                ComponentEditor editor = new ComponentEditor(TITLE, propertyEditor);
+                editor.show();
+                if (editor.getExitCode() == 0) {
+                    setProperty(propertyEditor.getProperty());
+                    if (senderEvent != null) {senderEvent.saveProperty(id);}
+                    if (propertiesEvent != null) {propertiesEvent.saveProperty(id);}
+                }
+            }
+        });
+        popupDelete = new JMenuItem("Delete");
+        popupDelete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (senderEvent != null) {senderEvent.deleteProperty(id);}
+                if (propertiesEvent != null) {propertiesEvent.deleteProperty(id);}
+            }
+        });
+
+        popupMenu = new JPopupMenu();
+        popupMenu.add(popupOpenEditor);
+        popupMenu.add(new JPopupMenu.Separator());
+        popupMenu.add(popupDelete);
+        /*TODO dalsie?*/
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -69,6 +106,7 @@ public class PropertyComponent extends JPanel {
                 SpringLayout.WEST, this);
 
         this.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent event) {
                 if (event.getButton() == MouseEvent.BUTTON1) {
                     if (event.getClickCount() == 2) {
@@ -84,7 +122,7 @@ public class PropertyComponent extends JPanel {
                     }
                 }
                 if (event.getButton() == MouseEvent.BUTTON3) {
-                     /*TODO right click -> popup menu*/
+                    popupMenu.show(PropertyComponent.this, event.getX(), event.getY());
                 }
             }
             @Override
@@ -100,10 +138,6 @@ public class PropertyComponent extends JPanel {
                 ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
             }
         });
-
-
-
-
     }
 
     @Override
