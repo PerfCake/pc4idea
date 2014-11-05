@@ -127,12 +127,12 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         panelDesignerMenu = new JPanel();
         panelDesignerScenario = new JPanel();
         treeAdditiveCompsForScenario = new Tree(new DefaultTreeModel(new DefaultMutableTreeNode("root")));
-        panelGenerator = new GeneratorPanel(project,new ScenarioEvent());
-        panelSender = new SenderPanel(project,new ScenarioEvent());
-        panelMessages = new MessagesPanel(project);
-        panelValidation = new ValidationPanel(project);
-        panelReporting = new ReportingPanel(project);
-        panelProperties = new PropertiesPanel(project,new ScenarioEvent());
+        panelGenerator = new GeneratorPanel(new ScenarioEvent());
+        panelSender = new SenderPanel(new ScenarioEvent());
+        panelMessages = new MessagesPanel(new ScenarioEvent());
+        panelValidation = new ValidationPanel(new ScenarioEvent());
+        panelReporting = new ReportingPanel();
+        panelProperties = new PropertiesPanel(new ScenarioEvent());
 
 
         tabbedPane.addTab("Designer", tabDesignerComponent);
@@ -287,8 +287,8 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
 //
 //        myConnection.disconnect();
 //        editor.removeEditorMouseListener(myEditorMouseListener);
-        System.out.println(Thread.activeCount()+" "+
-                 Thread.currentThread().getName());
+        System.out.println(Thread.activeCount() + " " +
+                Thread.currentThread().getName());
         /*TODO threadIntrpted exc.(dispose in porgress?)*/
         /*TODO filewatcher?*/
         /*TODO save before dispose <- not needed maybe*/
@@ -335,8 +335,18 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
             saveScenario();
         }
         public void saveProperties(){
-            scenarioModel.setProperties((Scenario.Properties)panelProperties.getComponent());
+            scenarioModel.setProperties((Scenario.Properties) panelProperties.getComponent());
             System.out.println("SAVE: " + scenarioModel.getProperties().getProperty().size()+". properties");
+            saveScenario();
+        }
+        public void saveMessages(){
+            scenarioModel.setMessages((Scenario.Messages) panelMessages.getComponent());
+            System.out.println("SAVE: " + scenarioModel.getMessages().getMessage().size()+". messages");
+            saveScenario();
+        }
+        public void saveValidation(){
+            scenarioModel.setValidation((Scenario.Validation) panelValidation.getComponent());
+            System.out.println("SAVE: " + scenarioModel.getValidation().getValidator().size()+". validators");
             saveScenario();
         }
 
