@@ -1,6 +1,5 @@
 package org.perfcake.pc4idea.editor.gui;
 
-import com.intellij.openapi.project.Project;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
@@ -19,7 +18,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,20 +29,17 @@ import java.util.*;
 public class PropertiesPanel extends AbstractPanel {
     private final String TITLE ="Properties Editor";
     private Color propertiesColor = Color.getHSBColor(0/360f,0.2f,0.5f);
-    private final Project project;
 
     private PropertiesEditor propertiesEditor;
     private Scenario.Properties properties;
-    PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
+    private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
 
     private JLabel labelProperties;
     private PanelProperties panelProperties;
 
     private int labelPropertiesWidth;
 
-    public PropertiesPanel(Project project, PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
-        super(project);
-        this.project = project;
+    public PropertiesPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
         this.scenarioEvent = scenarioEvent;
 
         initComponents();
@@ -102,19 +99,15 @@ public class PropertiesPanel extends AbstractPanel {
                 } catch (IOException e) {
                     e.printStackTrace();   /*TODO log*/
                 }
-                switch (transferredData){
-                    case "Property": {
-                        PropertyEditor propertyEditor = new PropertyEditor();
-                        ComponentEditor editor = new ComponentEditor("Property Editor",propertyEditor);
-                        editor.show();
-                        if (editor.getExitCode() == 0) {
-                            properties.getProperty().add(propertyEditor.getProperty());
-                            setComponent(properties);
-                            scenarioEvent.saveProperties();
-                        }
-                        break;
+                if (transferredData.equals("Property")) {
+                    PropertyEditor propertyEditor = new PropertyEditor();
+                    ComponentEditor editor = new ComponentEditor("Property Editor", propertyEditor);
+                    editor.show();
+                    if (editor.getExitCode() == 0) {
+                        properties.getProperty().add(propertyEditor.getProperty());
+                        setComponent(properties);
+                        scenarioEvent.saveProperties();
                     }
-                    default: break;
                 }
                 return true;
             }
@@ -163,7 +156,7 @@ public class PropertiesPanel extends AbstractPanel {
         Dimension dimension = new Dimension();
         int widestPropertyWidth = panelProperties.getWidestPropertyWidth();
         dimension.width = (widestPropertyWidth+20 > labelPropertiesWidth+30) ? widestPropertyWidth+20 : labelPropertiesWidth+30;
-        dimension.height = 50;
+        dimension.height = panelProperties.getPropertiesRowCount()*40 + 50;
         return dimension;
     }
 
@@ -255,7 +248,7 @@ public class PropertiesPanel extends AbstractPanel {
         public Dimension getMinimumSize(){
             Dimension dimension = new Dimension();
             dimension.width = widestPropertyWidth;
-            dimension.height = 20;
+            dimension.height = propertiesRowCount*40;
             return dimension;
         }
 
@@ -273,7 +266,7 @@ public class PropertiesPanel extends AbstractPanel {
         public Dimension getMaximumSize(){
             Dimension dimension = new Dimension();
             dimension.width = PropertiesPanel.this.getSize().width-20;
-            dimension.height = Integer.MAX_VALUE;
+            dimension.height = propertiesRowCount*40;
             return dimension;
         }
 
@@ -334,45 +327,42 @@ public class PropertiesPanel extends AbstractPanel {
                             expectedReleaseComponent = i;
                         }
                     }
-                } else {
-                    expectedReleaseComponent = -1;
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e){
-                if(mousePressed){
-                    if (expectedReleaseComponent >= 0) {
-                        if (selectedComponent == expectedReleaseComponent) {
-                            // do nothing
-                        } else {
-                            if (selectedComponent < expectedReleaseComponent) {
-                                for (int i = 0; i < propertiesList.size(); i++) {
-                                    if (i < selectedComponent) {
-                                        // do nothing
-                                    } else {
-                                        if (i < expectedReleaseComponent) {
-                                            Collections.swap(propertiesList, i, i + 1);
-                                        }
+                if(mousePressed) {
+                    if (selectedComponent == expectedReleaseComponent) {
+                        // do nothing
+                    } else {
+                        if (selectedComponent < expectedReleaseComponent) {
+                            for (int i = 0; i < propertiesList.size(); i++) {
+                                if (i < selectedComponent) {
+                                    // do nothing
+                                } else {
+                                    if (i < expectedReleaseComponent) {
+                                        Collections.swap(propertiesList, i, i + 1);
                                     }
                                 }
                             }
-                            if (selectedComponent > expectedReleaseComponent) {
-                                for (int i = propertiesList.size() - 1; 0 <= i; i--) {
-                                    if (i < selectedComponent) {
-                                        if (i >= expectedReleaseComponent) {
-                                            Collections.swap(propertiesList, i, i + 1);
-                                        }
-                                    }
-                                }
-                            }
-                            properties.getProperty().clear();
-                            properties.getProperty().addAll(propertiesList);
-                            PropertiesPanel.this.setComponent(properties);
-                            scenarioEvent.saveProperties();
                         }
-                        mousePressed = false;
+                        if (selectedComponent > expectedReleaseComponent) {
+                            for (int i = propertiesList.size() - 1; 0 <= i; i--) {
+                                if (i < selectedComponent) {
+                                    if (i >= expectedReleaseComponent) {
+                                        Collections.swap(propertiesList, i, i + 1);
+                                    }
+                                }
+                            }
+                        }
+                        properties.getProperty().clear();
+                        properties.getProperty().addAll(propertiesList);
+                        PropertiesPanel.this.setComponent(properties);
+                        scenarioEvent.saveProperties();
                     }
+                    mousePressed = false;
+
                 }
             }
 
