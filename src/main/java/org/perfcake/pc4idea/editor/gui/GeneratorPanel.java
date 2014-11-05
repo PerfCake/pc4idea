@@ -1,6 +1,5 @@
 package org.perfcake.pc4idea.editor.gui;
 
-import com.intellij.openapi.project.Project;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.wizard.GeneratorEditor;
@@ -26,8 +25,7 @@ public class GeneratorPanel extends AbstractPanel {
     private int minimumWidth = 0;
 
 
-    public GeneratorPanel(Project project, PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
-        super(project);
+    public GeneratorPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
         this.scenarioEvent = scenarioEvent;
 
         initComponents();
@@ -101,7 +99,7 @@ public class GeneratorPanel extends AbstractPanel {
 
     @Override
     public Dimension getMinimumSize(){
-        return new Dimension(minimumWidth,70);
+        return /*TODO for testing purpose*/new Dimension(0,70);//new Dimension(minimumWidth,70);
     }
 
     @Override
