@@ -131,7 +131,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         panelSender = new SenderPanel(new ScenarioEvent());
         panelMessages = new MessagesPanel(new ScenarioEvent());
         panelValidation = new ValidationPanel(new ScenarioEvent());
-        panelReporting = new ReportingPanel();
+        panelReporting = new ReportingPanel(new ScenarioEvent());
         panelProperties = new PropertiesPanel(new ScenarioEvent());
 
 
@@ -265,12 +265,12 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
     }
     private void setDesignerComponents(){
         /*TODO null pointer exc. if comp. isnt set in xml -> solve in Comps.*/
-        panelGenerator.setComponent(scenarioModel.getGenerator());
-        panelSender.setComponent(scenarioModel.getSender());
-        panelReporting.setComponent(scenarioModel.getReporting());
-        panelMessages.setComponent(scenarioModel.getMessages());
-        panelValidation.setComponent(scenarioModel.getValidation());
-        panelProperties.setComponent(scenarioModel.getProperties());
+        panelGenerator.setComponentModel(scenarioModel.getGenerator());
+        panelSender.setComponentModel(scenarioModel.getSender());
+        panelReporting.setComponentModel(scenarioModel.getReporting());
+        panelMessages.setComponentModel(scenarioModel.getMessages());
+        panelValidation.setComponentModel(scenarioModel.getValidation());
+        panelProperties.setComponentModel(scenarioModel.getProperties());
         /*TODO for testing purpose*/System.out.println("designerSet");/*LOG.info("designerSet");*/
     }
 
@@ -325,28 +325,33 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
     public final class ScenarioEvent {
 
         public void saveGenerator(){
-            scenarioModel.setGenerator((Scenario.Generator)panelGenerator.getComponent());
+            scenarioModel.setGenerator((Scenario.Generator)panelGenerator.getComponentModel());
             System.out.println("SAVE: " + scenarioModel.getGenerator().getClazz().toString());
             saveScenario();
         }
         public void saveSender(){
-            scenarioModel.setSender((Scenario.Sender)panelSender.getComponent());
+            scenarioModel.setSender((Scenario.Sender)panelSender.getComponentModel());
             System.out.println("SAVE: " + scenarioModel.getSender().getClazz().toString());
             saveScenario();
         }
         public void saveProperties(){
-            scenarioModel.setProperties((Scenario.Properties) panelProperties.getComponent());
+            scenarioModel.setProperties((Scenario.Properties) panelProperties.getComponentModel());
             System.out.println("SAVE: " + scenarioModel.getProperties().getProperty().size()+". properties");
             saveScenario();
         }
         public void saveMessages(){
-            scenarioModel.setMessages((Scenario.Messages) panelMessages.getComponent());
+            scenarioModel.setMessages((Scenario.Messages) panelMessages.getComponentModel());
             System.out.println("SAVE: " + scenarioModel.getMessages().getMessage().size()+". messages");
             saveScenario();
         }
         public void saveValidation(){
-            scenarioModel.setValidation((Scenario.Validation) panelValidation.getComponent());
+            scenarioModel.setValidation((Scenario.Validation) panelValidation.getComponentModel());
             System.out.println("SAVE: " + scenarioModel.getValidation().getValidator().size()+". validators");
+            saveScenario();
+        }
+        public void saveReporting(){
+            scenarioModel.setReporting((Scenario.Reporting) panelReporting.getComponentModel());
+            System.out.println("SAVE: " + scenarioModel.getReporting().getReporter().size()+". reporters");
             saveScenario();
         }
 
@@ -355,7 +360,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                 //final Document doc = PsiDocumentManager.getInstance(project).getCachedDocument(psiFile);
                 /*TODO psi rewrte - to doc or doc change*/
 
-
+                /*TODO nejak zablokovat undo z xml editora*/
                 ApplicationManager.getApplication().runWriteAction(new Runnable() {
                     @Override
                     public void run() {
@@ -370,6 +375,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                                     Marshaller marshaller = context.createMarshaller();
                                     marshaller.setSchema(schema);
                                     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                                    /*TODO pri vynimke zapise prazdny obsah do suboru!!!*/
                                     marshaller.marshal(scenarioModel, new File(file.getPath()));
                                     file.refresh(false,false);
                                 } catch (JAXBException e) {
