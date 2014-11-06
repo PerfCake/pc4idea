@@ -1,14 +1,22 @@
 package org.perfcake.pc4idea.editor.gui;
 
-import com.intellij.openapi.project.Project;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
+import org.perfcake.pc4idea.editor.components.ComponentEditor;
+import org.perfcake.pc4idea.editor.components.ReporterComponent;
+import org.perfcake.pc4idea.editor.wizard.ReporterEditor;
 import org.perfcake.pc4idea.editor.wizard.ReportingEditor;
 
-import javax.accessibility.AccessibleContext;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,26 +26,19 @@ import java.awt.event.ComponentEvent;
 public class ReportingPanel extends AbstractPanel {
     private final String TITLE ="Reporting Editor";
     private Color reportingColor = Color.getHSBColor(0/360f,1f,0.75f);
-    private final Project project;
 
     private ReportingEditor reportingEditor;
     private Scenario.Reporting reporting;
+    private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
 
     private JLabel labelReporting;
-    private JPanel panelReporters;
+    private PanelReporters panelReporters;
 
-    private int reportersHeight;
     private int labelReportingWidth;
-    private int widestReporterPreferredWidth;
-    private int widestReporterMinimumWidth;
 
-    public ReportingPanel(Project project){
-        super(project);
-        this.project = project;
-        reportersHeight = 0;
+    public ReportingPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
+        this.scenarioEvent = scenarioEvent;
         labelReportingWidth = 0;
-        widestReporterPreferredWidth = 0;
-        widestReporterMinimumWidth = 0;
 
         initComponents();
     }
@@ -49,9 +50,7 @@ public class ReportingPanel extends AbstractPanel {
         FontMetrics fontMetrics = labelReporting.getFontMetrics(labelReporting.getFont());
         labelReportingWidth = fontMetrics.stringWidth(labelReporting.getText());
 
-        panelReporters = new JPanel();
-        panelReporters.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
-        /*panelReporters.setBackground(Color.cyan);*/panelReporters.setOpaque(false);
+        panelReporters = new PanelReporters();
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -73,70 +72,46 @@ public class ReportingPanel extends AbstractPanel {
         this.addComponentListener( new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                if (widestReporterMinimumWidth < e.getComponent().getSize().width - 20) {
-                    AccessibleContext aReporters = panelReporters.getAccessibleContext();
-                    for (int i = 0; i < aReporters.getAccessibleChildrenCount(); i++) {
-                        ((ReporterComponent) aReporters.getAccessibleChild(i)).setRequiredMaximumWidth(e.getComponent().getSize().width - 20);
-                    }
-                    panelReporters.setMinimumSize(new Dimension(e.getComponent().getSize().width - 20, panelReporters.getMinimumSize().height));
-                    panelReporters.setPreferredSize(new Dimension(e.getComponent().getSize().width - 20, panelReporters.getPreferredSize().height));
-                    panelReporters.setMaximumSize(new Dimension(e.getComponent().getSize().width - 20, panelReporters.getMaximumSize().height));
-                    panelReporters.revalidate();
-                } else {
-                    panelReporters.setMinimumSize(new Dimension(widestReporterMinimumWidth, panelReporters.getMinimumSize().height));
-                    panelReporters.setPreferredSize(new Dimension(widestReporterMinimumWidth, panelReporters.getPreferredSize().height));
-                    panelReporters.setMaximumSize(new Dimension(widestReporterMinimumWidth, panelReporters.getMaximumSize().height));
-                    panelReporters.revalidate();
-
-                }
-
+                e.getComponent().revalidate();
+                e.getComponent().repaint();
             }
         });
-        panelReporters.addComponentListener( new ComponentAdapter() {
+
+        this.setTransferHandler(new TransferHandler(){
             @Override
-            public void componentResized(ComponentEvent e) {
-                if (widestReporterMinimumWidth < e.getComponent().getSize().width) {
-                    AccessibleContext aReporters = e.getComponent().getAccessibleContext();
-                    int controlSum = 0;
-                    int expectedHeight = 0;
-                    int rowHeight = 0;
-                    int rowLeader = 0;
-                    for (int i = 0; i < aReporters.getAccessibleChildrenCount(); i++) {
-                        ((ReporterComponent) aReporters.getAccessibleChild(i)).setRequiredMinimumHeight(0);
-                        ReporterComponent iReporter = (ReporterComponent) aReporters.getAccessibleChild(i);
-                        controlSum += iReporter.getPreferredSize().width;
-                        if (controlSum > panelReporters.getPreferredSize().width) {
-                            for (int j = rowLeader; j < i; j++) {
-                                ((ReporterComponent) aReporters.getAccessibleChild(j)).setRequiredMinimumHeight(rowHeight);
-                            }
-                            rowLeader = i;
-                            i--;
-                            controlSum = 0;
-                            expectedHeight += rowHeight;
-                            rowHeight = 0;
-                        } else {
-                            rowHeight = (rowHeight > iReporter.getPreferredSize().height) ? rowHeight : iReporter.getPreferredSize().height;
-                        }
-
-
-                    }
-                    if (rowHeight != 0) {
-                        expectedHeight += rowHeight;
-                        for (int j = rowLeader; j < aReporters.getAccessibleChildrenCount(); j++) {
-                            ((ReporterComponent) aReporters.getAccessibleChild(j)).setRequiredMinimumHeight(rowHeight);
-                        }
-                    }
-                    if (expectedHeight != reportersHeight) {
-                        reportersHeight = expectedHeight;
-                        panelReporters.setMinimumSize(new Dimension(panelReporters.getMinimumSize().width, reportersHeight));
-                        panelReporters.setPreferredSize(new Dimension(panelReporters.getPreferredSize().width, reportersHeight));
-                        panelReporters.setMaximumSize(new Dimension(panelReporters.getMaximumSize().width, reportersHeight));
-                        panelReporters.revalidate();
+            public boolean canImport(TransferHandler.TransferSupport support){
+                support.setDropAction(COPY);
+                return support.isDataFlavorSupported(DataFlavor.stringFlavor);
+            }
+            @Override
+            public boolean importData(TransferHandler.TransferSupport support){
+                if (!canImport(support)) {
+                    return false;
+                }
+                Transferable t = support.getTransferable();
+                String transferredData = "";
+                try {
+                    transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
+                } catch (UnsupportedFlavorException e) {
+                    e.printStackTrace();   /*TODO log*/
+                } catch (IOException e) {
+                    e.printStackTrace();   /*TODO log*/
+                }
+                if (transferredData.contains("Reporter")) {
+                    ReporterEditor reporterEditor = new ReporterEditor();
+                    Scenario.Reporting.Reporter reporterClass = new Scenario.Reporting.Reporter();
+                    reporterClass.setClazz(transferredData);
+                    ComponentEditor editor = new ComponentEditor("Reporter Editor", reporterEditor);
+                    editor.show();
+                    if (editor.getExitCode() == 0) {
+                        reporting.getReporter().add(reporterEditor.getReporter());
+                        setComponentModel(reporting);
+                        scenarioEvent.saveReporting();
                     }
                 }
+                return true;
             }
         });
-
     }
 
     @Override
@@ -158,45 +133,265 @@ public class ReportingPanel extends AbstractPanel {
 
     @Override
     protected void applyChanges() {
-        this.setComponent(reportingEditor.getReporting());
+        this.setComponentModel(reportingEditor.getReporting());
+        scenarioEvent.saveReporting();
     }
 
     @Override
-    public void setComponent(Object component) {
-        reporting = (Scenario.Reporting) component;
+    public void setComponentModel(Object componentModel) {
+        reporting = (Scenario.Reporting) componentModel;
 
         panelReporters.removeAll();
         panelReporters.repaint();
 
-        widestReporterPreferredWidth = 0;
-        widestReporterMinimumWidth = 0;
-        for (Scenario.Reporting.Reporter reporter : reporting.getReporter()) {
-            ReporterComponent reporterComponent = new ReporterComponent(project, reportingColor);
-            reporterComponent.setComponent(reporter);
-            panelReporters.add(reporterComponent);
-            if (reporterComponent.getPreferredSize().width > widestReporterPreferredWidth){
-                widestReporterPreferredWidth = reporterComponent.getPreferredSize().width;
-            }
-            if (reporterComponent.getMinimumWidth() > widestReporterMinimumWidth){
-                widestReporterMinimumWidth = reporterComponent.getMinimumWidth();
-            }
-        }
+        panelReporters.setReporters(reporting.getReporter());
 
-        panelReporters.getComponentListeners()[0].componentResized(new ComponentEvent(panelReporters,0));
         this.revalidate();
-
     }
 
     @Override
-    public Object getComponent() {
+    public Object getComponentModel() {
         return reporting;
     }
 
     @Override
     public Dimension getMinimumSize(){
         Dimension dimension = new Dimension();
-        dimension.width = (widestReporterMinimumWidth +20 > labelReportingWidth+30) ? widestReporterMinimumWidth +20 : labelReportingWidth+30;
-        dimension.height = reportersHeight + 50;
+        int minimumWidth = panelReporters.getWidestReporterMinimumWidth();
+        dimension.width = (minimumWidth+20 > labelReportingWidth+30) ? minimumWidth+20 : labelReportingWidth+30;
+        dimension.height = panelReporters.getReportersRowHeight() + 50;
         return dimension;
     }
+/*TODO Reporting able to fit Validation+Messages*/
+//    @Override
+//    public Dimension getPreferredSize(){
+//        Dimension dimension = new Dimension();
+//        dimension.width = super.getPreferredSize().width;   /*TODO ak presne polku potom parent getsize.width/2*/
+//        dimension.height = panelValidators.getValidatorsRowCount()*40 + 50;   /*TODO potom aj super.get width*/
+//        return dimension;
+//    }
+//
+//    @Override
+//    public Dimension getMaximumSize(){
+//        Dimension dimension = new Dimension();
+//        dimension.width = super.getMaximumSize().width;
+//        dimension.height = panelValidators.getValidatorsRowCount()*40 + 50;  /*TODO -//-*/
+//        return dimension;
+//    }
+
+    public class PanelReporters extends JPanel {
+        private List<ReporterComponent> reporterComponentList;
+        private List<Scenario.Reporting.Reporter> reporterList;
+
+        private int widestReporterMinimumWidth;
+        private int reportersRowHeight;
+
+        private PanelReporters(){
+            reporterComponentList = new ArrayList<>();
+            reporterList = new ArrayList<>();
+
+            widestReporterMinimumWidth = 0;
+            reportersRowHeight = 0;
+            this.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
+            //this.addMouseListener(new DragListener());
+            this.setBackground(Color.orange);//this.setOpaque(false);
+        }
+
+        private void setReporters(List<Scenario.Reporting.Reporter> reporters){
+            reporterList.clear();
+            reporterList.addAll(reporters);
+            reporterComponentList.clear();
+            this.removeAll();
+            this.repaint();
+
+            widestReporterMinimumWidth = 0;
+            int reporterId = 0;
+            for (Scenario.Reporting.Reporter reporter : reporterList) {
+                ReporterComponent reporterComponent = new ReporterComponent(reportingColor,reporterId,new ReportingEvent());
+                reporterComponent.setReporter(reporter);
+                reporterComponentList.add(reporterComponent);
+                this.add(reporterComponent);
+                if (reporterComponent.getMinimumSize().width > widestReporterMinimumWidth) {
+                    widestReporterMinimumWidth = reporterComponent.getMinimumSize().width;
+                }
+                reporterId++;
+            }
+            countReportersRowHeight();
+
+            this.revalidate();
+        }
+
+        private int getWidestReporterMinimumWidth(){
+            return widestReporterMinimumWidth;
+        }
+        private int getReportersRowHeight(){
+            return reportersRowHeight;
+        }
+        private void countReportersRowHeight(){
+            int thisPanelWidth = ReportingPanel.this.getSize().width-20;
+            thisPanelWidth = (thisPanelWidth < 0) ? Short.MAX_VALUE : thisPanelWidth;
+
+            boolean delayCondition = true;
+            for (ReporterComponent reporterComponent : reporterComponentList){
+                reporterComponent.setRequiredWidth(thisPanelWidth);
+                if (reporterComponent.getPreferredSize().width > thisPanelWidth){
+                    delayCondition = false;
+                }
+            }
+
+            if (widestReporterMinimumWidth <= thisPanelWidth && delayCondition) {
+                int controlSum = 0;
+                int expectedRowsHeight = 0;
+                int nRowHeight = 0;
+                for (int i = 0; i < reporterComponentList.size(); i++) {
+                    controlSum += reporterComponentList.get(i).getPreferredSize().width;
+                    if (controlSum > thisPanelWidth) {
+                        i--;
+                        controlSum = 0;
+
+                        expectedRowsHeight += nRowHeight;
+                        nRowHeight = 0;
+                    } else {
+                        int iReporterHeight = reporterComponentList.get(i).getPreferredSize().height;
+                        nRowHeight = (iReporterHeight > nRowHeight) ? iReporterHeight : nRowHeight;
+                    }
+                }
+                if (nRowHeight != 0){
+                    expectedRowsHeight += nRowHeight;
+                }
+                reportersRowHeight = (expectedRowsHeight != reportersRowHeight) ? expectedRowsHeight : reportersRowHeight;
+            }   /*TODO mozno este dokoncit vysku reportrov v riadku*/
+        }
+
+        @Override
+        public Dimension getMinimumSize(){
+            Dimension dimension = new Dimension();
+            dimension.width = widestReporterMinimumWidth; /*TODO vo vsetkych vnut.P. ReportingPanel.this.getSize().width-20;*/
+            dimension.height = reportersRowHeight;
+            return dimension;
+        }
+
+        @Override
+        public Dimension getPreferredSize(){
+            countReportersRowHeight();
+
+            Dimension dimension = new Dimension();
+            dimension.width = ReportingPanel.this.getSize().width-20;
+            dimension.height = reportersRowHeight;
+            return dimension;
+        }
+
+        @Override
+        public Dimension getMaximumSize(){
+            Dimension dimension = new Dimension();
+            dimension.width = ReportingPanel.this.getSize().width-20;
+            dimension.height = reportersRowHeight;
+            return dimension;
+        }
+
+        public final class ReportingEvent {
+            public void saveReporter(int reporterId){
+                for (int i = 0; i<reporterComponentList.size();i++){
+                    if (reporterComponentList.get(i).getId() == reporterId){
+                        reporterList.set(i, reporterComponentList.get(i).getReporter());
+
+                        reporting.getReporter().clear();
+                        reporting.getReporter().addAll(reporterList);
+                        ReportingPanel.this.setComponentModel(reporting);
+                        scenarioEvent.saveReporting();
+                    }
+                }
+
+            }
+            public void deleteReporter(int reporterId){
+                for (int i = 0; i<reporterComponentList.size();i++){
+                    if (reporterComponentList.get(i).getId() == reporterId){
+                        reporterList.remove(i);
+
+                        reporting.getReporter().clear();
+                        reporting.getReporter().addAll(reporterList);
+                        ReportingPanel.this.setComponentModel(reporting);
+                        scenarioEvent.saveReporting();
+                    }
+                }
+            }
+            /*TODO save Property Maybe,after right click addProp.*/
+        }
+
+//        private class DragListener extends MouseInputAdapter {
+//            private boolean mousePressed;
+//            private int selectedComponent;
+//            private int expectedReleaseComponent;
+//
+//            private DragListener(){
+//                mousePressed = false;
+//            }
+//
+//            @Override
+//            public void mousePressed(MouseEvent e){
+//                if (e.getComponentModel() instanceof ValidatorComponent){
+//                    for (int i = 0;i< validatorComponentList.size();i++){
+//                        if (e.getComponentModel().equals(validatorComponentList.get(i))){
+//                            selectedComponent = i;
+//                            expectedReleaseComponent = i;
+//                            mousePressed = true;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void mouseEntered(MouseEvent e) {
+//                if (e.getComponentModel() instanceof ValidatorComponent){
+//                    for (int i = 0;i< validatorComponentList.size();i++){
+//                        if (e.getComponentModel().equals(validatorComponentList.get(i))){
+//                            expectedReleaseComponent = i;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void mouseReleased(MouseEvent e){
+//                if(mousePressed) {
+//                    if (selectedComponent == expectedReleaseComponent) {
+//                        // do nothing
+//                    } else {
+//                        if (selectedComponent < expectedReleaseComponent) {
+//                            for (int i = 0; i < validatorList.size(); i++) {
+//                                if (i < selectedComponent) {
+//                                    // do nothing
+//                                } else {
+//                                    if (i < expectedReleaseComponent) {
+//                                        Collections.swap(validatorList, i, i + 1);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        if (selectedComponent > expectedReleaseComponent) {
+//                            for (int i = validatorList.size() - 1; 0 <= i; i--) {
+//                                if (i < selectedComponent) {
+//                                    if (i >= expectedReleaseComponent) {
+//                                        Collections.swap(validatorList, i, i + 1);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        validation.getValidator().clear();
+//                        validation.getValidator().addAll(validatorList);
+//                        ValidationPanel.this.setComponentModel(validation);
+//                        scenarioEvent.saveValidation();
+//                    }
+//                    mousePressed = false;
+//                }
+//            }
+//
+//            @Override
+//            public void mouseClicked(MouseEvent e){
+//                MouseEvent wrappedEvent = new MouseEvent((Component)e.getSource(),e.getID(),e.getWhen(),e.getModifiers(),e.getX()+10,e.getY()+40,e.getClickCount(),e.isPopupTrigger(),e.getButton());
+//                ((JPanel)e.getComponentModel().getAccessibleContext().getAccessibleParent()).dispatchEvent(wrappedEvent);
+//            }
+//        }
+    }
+
 }
