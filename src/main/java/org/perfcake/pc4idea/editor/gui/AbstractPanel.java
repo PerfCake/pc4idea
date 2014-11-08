@@ -63,8 +63,8 @@ public abstract class AbstractPanel extends JPanel {
     protected abstract String getEditorTitle();
     protected abstract JPanel getEditorPanel();
     protected abstract void applyChanges();
-    public abstract void setComponent(Object component);
-    public abstract Object getComponent();
+    public abstract void setComponentModel(Object componentModel);
+    public abstract Object getComponentModel();
 
     @Override
     protected void paintComponent(Graphics g) {

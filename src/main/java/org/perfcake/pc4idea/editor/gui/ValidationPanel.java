@@ -108,7 +108,7 @@ public class ValidationPanel extends AbstractPanel {
                     editor.show();
                     if (editor.getExitCode() == 0) {
                         validation.getValidator().add(validatorEditor.getValidator());
-                        setComponent(validation);
+                        setComponentModel(validation);
                         scenarioEvent.saveValidation();
                     }
                 }
@@ -136,13 +136,13 @@ public class ValidationPanel extends AbstractPanel {
 
     @Override
     protected void applyChanges() {
-        setComponent(validationEditor.getValidation());
+        setComponentModel(validationEditor.getValidation());
         scenarioEvent.saveValidation();
     }
 
     @Override
-    public void setComponent(Object component) {
-        validation = (Scenario.Validation) component;
+    public void setComponentModel(Object componentModel) {
+        validation = (Scenario.Validation) componentModel;
 
         panelValidators.setValidators(validation.getValidator());
 
@@ -150,7 +150,7 @@ public class ValidationPanel extends AbstractPanel {
     }
 
     @Override
-    public Object getComponent() {
+    public Object getComponentModel() {
         return validation;
     }
 
@@ -162,7 +162,7 @@ public class ValidationPanel extends AbstractPanel {
         dimension.height = panelValidators.getValidatorsRowCount()*40 + 50;
         return dimension;
     }
-/*TODO validation able to fit Reporting*/
+/*TODO Validation able to fit Reporting*/
 //    @Override
 //    public Dimension getPreferredSize(){
 //        Dimension dimension = new Dimension();
@@ -281,7 +281,7 @@ public class ValidationPanel extends AbstractPanel {
 
                         validation.getValidator().clear();
                         validation.getValidator().addAll(validatorList);
-                        ValidationPanel.this.setComponent(validation);
+                        ValidationPanel.this.setComponentModel(validation);
                         scenarioEvent.saveValidation();
                     }
                 }
@@ -294,7 +294,7 @@ public class ValidationPanel extends AbstractPanel {
 
                         validation.getValidator().clear();
                         validation.getValidator().addAll(validatorList);
-                        ValidationPanel.this.setComponent(validation);
+                        ValidationPanel.this.setComponentModel(validation);
                         scenarioEvent.saveValidation();
                     }
                 }
@@ -362,7 +362,7 @@ public class ValidationPanel extends AbstractPanel {
                         }
                         validation.getValidator().clear();
                         validation.getValidator().addAll(validatorList);
-                        ValidationPanel.this.setComponent(validation);
+                        ValidationPanel.this.setComponentModel(validation);
                         scenarioEvent.saveValidation();
                     }
                     mousePressed = false;

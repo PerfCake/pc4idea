@@ -105,7 +105,7 @@ public class PropertiesPanel extends AbstractPanel {
                     editor.show();
                     if (editor.getExitCode() == 0) {
                         properties.getProperty().add(propertyEditor.getProperty());
-                        setComponent(properties);
+                        setComponentModel(properties);
                         scenarioEvent.saveProperties();
                     }
                 }
@@ -133,13 +133,13 @@ public class PropertiesPanel extends AbstractPanel {
 
     @Override
     protected void applyChanges() {
-        setComponent(propertiesEditor.getObjProperties());
+        setComponentModel(propertiesEditor.getObjProperties());
         scenarioEvent.saveProperties();
     }
 
     @Override
-    public void setComponent(Object component) {
-        properties = (Scenario.Properties) component;
+    public void setComponentModel(Object componentModel) {
+        properties = (Scenario.Properties) componentModel;
 
         panelProperties.setProperties(properties.getProperty());
 
@@ -147,7 +147,7 @@ public class PropertiesPanel extends AbstractPanel {
     }
 
     @Override
-    public Object getComponent() {
+    public Object getComponentModel() {
         return properties;
     }
 
@@ -278,7 +278,7 @@ public class PropertiesPanel extends AbstractPanel {
 
                         properties.getProperty().clear();
                         properties.getProperty().addAll(propertiesList);
-                        PropertiesPanel.this.setComponent(properties);
+                        PropertiesPanel.this.setComponentModel(properties);
                         scenarioEvent.saveProperties();
                     }
                 }
@@ -290,7 +290,7 @@ public class PropertiesPanel extends AbstractPanel {
 
                         properties.getProperty().clear();
                         properties.getProperty().addAll(propertiesList);
-                        PropertiesPanel.this.setComponent(properties);
+                        PropertiesPanel.this.setComponentModel(properties);
                         scenarioEvent.saveProperties();
                     }
                 }
@@ -358,7 +358,7 @@ public class PropertiesPanel extends AbstractPanel {
                         }
                         properties.getProperty().clear();
                         properties.getProperty().addAll(propertiesList);
-                        PropertiesPanel.this.setComponent(properties);
+                        PropertiesPanel.this.setComponentModel(properties);
                         scenarioEvent.saveProperties();
                     }
                     mousePressed = false;

@@ -51,12 +51,20 @@ public class PropertyEditor extends JPanel {
         textFieldValue.setText(property.getValue());
     }
 
+    public boolean areInsertedValuesValid() {
+        //boolean areValid = false;
+        /*TODO check validity of inserted data - if false OK button disabled*/
+        return true;
+    }
+
     public Property getProperty(){
         Property newPropery = new Property();
         newPropery.setName(textFieldName.getText());
         newPropery.setValue(textFieldValue.getText());
         return newPropery;
     }
+
+
 
 
 

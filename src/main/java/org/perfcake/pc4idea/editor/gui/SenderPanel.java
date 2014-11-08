@@ -105,7 +105,7 @@ public class SenderPanel extends AbstractPanel {
                     editor.show();
                     if (editor.getExitCode() == 0) {
                         sender.getProperty().add(propertyEditor.getProperty());
-                        setComponent(sender);
+                        setComponentModel(sender);
                         scenarioEvent.saveSender();
                     }
                 }
@@ -133,13 +133,13 @@ public class SenderPanel extends AbstractPanel {
 
     @Override
     protected void applyChanges() {
-        setComponent(senderEditor.getSender());
+        setComponentModel(senderEditor.getSender());
         scenarioEvent.saveSender();
     }
 
     @Override
-    public void setComponent(Object component) {
-        sender = (Scenario.Sender) component;
+    public void setComponentModel(Object componentModel) {
+        sender = (Scenario.Sender) componentModel;
         labelSenderClass.setText(sender.getClazz());
         FontMetrics fontMetrics = labelSenderClass.getFontMetrics(labelSenderClass.getFont());
         labelSenderClassWidth = fontMetrics.stringWidth(labelSenderClass.getText());
@@ -150,7 +150,7 @@ public class SenderPanel extends AbstractPanel {
     }
 
     @Override
-    public Object getComponent() {
+    public Object getComponentModel() {
         return sender;
     }
 
@@ -250,7 +250,7 @@ public class SenderPanel extends AbstractPanel {
         @Override
         public Dimension getMinimumSize(){
             Dimension dimension = new Dimension();
-            dimension.width = widestPropertyWidth;
+            dimension.width = widestPropertyWidth;   /*TODO maybe same as pref,max*/
             dimension.height = propertiesRowCount*40;
             return dimension;
         }
@@ -281,7 +281,7 @@ public class SenderPanel extends AbstractPanel {
 
                         sender.getProperty().clear();
                         sender.getProperty().addAll(propertiesList);
-                        SenderPanel.this.setComponent(sender);
+                        SenderPanel.this.setComponentModel(sender);
                         scenarioEvent.saveSender();
                     }
                 }
@@ -294,7 +294,7 @@ public class SenderPanel extends AbstractPanel {
 
                         sender.getProperty().clear();
                         sender.getProperty().addAll(propertiesList);
-                        SenderPanel.this.setComponent(sender);
+                        SenderPanel.this.setComponentModel(sender);
                         scenarioEvent.saveSender();
                     }
                 }
@@ -362,7 +362,7 @@ public class SenderPanel extends AbstractPanel {
                         }
                         sender.getProperty().clear();
                         sender.getProperty().addAll(propertiesList);
-                        SenderPanel.this.setComponent(sender);
+                        SenderPanel.this.setComponentModel(sender);
                         scenarioEvent.saveSender();
                     }
                     mousePressed = false;

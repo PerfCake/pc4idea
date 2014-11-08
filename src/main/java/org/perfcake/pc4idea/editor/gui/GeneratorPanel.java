@@ -76,13 +76,13 @@ public class GeneratorPanel extends AbstractPanel {
 
     @Override
     protected void applyChanges() {
-        this.setComponent(panelEditor.getGenerator());
+        this.setComponentModel(panelEditor.getGenerator());
         scenarioEvent.saveGenerator();
     }
 
     @Override
-    public void setComponent(Object component){
-        generator = (Scenario.Generator) component;
+    public void setComponentModel(Object componentModel){
+        generator = (Scenario.Generator) componentModel;
         generatorAttr.setText(generator.getClazz()+" ("+generator.getThreads()+")");
         generatorRunAttr.setText(generator.getRun().getType()+" : "+generator.getRun().getValue());
 
@@ -93,13 +93,13 @@ public class GeneratorPanel extends AbstractPanel {
     }
 
     @Override
-    public Object getComponent(){
+    public Object getComponentModel(){
         return generator;
     }
 
     @Override
     public Dimension getMinimumSize(){
-        return /*TODO for testing purpose*/new Dimension(0,70);//new Dimension(minimumWidth,70);
+        return new Dimension(minimumWidth,70);
     }
 
     @Override

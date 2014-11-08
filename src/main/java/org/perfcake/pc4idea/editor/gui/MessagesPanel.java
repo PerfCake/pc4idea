@@ -95,7 +95,7 @@ public class MessagesPanel extends AbstractPanel {
                     editor.show();
                     if (editor.getExitCode() == 0) {
                         messages.getMessage().add(messageEditor.getMessage());
-                        setComponent(messages);
+                        setComponentModel(messages);
                         scenarioEvent.saveMessages();
                     }
                 }
@@ -123,13 +123,13 @@ public class MessagesPanel extends AbstractPanel {
 
     @Override
     protected void applyChanges() {
-        this.setComponent(messagesEditor.getMessages());
+        this.setComponentModel(messagesEditor.getMessages());
         scenarioEvent.saveMessages();
     }
 
     @Override
-    public void setComponent(Object component) {
-        messages = (Scenario.Messages) component;
+    public void setComponentModel(Object componentModel) {
+        messages = (Scenario.Messages) componentModel;
 
         panelMessages.setMessages(messages.getMessage());
 
@@ -137,7 +137,7 @@ public class MessagesPanel extends AbstractPanel {
     }
 
     @Override
-    public Object getComponent() {
+    public Object getComponentModel() {
         return messages;
     }
 
@@ -268,7 +268,7 @@ public class MessagesPanel extends AbstractPanel {
 
                         messages.getMessage().clear();
                         messages.getMessage().addAll(messagesList);
-                        MessagesPanel.this.setComponent(messages);
+                        MessagesPanel.this.setComponentModel(messages);
                         scenarioEvent.saveMessages();
                     }
                 }
@@ -280,7 +280,7 @@ public class MessagesPanel extends AbstractPanel {
 
                         messages.getMessage().clear();
                         messages.getMessage().addAll(messagesList);
-                        MessagesPanel.this.setComponent(messages);
+                        MessagesPanel.this.setComponentModel(messages);
                         scenarioEvent.saveMessages();
                     }
                 }
@@ -348,7 +348,7 @@ public class MessagesPanel extends AbstractPanel {
                         }
                         messages.getMessage().clear();
                         messages.getMessage().addAll(messagesList);
-                        MessagesPanel.this.setComponent(messages);
+                        MessagesPanel.this.setComponentModel(messages);
                         scenarioEvent.saveMessages();
                     }
                     mousePressed = false;

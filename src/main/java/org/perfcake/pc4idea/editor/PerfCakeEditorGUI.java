@@ -41,6 +41,8 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 
 /**
  * Created with IntelliJ IDEA.
@@ -146,6 +148,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                         /*TODO overit validitu scenaria*/
                         setDesignerComponents();
                         documentWasModified = false;
+
                     }
                 }
                 if (tabbedPane.getSelectedIndex() == 1){
@@ -261,7 +264,6 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
             System.out.println("ERROR:"+e.getClass().getName()); /*TODO nevalidne xml*/ e.printStackTrace();
         }
 
-
     }
     private void setDesignerComponents(){
         /*TODO null pointer exc. if comp. isnt set in xml -> solve in Comps.*/
@@ -307,14 +309,16 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
 
             /*TODO for testing purpose*/System.out.println("docChanged");
             documentWasModified = true;
+            /*TODO asi tu: ak je tab=0 potom save doc*/
+
         }
     }
 
     private final class ScenarioVirtualFileListener extends VirtualFileAdapter {
         @Override
         public void contentsChanged(@NotNull VirtualFileEvent event){
-            /*TODO for testing purpose*/System.out.println("virtualFileChanged");
-            if (documentWasModified) {
+            /*TODO for testing purpose*/System.out.println("virtualFileChanged: save?:"+event.isFromSave()+" ref?:"+event.isFromRefresh());
+            if (documentWasModified) {   /*TODO ak save alebo refresh > + load scenario + log*/
                 /*TODO for testing purpose*/System.out.println("scenarioLoaded");
                 loadScenario();
             }
@@ -355,16 +359,17 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
             saveScenario();
         }
 
-        private void saveScenario(){
+        private void saveScenario() {
                  /*TODO undo*/
                 //final Document doc = PsiDocumentManager.getInstance(project).getCachedDocument(psiFile);
                 /*TODO psi rewrte - to doc or doc change*/
 
-                /*TODO nejak zablokovat undo z xml editora*/
-                ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                /*TODO nejak zablokovat undo z xml editora alebo nechat, len ak sa tym dostane do nevalidneho stavu tak hlaska*/
+                /*TODO undo,redo funguje ale neupdatuje designer*/
+                CommandProcessor.getInstance().executeCommand(project, new Runnable() {
                     @Override
                     public void run() {
-                        CommandProcessor.getInstance().executeCommand(project,new Runnable() {
+                        ApplicationManager.getApplication().runWriteAction(new Runnable() {
                             @Override
                             public void run() {
                                 try {
@@ -375,18 +380,33 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                                     Marshaller marshaller = context.createMarshaller();
                                     marshaller.setSchema(schema);
                                     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-                                    /*TODO pri vynimke zapise prazdny obsah do suboru!!!*/
-                                    marshaller.marshal(scenarioModel, new File(file.getPath()));
-                                    file.refresh(false,false);
+
+                                    StringWriter sw = new StringWriter();
+
+                                    marshaller.marshal(scenarioModel, sw);
+                                    if (!sw.toString().equals("")) {
+                                        document.setText(sw.toString());
+                                    } else {
+                                        //some error
+                                        System.out.println("wtf");
+                                    }
+                                    sw.close();
+                                    //file.refresh(true, false);
                                 } catch (JAXBException e) {
-                                    System.out.println("ERROR:"+e.getClass().getName()); /*TODO ???*/ e.printStackTrace();
+                                    System.out.println("ERROR:" + e.getClass().getName()); /*TODO ???*/
+                                    e.printStackTrace();
                                 } catch (SAXException e) {
-                                    System.out.println("ERROR:"+e.getClass().getName()); /*TODO nevalidne xml*/ e.printStackTrace();
+                                    System.out.println("ERROR:" + e.getClass().getName()); /*TODO nevalidne xml*/
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    System.out.println("ERROR:" + e.getClass().getName()); /*TODO ... */
+                                    e.printStackTrace();
                                 }
                             }
-                        },"string",this, UndoConfirmationPolicy.DEFAULT);/*doc?*/
+                        });
                     }
-                });
+                }, "Scenario Change", null, UndoConfirmationPolicy.DEFAULT, document);
+
 
 
 
