@@ -30,6 +30,7 @@ public class ValidatorEditor extends AbstractEditor {
         comboBoxType.addItem("RulesValidator");
         comboBoxType.addItem("RegExpValidator");
         comboBoxType.addItem("DictionaryValidator");
+        comboBoxType.setSelectedIndex(-1);
         textFieldId = new JTextField();
         panelProperties = new PropertiesEditor();
 
@@ -75,8 +76,14 @@ public class ValidatorEditor extends AbstractEditor {
 
     @Override
     public ValidationInfo areInsertedValuesValid() {
+        ValidationInfo info = null;
+        if (textFieldId.getText().isEmpty()){
+            info = new ValidationInfo("Text field can't be empty");
+        }
+        if (comboBoxType.getSelectedIndex() == -1){
+            info = new ValidationInfo("Validator type isn't selected");
+        }
         /*TODO valid id must be uniqe*/
-        return (textFieldId.getText().isEmpty()) ?
-                new ValidationInfo("Text field can't be empty") : null;
+        return info;
     }
 }

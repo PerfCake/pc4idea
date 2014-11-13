@@ -36,8 +36,8 @@
   </project-components>
 
     <actions>
-        <action id="NewPCScenario" class="org.perfcake.pc4idea.actions.NewScenarioAction" text="PerfCake Scenario"
-                description="Action to start new scenario wizard">
+        <action id="NewPCScenario" class="org.perfcake.pc4idea.wizard.NewScenarioAction" text="PerfCake Scenario"
+                description="Create new PerfCake Scenario">
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>
     </actions>

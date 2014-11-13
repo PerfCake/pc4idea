@@ -38,6 +38,7 @@ public class ReporterEditor extends AbstractEditor {
         comboBoxReporterType.addItem("MemoryUsageReporter");
         comboBoxReporterType.addItem("ResponseTimeStatsReporter");
         comboBoxReporterType.addItem("WarmUpReporter");
+        comboBoxReporterType.setSelectedIndex(-1);
         checkBoxEnabled = new JCheckBox();
 
         tablePanelDestinations = new EditorTablePanel(new DestinationsTableModel(new ArrayList<Scenario.Reporting.Reporter.Destination>())) {
@@ -149,8 +150,8 @@ public class ReporterEditor extends AbstractEditor {
 
     @Override
     public ValidationInfo areInsertedValuesValid() {
-        // always valid
-        return null;
+        return (comboBoxReporterType.getSelectedIndex() == -1) ?
+                new ValidationInfo("Reporter type isn't selected") : null;
     }
 
     private class DestinationsTableModel extends AbstractTableModel {

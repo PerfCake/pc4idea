@@ -179,6 +179,7 @@ public class ReporterComponent extends JPanel {
                 if (transferredData.contains("Destination")) {
                     Scenario.Reporting.Reporter.Destination destinationClass = new Scenario.Reporting.Reporter.Destination();
                     destinationClass.setClazz(transferredData);
+                     destinationClass.setEnabled(false);
 
                     DestinationEditor destinationEditor = new DestinationEditor();
                     destinationEditor.setDestination(destinationClass);

@@ -12,13 +12,13 @@ public class EnabledComponent extends JComponent {
     private final Color color;
     private boolean state;
 
+    private Dimension enabledSize;
+
     public EnabledComponent(Color color){
         this.color = color;
         state = true;
 
-        this.setMinimumSize(new Dimension(15,20));
-        this.setPreferredSize(new Dimension(15,20));
-        this.setMaximumSize(new Dimension(15,20));
+        enabledSize = new Dimension(15,20);
     }
 
     @Override
@@ -39,5 +39,20 @@ public class EnabledComponent extends JComponent {
     public void setState(boolean state){
         this.state = state;
         repaint();
+    }
+
+    @Override
+    public Dimension getMinimumSize(){
+        return enabledSize;
+    }
+
+    @Override
+    public Dimension getPreferredSize(){
+        return enabledSize;
+    }
+
+    @Override
+    public Dimension getMaximumSize(){
+        return enabledSize;
     }
 }

@@ -153,7 +153,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                 if (tabbedPane.getSelectedIndex() == 1){
                     if (documentWasModified){
                         FileDocumentManager.getInstance().saveDocument(document);
-
+                        documentWasModified = false;
                     }
                     /*TODO save scenario from designer*/
 

@@ -34,10 +34,12 @@ public class GeneratorEditor extends AbstractEditor {
         comboBoxGeneratorType = new ComboBox();
         comboBoxGeneratorType.addItem("DefaultMessageGenerator");
         comboBoxGeneratorType.addItem("RampUpDownGenerator");
+        comboBoxGeneratorType.setSelectedIndex(-1);
         comboBoxRunType = new ComboBox();
         comboBoxRunType.addItem("iteration");
         comboBoxRunType.addItem("time");
         comboBoxRunType.addItem("percentage");
+        comboBoxRunType.setSelectedIndex(-1);
         textFieldRunValue = new JTextField();
         textFieldNumOfThreads = new JTextField();
         panelProperties = new PropertiesEditor();
@@ -105,7 +107,16 @@ public class GeneratorEditor extends AbstractEditor {
 
     @Override
     public ValidationInfo areInsertedValuesValid() {
-        return (textFieldRunValue.getText().isEmpty() || textFieldNumOfThreads.getText().isEmpty()) ?
-                new ValidationInfo("Text fields can't be empty") : null;
+        ValidationInfo info = null;
+        if (textFieldRunValue.getText().isEmpty() || textFieldNumOfThreads.getText().isEmpty()) {
+            info = new ValidationInfo("Text fields can't be empty");
+        }
+        if (comboBoxRunType.getSelectedIndex() == -1) {
+            info = new ValidationInfo("Run type isn't selected");
+        }
+        if (comboBoxGeneratorType.getSelectedIndex() == -1){
+            info = new ValidationInfo("Generator type isn't selected");
+        }
+        return info;
     }
 }

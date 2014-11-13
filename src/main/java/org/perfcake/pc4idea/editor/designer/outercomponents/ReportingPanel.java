@@ -4,10 +4,10 @@ import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.designer.innercomponents.ReporterComponent;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.editors.ReporterEditor;
 import org.perfcake.pc4idea.editor.designer.editors.ReportingEditor;
+import org.perfcake.pc4idea.editor.designer.innercomponents.ReporterComponent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +28,7 @@ import java.util.List;
  * Date: 28.9.2014
  */
 public class ReportingPanel extends AbstractPanel {
-    private Color reportingColor = Color.getHSBColor(0 / 360f, 1f, 0.75f);          //private static final Logger LOG = Logger.getInstance("#editor.designer.outercomponents.ReportingPanel");
+    private Color reportingColor = Color.getHSBColor(0 / 360f, 1f, 0.75f);
 
     private ReportingEditor reportingEditor;
     private Scenario.Reporting reporting;
@@ -94,16 +94,16 @@ public class ReportingPanel extends AbstractPanel {
                 Transferable t = support.getTransferable();
                 String transferredData = "";
                 try {
-                    transferredData = (String)t.getTransferData(DataFlavor.imageFlavor);  // throw new UnsupportedFlavorException(DataFlavor.imageFlavor);
+                    transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
                 } catch (UnsupportedFlavorException e) {
-                    e.printStackTrace();   /*TODO LOG.error*/
-                    //LOG.error("message");
+                    e.printStackTrace();   /*TODO log to message*/
                 } catch (IOException e) {
-                    e.printStackTrace();   /*TODO LOG.error*/
+                    e.printStackTrace();   /*TODO log to message*/
                 }
                 if (transferredData.contains("Reporter")) {
                     Scenario.Reporting.Reporter reporterClass = new Scenario.Reporting.Reporter();
                     reporterClass.setClazz(transferredData);
+                    reporterClass.setEnabled(false);
 
                     ReporterEditor reporterEditor = new ReporterEditor();
                     reporterEditor.setReporter(reporterClass);

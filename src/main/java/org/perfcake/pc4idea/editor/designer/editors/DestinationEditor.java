@@ -37,6 +37,7 @@ public class DestinationEditor extends AbstractEditor {
         comboBoxDestinationType.addItem("ConsoleDestination");        /*TODO load from classpath?*/
         comboBoxDestinationType.addItem("CsvDestination");
         comboBoxDestinationType.addItem("Log4jDestination");
+        comboBoxDestinationType.setSelectedIndex(-1);
         checkBoxEnabled = new JCheckBox();
 
         tablePanelPeriods = new EditorTablePanel(new PeriodsTableModel(new ArrayList<Scenario.Reporting.Reporter.Destination.Period>())) {
@@ -148,8 +149,8 @@ public class DestinationEditor extends AbstractEditor {
 
     @Override
     public ValidationInfo areInsertedValuesValid() {
-        // always valid
-        return null;
+        return (comboBoxDestinationType.getSelectedIndex() == -1) ?
+                new ValidationInfo("Destination type isn't selected") : null;
     }
 
     private class PeriodsTableModel extends AbstractTableModel {
@@ -191,52 +192,53 @@ public class DestinationEditor extends AbstractEditor {
     }
 
     private class PeriodEditor extends AbstractEditor {
-        private JLabel labelType;
-        private JLabel labelValue;
-        private JComboBox comboBoxType;
-        private JTextField textFieldValue;
+        private JLabel labelPeriodType;
+        private JLabel labelPeriodValue;
+        private JComboBox comboBoxPeriodType;
+        private JTextField textFieldPeriodValue;
 
         private PeriodEditor() {
             initComponents();
         }
 
         private void initComponents(){
-            labelType = new JLabel("Period type:");
-            labelValue = new JLabel("Value:");
-            comboBoxType = new ComboBox();
-            comboBoxType.addItem("iteration");
-            comboBoxType.addItem("time");
-            comboBoxType.addItem("percentage");
-            textFieldValue = new JTextField();
+            labelPeriodType = new JLabel("Period type:");
+            labelPeriodValue = new JLabel("Value:");
+            comboBoxPeriodType = new ComboBox();
+            comboBoxPeriodType.addItem("iteration");
+            comboBoxPeriodType.addItem("time");
+            comboBoxPeriodType.addItem("percentage");
+            comboBoxPeriodType.setSelectedIndex(-1);
+            textFieldPeriodValue = new JTextField();
 
             GroupLayout layout = new GroupLayout(this);
             this.setLayout(layout);
             layout.setHorizontalGroup(layout.createParallelGroup()
                     .addGroup(layout.createSequentialGroup()
-                            .addComponent(labelType, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(comboBoxType))
+                            .addComponent(labelPeriodType, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboBoxPeriodType))
                     .addGroup(layout.createSequentialGroup()
-                            .addComponent(labelValue, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(textFieldValue)));
+                            .addComponent(labelPeriodValue, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(textFieldPeriodValue)));
             layout.setVerticalGroup(layout.createSequentialGroup()
                     .addGroup(layout.createParallelGroup()
-                            .addComponent(labelType, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(comboBoxType, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+                            .addComponent(labelPeriodType, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboBoxPeriodType, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
                     .addGap(10)
                     .addGroup(layout.createParallelGroup()
-                            .addComponent(labelValue, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(textFieldValue, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)));
+                            .addComponent(labelPeriodValue, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(textFieldPeriodValue, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)));
         }
 
         public void setPeriod(Scenario.Reporting.Reporter.Destination.Period period){
-            comboBoxType.setSelectedItem(period.getType());
-            textFieldValue.setText(period.getValue());
+            comboBoxPeriodType.setSelectedItem(period.getType());
+            textFieldPeriodValue.setText(period.getValue());
         }
 
         public Scenario.Reporting.Reporter.Destination.Period getPeriod(){
             Scenario.Reporting.Reporter.Destination.Period newPeriod = new Scenario.Reporting.Reporter.Destination.Period();
-            newPeriod.setType((String)comboBoxType.getSelectedItem());
-            newPeriod.setValue(textFieldValue.getText());
+            newPeriod.setType((String) comboBoxPeriodType.getSelectedItem());
+            newPeriod.setValue(textFieldPeriodValue.getText());
             return newPeriod;
         }
 
@@ -247,8 +249,14 @@ public class DestinationEditor extends AbstractEditor {
 
         @Override
         public ValidationInfo areInsertedValuesValid() {
-            return (textFieldValue.getText().isEmpty()) ?
-                    new ValidationInfo("Text fields can't be empty") : null;
+            ValidationInfo info = null;
+            if (textFieldPeriodValue.getText().isEmpty()){
+                info = new ValidationInfo("Text field can't be empty");
+            }
+            if (comboBoxPeriodType.getSelectedIndex() == -1){
+                info = new ValidationInfo("Period type isn't selected");
+            }
+            return info;
         }
     }
 }

@@ -37,6 +37,7 @@ public class SenderEditor extends AbstractEditor {
         comboBoxSenderType.addItem("DummySender");
         comboBoxSenderType.addItem("CommandSender");
         comboBoxSenderType.addItem("JmsSender");
+        comboBoxSenderType.setSelectedIndex(-1);
         panelProperties = new PropertiesEditor();
 
         GroupLayout layout = new GroupLayout(this);
@@ -73,8 +74,7 @@ public class SenderEditor extends AbstractEditor {
 
     @Override
     public ValidationInfo areInsertedValuesValid() {
-        // always valid
-        return null;
+        return (comboBoxSenderType.getSelectedIndex() == -1) ? new ValidationInfo("Sender type isn't selected") : null;
     }
 
 }
