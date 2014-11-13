@@ -22,7 +22,7 @@ import com.intellij.ui.treeStructure.Tree;
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.gui.*;
+import org.perfcake.pc4idea.editor.designer.outercomponents.*;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
@@ -48,7 +48,6 @@ import java.io.StringWriter;
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
  * Date: 17.9.2014
- * To change this template use File | Settings | File Templates.
  */
 public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider TODO ??? */{
     private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.editor.PerfCakeEditorGUI");
@@ -152,6 +151,10 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                     }
                 }
                 if (tabbedPane.getSelectedIndex() == 1){
+                    if (documentWasModified){
+                        FileDocumentManager.getInstance().saveDocument(document);
+
+                    }
                     /*TODO save scenario from designer*/
 
                 }
@@ -188,7 +191,6 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         reporters.add(new DefaultMutableTreeNode("MemoryUsageReporter"));
         reporters.add(new DefaultMutableTreeNode("ResponseTimeStatsReporter"));
         reporters.add(new DefaultMutableTreeNode("WarmUpReporter"));
-        reporters.add(new DefaultMutableTreeNode("ThroughputStatsReporter"));
         root.add(reporters);
         DefaultMutableTreeNode destinations = new DefaultMutableTreeNode("Destinations");
         destinations.add(new DefaultMutableTreeNode("ConsoleDestination"));
@@ -327,45 +329,39 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
     }
 
     public final class ScenarioEvent {
-
+        /*TODO sources*/
         public void saveGenerator(){
             scenarioModel.setGenerator((Scenario.Generator)panelGenerator.getComponentModel());
-            System.out.println("SAVE: " + scenarioModel.getGenerator().getClazz().toString());
-            saveScenario();
+            saveScenario("Generator");
         }
         public void saveSender(){
             scenarioModel.setSender((Scenario.Sender)panelSender.getComponentModel());
-            System.out.println("SAVE: " + scenarioModel.getSender().getClazz().toString());
-            saveScenario();
+            saveScenario("Sender");
         }
         public void saveProperties(){
             scenarioModel.setProperties((Scenario.Properties) panelProperties.getComponentModel());
-            System.out.println("SAVE: " + scenarioModel.getProperties().getProperty().size()+". properties");
-            saveScenario();
+            saveScenario("Properties");
         }
         public void saveMessages(){
             scenarioModel.setMessages((Scenario.Messages) panelMessages.getComponentModel());
-            System.out.println("SAVE: " + scenarioModel.getMessages().getMessage().size()+". messages");
-            saveScenario();
+            saveScenario("Messages");
         }
         public void saveValidation(){
             scenarioModel.setValidation((Scenario.Validation) panelValidation.getComponentModel());
-            System.out.println("SAVE: " + scenarioModel.getValidation().getValidator().size()+". validators");
-            saveScenario();
+            saveScenario("Validation");
         }
         public void saveReporting(){
             scenarioModel.setReporting((Scenario.Reporting) panelReporting.getComponentModel());
-            System.out.println("SAVE: " + scenarioModel.getReporting().getReporter().size()+". reporters");
-            saveScenario();
+            saveScenario("Reporting");
         }
 
-        private void saveScenario() {
+        private void saveScenario(final String source) {
                  /*TODO undo*/
                 //final Document doc = PsiDocumentManager.getInstance(project).getCachedDocument(psiFile);
                 /*TODO psi rewrte - to doc or doc change*/
 
                 /*TODO nejak zablokovat undo z xml editora alebo nechat, len ak sa tym dostane do nevalidneho stavu tak hlaska*/
-                /*TODO undo,redo funguje ale neupdatuje designer*/
+                /*TODO undo,redo funguje(zapina ho az xml editor) ale neupdatuje designer*/
                 CommandProcessor.getInstance().executeCommand(project, new Runnable() {
                     @Override
                     public void run() {
@@ -386,6 +382,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                                     marshaller.marshal(scenarioModel, sw);
                                     if (!sw.toString().equals("")) {
                                         document.setText(sw.toString());
+                                        /*TODO log */ System.out.println("SAVE: " + source);
                                     } else {
                                         //some error
                                         System.out.println("wtf");
@@ -405,7 +402,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                             }
                         });
                     }
-                }, "Scenario Change", null, UndoConfirmationPolicy.DEFAULT, document);
+                }, source+" modification", null, UndoConfirmationPolicy.DEFAULT, document);
 
 
 

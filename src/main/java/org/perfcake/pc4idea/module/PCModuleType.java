@@ -11,7 +11,6 @@ import javax.swing.*;
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
  * Date: 7.9.2014
- * To change this template use File | Settings | File Templates.
  */
 public class PCModuleType extends ModuleType<PCModuleBuilder> {
     @NonNls private static final String ID = "PERFCAKE_MODULE";
@@ -23,10 +22,6 @@ public class PCModuleType extends ModuleType<PCModuleBuilder> {
     public static PCModuleType getInstance() {
         return (PCModuleType) ModuleTypeManager.getInstance().findByID(ID);
     }
-
-//    public static boolean isOfType(@NotNull Module module) {
-//        return get(module) instanceof PCModuleType;
-//    }
 
     @NotNull
     @Override

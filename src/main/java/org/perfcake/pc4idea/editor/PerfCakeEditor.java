@@ -22,7 +22,6 @@ import java.beans.PropertyChangeListener;
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
  * Date: 17.9.2014
- * To change this template use File | Settings | File Templates.
  */
 class PerfCakeEditor implements FileEditor {
     private final PerfCakeEditorGUI editorGUI;

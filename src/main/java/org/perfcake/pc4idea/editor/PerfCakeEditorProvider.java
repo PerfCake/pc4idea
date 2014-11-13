@@ -27,7 +27,7 @@ import java.io.IOException;
  * Date: 17.9.2014
  */
 public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
-    private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.editor.PerfCakeEditorProvider");
+    private static final Logger LOG = Logger.getInstance("#...PerfCakeEditorProvider");
     private final String EDITOR_TYPE_ID = "PerfCakeDesigner";
 
     public static PerfCakeEditorProvider getInstance() {
@@ -37,22 +37,37 @@ public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
     // accepting perfcake-scenario-3.0 xml
     @Override
     public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
-        String xmlnsAttr = "";
 
         if (virtualFile.getFileType() == StdFileTypes.XML && !StdFileTypes.XML.isBinary() &&
-           (ModuleUtil.findModuleForFile(virtualFile, project) != null || virtualFile instanceof LightVirtualFile)){
+            (ModuleUtil.findModuleForFile(virtualFile, project) != null || virtualFile instanceof LightVirtualFile) ) {
+            String xmlnsAttr = "";
             try {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 Document temp = builder.parse(virtualFile.getPath());
 
                 xmlnsAttr = temp.getDocumentElement().getAttribute("xmlns");
-            } catch (ParserConfigurationException ignored) {}
-            catch (SAXException ignored) {}
-            catch (IOException ignored) {}
+            } catch (ParserConfigurationException ignored) {
+                // will return false
+            } catch (SAXException ignored) {
+                // will return false
+            } catch (IOException ignored) {
+                // will return false
+            }
+            if (xmlnsAttr.equals("urn:perfcake:scenario:3.0")) {
+                if (ModuleUtil.findModuleForFile(virtualFile, project).getOptionValue("type").equals("PERFCAKE_MODULE")) {
+                    return true;
+                } else {
+                    /*TODO log message that file type is perfcake but module type isnt perfcake*/
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
         }
 
-        return xmlnsAttr.equals("urn:perfcake:scenario:3.0");
     }
 
     @NotNull
