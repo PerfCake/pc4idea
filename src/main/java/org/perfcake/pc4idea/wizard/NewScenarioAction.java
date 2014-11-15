@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.perfcake.model.Scenario;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,10 +14,17 @@ import com.intellij.openapi.vfs.VirtualFile;
  */
 public class NewScenarioAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
-        WizardDialog wizardDialog = new WizardDialog();
+        WizardPanel wizard = new WizardPanel();
+        WizardDialog wizardDialog = new WizardDialog(wizard);
         wizardDialog.show();
         if (wizardDialog.getExitCode() == 0){
+            VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
+            file = (file.isDirectory()) ? file : file.getParent();
 
+            String uri = file.getPath()+"/"+wizard.getScenarioName()+".xml";
+            Scenario model = wizard.getScenarioModel();
+
+            createScenario(uri,model);
         }
     }
 
@@ -37,5 +45,9 @@ public class NewScenarioAction extends AnAction {
         } catch (NullPointerException ex) {
             e.getPresentation().setEnabledAndVisible(false);
         }
+    }
+
+    private void createScenario(String uri, Scenario model){
+
     }
 }
