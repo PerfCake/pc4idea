@@ -29,9 +29,9 @@ public class EnabledComponent extends JComponent {
         g2D.setColor(color);
         g2D.fillOval(2,5,11,11);
         if (state) {
-            g2D.setColor(Color.getHSBColor(120/360f,1f,1f));
+            g2D.setColor(Color.getHSBColor(120/360f,0.75f,0.75f));
         } else {
-            g2D.setColor(Color.getHSBColor(0/360f,1f,1f));
+            g2D.setColor(Color.getHSBColor(0/360f,0.75f,0.75f));
         }
         g2D.fillOval(3,6,9,9);
     }

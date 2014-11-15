@@ -28,7 +28,7 @@ import java.util.Collections;
  * Date: 28.9.2014
  */
 public class PropertiesPanel extends AbstractPanel {
-    private Color propertiesColor = Color.getHSBColor(0/360f,0.2f,0.5f);
+    private Color propertiesColor = Color.getHSBColor(160/360f,0.75f,0.75f);
 
     private PropertiesEditor propertiesEditor;
     private Scenario.Properties properties;

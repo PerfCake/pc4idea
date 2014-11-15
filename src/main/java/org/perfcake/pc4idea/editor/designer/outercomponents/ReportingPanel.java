@@ -28,7 +28,7 @@ import java.util.List;
  * Date: 28.9.2014
  */
 public class ReportingPanel extends AbstractPanel {
-    private Color reportingColor = Color.getHSBColor(0 / 360f, 1f, 0.75f);
+    private Color reportingColor = Color.getHSBColor(0 / 360f, 0.75f, 0.75f);
 
     private ReportingEditor reportingEditor;
     private Scenario.Reporting reporting;

@@ -28,7 +28,7 @@ import java.util.List;
  * Date: 28.9.2014
  */
 public class ValidationPanel extends AbstractPanel {
-    private Color validationColor = Color.getHSBColor(340/360f,1f,0.75f);
+    private Color validationColor = Color.getHSBColor(320/360f,0.75f,0.75f);
 
     private ValidationEditor validationEditor;
     private Scenario.Validation validation;

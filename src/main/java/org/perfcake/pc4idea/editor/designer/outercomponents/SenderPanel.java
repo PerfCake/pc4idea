@@ -29,7 +29,7 @@ import java.util.List;
  * Date: 28.9.2014
  */
 public class SenderPanel extends AbstractPanel {
-    private Color senderColor = Color.getHSBColor(220/360f,0.5f,0.75f);
+    private Color senderColor = Color.getHSBColor(220/360f,0.75f,0.75f);
 
     private SenderEditor senderEditor;
     private Scenario.Sender sender;

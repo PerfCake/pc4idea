@@ -25,7 +25,7 @@ import java.util.Collections;
  * Date: 28.9.2014
  */
 public class MessagesPanel extends AbstractPanel {
-    private Color messagesColor = Color.getHSBColor(40/360f,1f,0.75f);
+    private Color messagesColor = Color.getHSBColor(40/360f,0.75f,0.75f);
 
     private MessagesEditor messagesEditor;
     private Scenario.Messages messages;
