@@ -1,5 +1,6 @@
 package org.perfcake.pc4idea.wizard;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.components.JBList;
@@ -7,9 +8,9 @@ import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.editors.*;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,14 +23,12 @@ class WizardPanel extends JPanel {
     private JList<String> wizardStepList;
     private JPanel panelEditors;
 
+    private Map<Integer, AbstractEditor> editors;
+    private boolean running = true;
+
     private WizardDialog.WizardEvent wizardEvent;
 
-    private int selectedEditor;
-
-    private Map<Integer, AbstractEditor> editors;
-
     WizardPanel(){
-        selectedEditor = 0;
         initComponents();
         this.setPreferredSize(new Dimension(480,240));
     }
@@ -45,18 +44,37 @@ class WizardPanel extends JPanel {
         editors.put(6, new PropertiesEditor());
 
         panelEditors = new JPanel(new GridLayout(1,1));
-        panelEditors.add(editors.get(selectedEditor));
+        panelEditors.add(editors.get(0));
 
         wizardStepList = new JBList(new String[]{"Name","Generator", "Sender", "Messages", "Reporting", "Validation", "Properties"});
         wizardStepList.setCellRenderer(new DefaultListCellRenderer() {
+            private boolean isSelected = false;
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+
+                Graphics2D g2D = (Graphics2D) g;
+
+                if (isSelected) {
+                    g2D.setColor(EditorColorsManager.getInstance().getGlobalScheme().getDefaultForeground());
+                    g2D.drawRect(0, 0, this.getWidth() - 1, this.getHeight() - 1);
+                    g2D.drawRect(1, 1, this.getWidth() - 3, this.getHeight() - 3);
+                }
+            }
+
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index,
                                                           boolean isSelected, boolean cellHasFocus) {
-                final Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                Color foregroundColor = null;
+                this.isSelected = isSelected;
+
+                Color rgb = EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground();
+                float brightness = Color.RGBtoHSB(rgb.getRed(),rgb.getGreen(),rgb.getBlue(),new float[]{0,0,0})[2];
+
+                Color backgroundColor = null;
                 if (index < 3){
-                    foregroundColor = (editors.get(index).areInsertedValuesValid() == null) ?
-                            Color.getHSBColor(120/360f,0.75f, 0.5f) : Color.getHSBColor(0 / 360f, 0.75f, 0.75f);
+                    backgroundColor = (editors.get(index).areInsertedValuesValid() == null) ?
+                            Color.getHSBColor(120/360f,0.20f, brightness) : Color.getHSBColor(0/360f, 0.20f, brightness);
                 } else {
                     boolean isInserted = false;
                     switch (index){
@@ -77,30 +95,25 @@ class WizardPanel extends JPanel {
                             break;
                         }
                     }
-                    foregroundColor = (isInserted) ? Color.getHSBColor(220/360f,0.75f, 0.75f) : Color.getHSBColor(240/360f,0f,0.3f);
-                }
-                c.setForeground(foregroundColor);
-
-                    if (index == selectedEditor){
-                    c.setBackground(Color.getHSBColor(0/360f,0f,0.7f));
+                    backgroundColor = (isInserted) ? Color.getHSBColor(220/360f,0.20f, brightness) : Color.getHSBColor(240/360f,0f,brightness);
                 }
 
-                return c;
+                super.setText(" "+value);
+                super.setFont(new Font(this.getFont().getName(),this.getFont().getStyle(), 15));
+                super.setBackground(backgroundColor);
+                super.setForeground(EditorColorsManager.getInstance().getGlobalScheme().getDefaultForeground());
+
+                return this;
             }
         });
-        Font defaultFont = new JLabel("-").getFont();
-        wizardStepList.setFont(new Font(defaultFont.getName(),defaultFont.getStyle(), 15));
         wizardStepList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        wizardStepList.setBackground(EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground());
-        wizardStepList.addMouseListener(new MouseAdapter() {
+        wizardStepList.setSelectedIndex(0);
+        wizardStepList.addListSelectionListener(new ListSelectionListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2){
-                    wizardEvent.wizardStepListClicked(wizardStepList.getSelectedIndex());
-                }
+            public void valueChanged(ListSelectionEvent e) {
+                wizardEvent.wizardStepListClicked(wizardStepList.getSelectedIndex());
             }
         });
-
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -111,6 +124,19 @@ class WizardPanel extends JPanel {
                 .addComponent(wizardStepList, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
                 .addGap(25)
                 .addComponent(panelEditors));
+
+        ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
+            @Override
+            public void run() {
+                while (running){
+                    try {
+                        Thread.sleep(500);
+                        wizardStepList.repaint();
+                    } catch (InterruptedException ignore) {
+                    }
+                }
+            }
+        });
     }
 
     protected void addWizardEvent(WizardDialog.WizardEvent wizardEvent){
@@ -118,11 +144,10 @@ class WizardPanel extends JPanel {
     }
 
     protected void selectEditor(int pointer){
-        selectedEditor = pointer;
         panelEditors.removeAll();
-        panelEditors.add(editors.get(selectedEditor));
-        wizardStepList.clearSelection();
-        panelEditors.revalidate();/*TODO musi byt?*/
+        panelEditors.add(editors.get(pointer));
+        wizardStepList.setSelectedIndex(pointer);
+        panelEditors.revalidate();
         panelEditors.repaint();
         wizardStepList.repaint();
     }
@@ -139,6 +164,10 @@ class WizardPanel extends JPanel {
             info = new ValidationInfo("name editor isn't complete : "+editors.get(0).areInsertedValuesValid().message);
         }
         return info;
+    }
+
+    public void stopCheckingValidity(){
+        running = false;
     }
 
     protected String getScenarioName(){

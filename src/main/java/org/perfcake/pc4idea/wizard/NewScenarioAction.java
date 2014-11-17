@@ -17,6 +17,7 @@ public class NewScenarioAction extends AnAction {
         WizardPanel wizard = new WizardPanel();
         WizardDialog wizardDialog = new WizardDialog(wizard);
         wizardDialog.show();
+        wizard.stopCheckingValidity();
         if (wizardDialog.getExitCode() == 0){
             VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
             file = (file.isDirectory()) ? file : file.getParent();
