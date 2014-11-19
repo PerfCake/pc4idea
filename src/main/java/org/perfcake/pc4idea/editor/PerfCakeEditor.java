@@ -77,12 +77,12 @@ class PerfCakeEditor implements FileEditor {
 
     @Override
     public boolean isModified() {
-        return editorGUI.isModified();
+        return false;
     }
 
     @Override
     public boolean isValid() {
-        return editorGUI.isEditorValid();
+        return true;
     }
 
     @Override

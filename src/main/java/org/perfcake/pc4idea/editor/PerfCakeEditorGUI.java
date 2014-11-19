@@ -13,6 +13,7 @@ import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileAdapter;
 import com.intellij.openapi.vfs.VirtualFileEvent;
@@ -22,6 +23,9 @@ import com.intellij.ui.treeStructure.Tree;
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.editor.designer.common.DependenciesPanel;
+import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
+import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.outercomponents.*;
 import org.xml.sax.SAXException;
 
@@ -40,6 +44,8 @@ import javax.xml.validation.SchemaFactory;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -62,19 +68,18 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
     private final FileEditor xmlEditor;
     private Scenario scenarioModel;
 
-    private boolean documentWasModified;/*TODO*/
-    private boolean isEditorValid;/*TODO*/
+    private boolean documentModifiedInSource;
 
     private JTabbedPane tabbedPane;
-    private JComponent tabDesignerComponent;
-    private JComponent tabSourceComponent;
-
-    private JBSplitter splitterDesigner;
+    private JComponent tabSource;
+    private JLayeredPane tabDesigner;
+    private JPanel layerBackground;
+    private JBSplitter layerDesigner;
+    private DependenciesPanel layerDependencies;
     private JPanel panelDesignerMenu;
     private JScrollPane scrollPaneDesignerMenu;
     private JPanel panelDesignerScenario;
     private JScrollPane scrollPaneDesignerScenario;
-    
     private JTree treeAdditiveCompsForScenario;
     private AbstractPanel panelGenerator;
     private AbstractPanel panelSender;
@@ -96,20 +101,22 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         LOG.assertTrue(document!=null);
         scenarioDocumentListener = new ScenarioDocumentListener();
         document.addDocumentListener(scenarioDocumentListener);
+        documentModifiedInSource = false;
 
         //psiFile = PsiManager.getInstance(project).findFile(file);
 
 
         xmlEditor = TextEditorProvider.getInstance().createEditor(project, this.file);  /*TODO first assert accept then create*/
 
-        documentWasModified = false;
-        loadScenario();
-//        isEditorValid = true   /*TODO*/
-//        LOG.assertTrue(isEditorValid);
         initComponents();
 
-
+        loadScenario();
         setDesignerComponents();
+
+
+
+
+
 
 
 
@@ -122,11 +129,15 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
 
     private void initComponents() {
         tabbedPane = new JTabbedPane();
-        tabDesignerComponent = new JPanel(new GridLayout(1,1));
-        tabSourceComponent = xmlEditor.getComponent();
-        splitterDesigner = new JBSplitter(false);
+        tabSource = xmlEditor.getComponent();
+        tabDesigner = new JLayeredPane();
+        layerBackground = new JPanel();
+        layerDesigner = new JBSplitter(false);
+        layerDependencies = new DependenciesPanel();
         panelDesignerMenu = new JPanel();
+        scrollPaneDesignerMenu = ScrollPaneFactory.createScrollPane(panelDesignerMenu);
         panelDesignerScenario = new JPanel();
+        scrollPaneDesignerScenario = ScrollPaneFactory.createScrollPane(panelDesignerScenario);
         treeAdditiveCompsForScenario = new Tree(new DefaultTreeModel(new DefaultMutableTreeNode("root")));
         panelGenerator = new GeneratorPanel(new ScenarioEvent());
         panelSender = new SenderPanel(new ScenarioEvent());
@@ -135,45 +146,65 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         panelReporting = new ReportingPanel(new ScenarioEvent());
         panelProperties = new PropertiesPanel(new ScenarioEvent());
 
-
-        tabbedPane.addTab("Designer", tabDesignerComponent);
-        tabbedPane.addTab("Source", tabSourceComponent);
+        tabbedPane.addTab("Designer", tabDesigner);
+        tabbedPane.addTab("Source", tabSource);
         tabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
         tabbedPane.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                if (tabbedPane.getSelectedIndex() == 0){
-                    if (documentWasModified){
+                if (tabbedPane.getSelectedIndex() == 0) {
+                    if (documentModifiedInSource) {
                         FileDocumentManager.getInstance().saveDocument(document);
-                        /*TODO overit validitu scenaria*/
+                        loadScenario();
                         setDesignerComponents();
-                        documentWasModified = false;
-
                     }
                 }
-                if (tabbedPane.getSelectedIndex() == 1){
-                    if (documentWasModified){
-                        FileDocumentManager.getInstance().saveDocument(document);
-                        documentWasModified = false;
-                    }
-                    /*TODO save scenario from designer*/
-
+                if (tabbedPane.getSelectedIndex() == 1) {
+                    documentModifiedInSource = false;
                 }
             }
         });
 
-        tabDesignerComponent.add(splitterDesigner);
-        scrollPaneDesignerScenario = ScrollPaneFactory.createScrollPane(panelDesignerScenario);
-        /*TODO unc.*///scrollPaneDesignerScenario.setMinimumSize(new Dimension(400, 0));
-        scrollPaneDesignerMenu = ScrollPaneFactory.createScrollPane(panelDesignerMenu);
-        scrollPaneDesignerMenu.setMinimumSize(new Dimension(100, 0));
-        splitterDesigner.setFirstComponent(scrollPaneDesignerMenu);
-        splitterDesigner.setSecondComponent(scrollPaneDesignerScenario);
-        splitterDesigner.setProportion(0.15f);
+        tabDesigner.add(layerBackground, new Integer(0));
+        tabDesigner.add(layerDesigner, new Integer(1));
+        tabDesigner.add(layerDependencies, new Integer(2));
+        tabDesigner.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
 
-        GroupLayout panelPCCompsMenuLayout = new GroupLayout(panelDesignerMenu);
-        panelDesignerMenu.setLayout(panelPCCompsMenuLayout);
-        panelPCCompsMenuLayout.setVerticalGroup(panelPCCompsMenuLayout.createSequentialGroup().addComponent(treeAdditiveCompsForScenario));
-        panelPCCompsMenuLayout.setHorizontalGroup(panelPCCompsMenuLayout.createSequentialGroup().addComponent(treeAdditiveCompsForScenario));
+                layerBackground.setBounds(0, 0, tabDesigner.getSize().width,tabDesigner.getSize().height);
+                layerDesigner.setBounds(0, 0, tabDesigner.getSize().width,tabDesigner.getSize().height);
+                layerDependencies.setBounds(0, 0, tabDesigner.getSize().width,tabDesigner.getSize().height);
+            }
+        });
+
+        JLabel labelError = new JLabel("Designer is invalid!",SwingConstants.CENTER);
+        labelError.setFont(new Font(labelError.getFont().getName(),labelError.getFont().getStyle(),15));
+        JLabel labelHint = new JLabel("(Please continue to the tab Source)",SwingConstants.CENTER);
+        labelHint.setFont(new Font(labelHint.getFont().getName(),labelHint.getFont().getStyle(),15));
+        SpringLayout layerBackgroundLayout = new SpringLayout();
+        layerBackground.setLayout(layerBackgroundLayout);
+        layerBackground.add(labelError);
+        layerBackground.add(labelHint);
+        layerBackgroundLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, labelError,
+                0,
+                SpringLayout.HORIZONTAL_CENTER, layerBackground);
+        layerBackgroundLayout.putConstraint(SpringLayout.VERTICAL_CENTER, labelError,
+                0,
+                SpringLayout.VERTICAL_CENTER,layerBackground);
+        layerBackgroundLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, labelHint,
+                0,
+                SpringLayout.HORIZONTAL_CENTER, layerBackground);
+        layerBackgroundLayout.putConstraint(SpringLayout.NORTH, labelHint,
+                0,
+                SpringLayout.SOUTH,labelError);
+
+        layerDesigner.setFirstComponent(scrollPaneDesignerMenu);
+        layerDesigner.setSecondComponent(scrollPaneDesignerScenario);
+        layerDesigner.setProportion(0.15f);
+
+        panelDesignerMenu.setLayout(new GridLayout(1,1));
+        panelDesignerMenu.add(treeAdditiveCompsForScenario);
         panelDesignerMenu.setBackground(EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground());
 
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeAdditiveCompsForScenario.getModel().getRoot();
@@ -253,78 +284,124 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
 
     private void loadScenario(){
         try {
+            String schemaURI = "/schemas/" + "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd";
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = schemaFactory.newSchema(this.getClass().getResource("/schemas/" + "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd"));
+            Schema schema = schemaFactory.newSchema(this.getClass().getResource(schemaURI));
 
             JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
             unmarshaller.setSchema(schema);
             scenarioModel = (org.perfcake.model.Scenario) unmarshaller.unmarshal(new File(file.getPath()));
-        } catch (JAXBException e) {
-            System.out.println("ERROR:"+e.getClass().getName()); /*TODO ???*/ e.printStackTrace();
-        } catch (SAXException e) {
-            System.out.println("ERROR:"+e.getClass().getName()); /*TODO nevalidne xml*/ e.printStackTrace();
+            /*TODO for testing purpose*/System.out.println("TEST LOG: scenario successfully loaded");
+        } catch (JAXBException | SAXException e) {
+            fireScenarioInvalid(e.getCause().toString());
         }
-
     }
     private void setDesignerComponents(){
-        /*TODO null pointer exc. if comp. isnt set in xml -> solve in Comps.*/
-        panelGenerator.setComponentModel(scenarioModel.getGenerator());
-        panelSender.setComponentModel(scenarioModel.getSender());
-        panelReporting.setComponentModel(scenarioModel.getReporting());
-        panelMessages.setComponentModel(scenarioModel.getMessages());
-        panelValidation.setComponentModel(scenarioModel.getValidation());
-        panelProperties.setComponentModel(scenarioModel.getProperties());
-        /*TODO for testing purpose*/System.out.println("designerSet");/*LOG.info("designerSet");*/
+        if (scenarioModel != null) {
+            /*TODO null pointer exc. if comp. isnt set in xml -> solve in Comps.*/
+            panelGenerator.setComponentModel(scenarioModel.getGenerator());
+            panelSender.setComponentModel(scenarioModel.getSender());
+            panelReporting.setComponentModel(scenarioModel.getReporting());
+            panelMessages.setComponentModel(scenarioModel.getMessages());      /*TODO validatorsID for attach*/
+            panelValidation.setComponentModel(scenarioModel.getValidation());
+            panelProperties.setComponentModel(scenarioModel.getProperties());
+
+            /*TODO for testing purpose*/System.out.println("TEST LOG: designer was set");
+            layerDesigner.setVisible(true);
+            layerDependencies.setVisible(true);
+        }
     }
 
-    public boolean isModified(){
-        return false; /*TODO for save?*/
-    }
-    public boolean isEditorValid(){
-        return true; /*TODO for not valid xml? skusit false*/
-    }
     public JComponent getPreferredFocusedComponent() {
         return tabbedPane;
     }
+
     public void dispose() {
 //
 //        myConnection.disconnect();
 //        editor.removeEditorMouseListener(myEditorMouseListener);
-        System.out.println(Thread.activeCount() + " " +
-                Thread.currentThread().getName());
+//        System.out.println(Thread.activeCount() + " " +
+//                Thread.currentThread().getName());
         /*TODO threadIntrpted exc.(dispose in porgress?)*/
         /*TODO filewatcher?*/
-        /*TODO save before dispose <- not needed maybe*/
-        xmlEditor.dispose();
-        /*TODO maven cant find method*///EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
         file.getFileSystem().removeVirtualFileListener(scenarioVirtualFileListener);
         document.removeDocumentListener(scenarioDocumentListener);
+
+        xmlEditor.dispose();
+        /*TODO maven cant find method*///EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
+
     }
+
+    private boolean savingScenario = false;
 
     private final class ScenarioDocumentListener extends DocumentAdapter {
         @Override
         public void documentChanged(DocumentEvent e) {
-        /*TODO set modif.=true + rozdelit podla tabbedPane.getSelectedIndex()
-            - source:  > designer selected: save Doc. + loadS. + setDes. + modif.=false
-            - designer(=externa zmena?): TODO a) sklbit b) ignore c) desigerWasModif.(+listener): true=ignore false=saveDoc. >vfLisener(true,false) loadS.+setDes.*/
-
-            /*TODO for testing purpose*/System.out.println("docChanged");
-            documentWasModified = true;
-            /*TODO asi tu: ak je tab=0 potom save doc*/
-
+            if (tabbedPane.getSelectedIndex() == 1) {
+                /*TODO for testing purpose*/System.out.println("TEST LOG: document changed (in Source)");
+                documentModifiedInSource = true;
+            }
+            if (tabbedPane.getSelectedIndex() == 0){
+                if (savingScenario){
+                    /*TODO for testing purpose*/System.out.println("TEST LOG: document changed (while saving)");
+                    FileDocumentManager.getInstance().saveDocument(document);
+                    savingScenario = false;
+                } else {
+                    /*TODO for testing purpose*/System.out.println("TEST LOG: document changed (undo/external)");
+                    FileDocumentManager.getInstance().saveDocument(document);
+                    loadScenario();
+                    setDesignerComponents();
+                }
+            }
         }
     }
 
     private final class ScenarioVirtualFileListener extends VirtualFileAdapter {
         @Override
         public void contentsChanged(@NotNull VirtualFileEvent event){
-            /*TODO for testing purpose*/System.out.println("virtualFileChanged: save?:"+event.isFromSave()+" ref?:"+event.isFromRefresh());
-            if (documentWasModified) {   /*TODO ak save alebo refresh > + load scenario + log*/
-                /*TODO for testing purpose*/System.out.println("scenarioLoaded");
-                loadScenario();
-            }
+            /*TODO for testing purpose*/System.out.println("TEST LOG: virtualFile changed: save?:"+event.isFromSave()+" refresh?:"+event.isFromRefresh());
+        }
+    }
 
+    private void fireScenarioInvalid(String message){
+        layerDesigner.setVisible(false);
+        layerDependencies.setVisible(false);
+
+        if (scenarioModel != null){
+            AbstractEditor scenarioInvalid = new AbstractEditor() {
+                @Override
+                public String getTitle() {
+                    return "Scenario Invalid";
+                }
+                @Override
+                public ValidationInfo areInsertedValuesValid() {
+                    return null;
+                }
+            };
+            scenarioInvalid.setLayout(new BoxLayout(scenarioInvalid,BoxLayout.Y_AXIS));
+            JLabel labelTitle = new JLabel("Last change made scenario INVALID!");
+            labelTitle.setFont(new Font(labelTitle.getFont().getName(),Font.BOLD,15));
+            scenarioInvalid.add(labelTitle);
+            String[] cause = message.split("; ");
+            for (int i=0;i<cause.length;i++){
+                scenarioInvalid.add(new JLabel("<html>"+cause[i]+"</html>"));
+            }
+            scenarioInvalid.add(new JLabel(" "));
+            JLabel labelQuestion = new JLabel("Would you like to load last known configuration?");
+            labelQuestion.setFont(new Font(labelQuestion.getFont().getName(),labelQuestion.getFont().getStyle(),15));
+            scenarioInvalid.add(labelQuestion);
+
+            ScenarioDialogEditor dialog = new ScenarioDialogEditor(scenarioInvalid);
+            dialog.show();
+            if (dialog.getExitCode() == 0){
+                new ScenarioEvent().saveScenario("reload last configuration");
+//                FileDocumentManager.getInstance().saveDocument(document);
+//                loadScenario();
+//                setDesignerComponents();
+            } else {
+                scenarioModel = null;
+            }
         }
     }
 
@@ -332,36 +409,32 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         /*TODO sources*/
         public void saveGenerator(){
             scenarioModel.setGenerator((Scenario.Generator)panelGenerator.getComponentModel());
-            saveScenario("Generator");
+            saveScenario("Generator modification");
         }
         public void saveSender(){
             scenarioModel.setSender((Scenario.Sender)panelSender.getComponentModel());
-            saveScenario("Sender");
+            saveScenario("Sender modification");
         }
         public void saveProperties(){
             scenarioModel.setProperties((Scenario.Properties) panelProperties.getComponentModel());
-            saveScenario("Properties");
+            saveScenario("Properties modification");
         }
         public void saveMessages(){
-            scenarioModel.setMessages((Scenario.Messages) panelMessages.getComponentModel());
-            saveScenario("Messages");
+            scenarioModel.setMessages((Scenario.Messages) panelMessages.getComponentModel());           /*TODO attached valid. depend.Line*/
+            saveScenario("Messages modification");
         }
         public void saveValidation(){
-            scenarioModel.setValidation((Scenario.Validation) panelValidation.getComponentModel());
-            saveScenario("Validation");
+            scenarioModel.setValidation((Scenario.Validation) panelValidation.getComponentModel());        /*TODO attached valid. depend.Line*/
+            saveScenario("Validation modification");
         }
         public void saveReporting(){
             scenarioModel.setReporting((Scenario.Reporting) panelReporting.getComponentModel());
-            saveScenario("Reporting");
+            saveScenario("Reporting modification");
         }
 
         private void saveScenario(final String source) {
-                 /*TODO undo*/
-                //final Document doc = PsiDocumentManager.getInstance(project).getCachedDocument(psiFile);
-                /*TODO psi rewrte - to doc or doc change*/
+                /*TODO psi rewrte - to doc or doc change*///final Document doc = PsiDocumentManager.getInstance(project).getCachedDocument(psiFile);
 
-                /*TODO nejak zablokovat undo z xml editora alebo nechat, len ak sa tym dostane do nevalidneho stavu tak hlaska*/
-                /*TODO undo,redo funguje(zapina ho az xml editor) ale neupdatuje designer*/
                 CommandProcessor.getInstance().executeCommand(project, new Runnable() {
                     @Override
                     public void run() {
@@ -377,38 +450,37 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                                     marshaller.setSchema(schema);
                                     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-                                    StringWriter sw = new StringWriter();
+                                    StringWriter stringWriter = new StringWriter();
 
-                                    marshaller.marshal(scenarioModel, sw);
-                                    if (!sw.toString().equals("")) {
-                                        document.setText(sw.toString());
+                                    marshaller.marshal(scenarioModel, stringWriter);
+                                    if (!stringWriter.toString().equals("")) {
+                                        savingScenario = true;
                                         /*TODO log */ System.out.println("SAVE: " + source);
+                                        document.setText(stringWriter.toString());
+
                                     } else {
                                         //some error
                                         System.out.println("wtf");
                                     }
-                                    sw.close();
+                                    stringWriter.close();
                                     //file.refresh(true, false);
                                 } catch (JAXBException e) {
-                                    System.out.println("ERROR:" + e.getClass().getName()); /*TODO ???*/
+                                    System.out.println("ERROR:" + e.getClass().getName()); /*TODO schema*/
                                     e.printStackTrace();
                                 } catch (SAXException e) {
                                     System.out.println("ERROR:" + e.getClass().getName()); /*TODO nevalidne xml*/
                                     e.printStackTrace();
                                 } catch (IOException e) {
-                                    System.out.println("ERROR:" + e.getClass().getName()); /*TODO ... */
+                                    System.out.println("ERROR:" + e.getClass().getName()); /*TODO stringWriter.close */
                                     e.printStackTrace();
                                 }
                             }
                         });
                     }
-                }, source+" modification", null, UndoConfirmationPolicy.DEFAULT, document);
-
-
-
-
+                }, source, null, UndoConfirmationPolicy.DEFAULT, document);
         }
-
     }
+
+
 
 }
