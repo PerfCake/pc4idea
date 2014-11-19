@@ -2,7 +2,6 @@ package org.perfcake.pc4idea.wizard;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.perfcake.model.Scenario;
@@ -19,7 +18,7 @@ public class NewScenarioAction extends AnAction {
         wizardDialog.show();
         wizard.stopCheckingValidity();
         if (wizardDialog.getExitCode() == 0){
-            VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
+            VirtualFile file = e.getData(DataKeys.VIRTUAL_FILE);   /*TODO maven cant find CommonDataKeys.VIRTUAL_FILE*/
             file = (file.isDirectory()) ? file : file.getParent();
 
             String uri = file.getPath()+"/"+wizard.getScenarioName()+".xml";
@@ -33,7 +32,7 @@ public class NewScenarioAction extends AnAction {
     public void update(AnActionEvent e) {
         try {
             String moduleType = e.getData(DataKeys.MODULE).getOptionValue("type");
-            VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
+            VirtualFile file = e.getData(DataKeys.VIRTUAL_FILE);
             String dirName = (file.isDirectory()) ? file.getName() : file.getParent().getName();
 
             if (!moduleType.equals("PERFCAKE_MODULE")){
@@ -49,6 +48,6 @@ public class NewScenarioAction extends AnAction {
     }
 
     private void createScenario(String uri, Scenario model){
-
+      /*TODO create file*/
     }
 }
