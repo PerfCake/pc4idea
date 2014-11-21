@@ -1,78 +1,69 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>org.perfcake</groupId>
     <artifactId>pc4idea</artifactId>
-    <version>3.0-SNAPSHOT</version>
-
+    <version>3.3-SNAPSHOT</version>
+    <properties>
+        <perfcake.version>3.3</perfcake.version>
+        <intellij.version>12.1.4</intellij.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.infinitest.intellij</groupId>
             <artifactId>intellij-annotations</artifactId>
-            <version>12.1.4</version>
+            <version>${intellij.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.infinitest.intellij</groupId>
             <artifactId>intellij-extensions</artifactId>
-            <version>12.1.4</version>
+            <version>${intellij.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.infinitest.intellij</groupId>
             <artifactId>intellij-idea</artifactId>
-            <version>12.1.4</version>
+            <version>${intellij.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.infinitest.intellij</groupId>
             <artifactId>intellij-openapi</artifactId>
-            <version>12.1.4</version>
+            <version>${intellij.version}</version>
             <scope>provided</scope>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.infinitest.intellij</groupId>-->
-            <!--<artifactId>intellij-trove4j</artifactId>-->
-            <!--<version>12.1.4</version>-->
-            <!--<scope>provided</scope>-->
+        <!--<groupId>org.infinitest.intellij</groupId>-->
+        <!--<artifactId>intellij-trove4j</artifactId>-->
+        <!--<version>${intellij.version}</version>-->
+        <!--<scope>provided</scope>-->
         <!--</dependency>-->
         <dependency>
             <groupId>org.infinitest.intellij</groupId>
             <artifactId>intellij-util</artifactId>
-            <version>12.1.4</version>
+            <version>${intellij.version}</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.jdom</groupId>
             <artifactId>jdom</artifactId>
             <version>1.1.3</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.perfcake</groupId>
             <artifactId>perfcake</artifactId>
-            <version>3.2</version>
+            <version>${perfcake.version}</version>
         </dependency>
     </dependencies>
-
     <repositories>
-        <repository>
-            <id>central</id>
-            <name>Maven Central Repository</name>
-            <url>https://repo1.maven.org/maven2</url>
-        </repository>
         <repository>
             <id>bintray</id>
             <name>Bintray Repository</name>
             <url>http://dl.bintray.com/infinitest/intellij</url>
         </repository>
     </repositories>
-
     <build>
         <resources>
             <resource>
@@ -97,11 +88,7 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
                             <includeGroupIds>${project.groupId}</includeGroupIds>
-                                <includes>schemas/perfcake-scenario-3.0.xsd,org/perfcake/model/</includes>
-
-
-
-
+                            <includes>schemas/perfcake-scenario-3.0.xsd,org/perfcake/model/</includes>
                         </configuration>
                     </execution>
                 </executions>
@@ -117,6 +104,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>
