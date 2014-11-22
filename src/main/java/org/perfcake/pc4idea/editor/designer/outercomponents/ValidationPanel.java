@@ -4,20 +4,16 @@ import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.designer.innercomponents.ValidatorComponent;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.editors.ValidationEditor;
 import org.perfcake.pc4idea.editor.designer.editors.ValidatorEditor;
+import org.perfcake.pc4idea.editor.designer.innercomponents.ValidatorComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -79,44 +75,24 @@ public class ValidationPanel extends AbstractPanel {
                 e.getComponent().repaint();
             }
         });
+    }
 
-        this.setTransferHandler(new TransferHandler(){
-            @Override
-            public boolean canImport(TransferHandler.TransferSupport support){
-                support.setDropAction(COPY);
-                return support.isDataFlavorSupported(DataFlavor.stringFlavor);
-            }
-            @Override
-            public boolean importData(TransferHandler.TransferSupport support){
-                if (!canImport(support)) {
-                    return false;
-                }
-                Transferable t = support.getTransferable();
-                String transferredData = "";
-                try {
-                    transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
-                } catch (UnsupportedFlavorException e) {
-                    e.printStackTrace();   /*TODO log*/
-                } catch (IOException e) {
-                    e.printStackTrace();   /*TODO log*/
-                }
-                if (transferredData.contains("Validator")){
-                    Scenario.Validation.Validator validatorClass = new Scenario.Validation.Validator();
-                    validatorClass.setClazz(transferredData);
+    @Override
+    protected void performImport(String transferredData){  /*TODO bez dialogu -> just create*/
+        if (transferredData.contains("Validator")){
+            Scenario.Validation.Validator validatorClass = new Scenario.Validation.Validator();
+            validatorClass.setClazz(transferredData);
 
-                    ValidatorEditor validatorEditor = new ValidatorEditor();
-                    validatorEditor.setValidator(validatorClass);
-                    ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
-                    dialog.show();
-                    if (dialog.getExitCode() == 0) {
-                        validation.getValidator().add(validatorEditor.getValidator());
-                        setComponentModel(validation);
-                        scenarioEvent.saveValidation();
-                    }
-                }
-                return true;
+            ValidatorEditor validatorEditor = new ValidatorEditor();
+            validatorEditor.setValidator(validatorClass);
+            ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
+            dialog.show();
+            if (dialog.getExitCode() == 0) {
+                validation.getValidator().add(validatorEditor.getValidator());
+                setComponentModel(validation);
+                scenarioEvent.saveValidation();
             }
-        });
+        }
     }
 
     @Override
@@ -139,16 +115,19 @@ public class ValidationPanel extends AbstractPanel {
 
     @Override
     public void setComponentModel(Object componentModel) {
-        validation = (Scenario.Validation) componentModel;
-
-        panelValidators.setValidators(validation.getValidator());
-
+        if (componentModel != null) {
+            validation = (Scenario.Validation) componentModel;
+            panelValidators.setValidators(validation.getValidator());
+        } else {
+            validation = new Scenario.Validation();
+            panelValidators.setValidators(new ArrayList<Scenario.Validation.Validator>());
+        }
         this.revalidate();
     }
 
     @Override
     public Object getComponentModel() {
-        return validation;
+        return (validation.getValidator().isEmpty()) ? null : validation;
     }
 
     @Override

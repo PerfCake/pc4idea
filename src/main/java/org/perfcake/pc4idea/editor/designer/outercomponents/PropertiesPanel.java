@@ -5,20 +5,16 @@ import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.designer.innercomponents.PropertyComponent;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.editors.PropertiesEditor;
 import org.perfcake.pc4idea.editor.designer.editors.PropertyEditor;
+import org.perfcake.pc4idea.editor.designer.innercomponents.PropertyComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -78,40 +74,20 @@ public class PropertiesPanel extends AbstractPanel {
                 e.getComponent().repaint();
             }
         });
+    }
 
-        this.setTransferHandler(new TransferHandler(){
-            @Override
-            public boolean canImport(TransferHandler.TransferSupport support){
-                support.setDropAction(COPY);
-                return support.isDataFlavorSupported(DataFlavor.stringFlavor);
+    @Override
+    protected void performImport(String transferredData){  /*TODO bez dialogu -> just create*/
+        if (transferredData.equals("Property")) {
+            PropertyEditor propertyEditor = new PropertyEditor();
+            ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+            dialog.show();
+            if (dialog.getExitCode() == 0) {
+                properties.getProperty().add(propertyEditor.getProperty());
+                setComponentModel(properties);
+                scenarioEvent.saveProperties();
             }
-            @Override
-            public boolean importData(TransferHandler.TransferSupport support){
-                if (!canImport(support)) {
-                    return false;
-                }
-                Transferable t = support.getTransferable();
-                String transferredData = "";
-                try {
-                    transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
-                } catch (UnsupportedFlavorException e) {
-                    e.printStackTrace();   /*TODO log*/
-                } catch (IOException e) {
-                    e.printStackTrace();   /*TODO log*/
-                }
-                if (transferredData.equals("Property")) {
-                    PropertyEditor propertyEditor = new PropertyEditor();
-                    ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
-                    dialog.show();
-                    if (dialog.getExitCode() == 0) {
-                        properties.getProperty().add(propertyEditor.getProperty());
-                        setComponentModel(properties);
-                        scenarioEvent.saveProperties();
-                    }
-                }
-                return true;
-            }
-        });
+        }
     }
 
     @Override
@@ -134,16 +110,19 @@ public class PropertiesPanel extends AbstractPanel {
 
     @Override
     public void setComponentModel(Object componentModel) {
-        properties = (Scenario.Properties) componentModel;
-
-        panelProperties.setProperties(properties.getProperty());
-
+        if (componentModel != null) {
+            properties = (Scenario.Properties) componentModel;
+            panelProperties.setProperties(properties.getProperty());
+        } else {
+            properties = new Scenario.Properties();
+            panelProperties.setProperties(new ArrayList<Property>());
+        }
         this.revalidate();
     }
 
     @Override
     public Object getComponentModel() {
-        return properties;
+        return (properties.getProperty().isEmpty()) ? null : properties;
     }
 
     @Override

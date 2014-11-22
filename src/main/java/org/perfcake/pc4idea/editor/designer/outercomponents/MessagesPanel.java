@@ -4,18 +4,14 @@ import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.designer.innercomponents.MessageComponent;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.editors.MessageEditor;
 import org.perfcake.pc4idea.editor.designer.editors.MessagesEditor;
+import org.perfcake.pc4idea.editor.designer.innercomponents.MessageComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -68,44 +64,24 @@ public class MessagesPanel extends AbstractPanel {
                 10,
                 SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, panelMessages,8,SpringLayout.SOUTH, labelMessages);
-
-        this.setTransferHandler(new TransferHandler(){
-            @Override
-            public boolean canImport(TransferHandler.TransferSupport support){
-                support.setDropAction(COPY);
-                return support.isDataFlavorSupported(DataFlavor.stringFlavor);
-            }
-            @Override
-            public boolean importData(TransferHandler.TransferSupport support){
-                if (!canImport(support)) {
-                    return false;
-                }
-                Transferable t = support.getTransferable();
-                String transferredData = "";
-                try {
-                    transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
-                } catch (UnsupportedFlavorException e) {
-                    e.printStackTrace();   /*TODO log*/
-                } catch (IOException e) {
-                    e.printStackTrace();   /*TODO log*/
-                }
-                if (transferredData.equals("Message")){
-                    MessageEditor messageEditor = new MessageEditor();
-                    ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
-                    dialog.show();
-                    if (dialog.getExitCode() == 0) {
-                        messages.getMessage().add(messageEditor.getMessage());
-                        setComponentModel(messages);
-                        scenarioEvent.saveMessages();
-                    }
-                }
-                return true;
-            }
-        });
     }
 
     @Override
-   protected Color getColor() {
+    protected void performImport(String transferredData){  /*TODO bez dialogu -> just create*/
+        if (transferredData.equals("Message")){
+            MessageEditor messageEditor = new MessageEditor();
+            ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
+            dialog.show();
+            if (dialog.getExitCode() == 0) {
+                messages.getMessage().add(messageEditor.getMessage());
+                setComponentModel(messages);
+                scenarioEvent.saveMessages();
+            }
+        }
+    }
+
+    @Override
+    protected Color getColor() {
         return messagesColor;
     }
 
@@ -124,16 +100,19 @@ public class MessagesPanel extends AbstractPanel {
 
     @Override
     public void setComponentModel(Object componentModel) {
-        messages = (Scenario.Messages) componentModel;
-
-        panelMessages.setMessages(messages.getMessage());
-
+        if (componentModel != null) {
+            messages = (Scenario.Messages) componentModel;
+            panelMessages.setMessages(messages.getMessage());
+        } else {
+            messages = new Scenario.Messages();
+            panelMessages.setMessages(new ArrayList<Scenario.Messages.Message>());
+        }
         this.revalidate();
     }
 
     @Override
     public Object getComponentModel() {
-        return messages;
+        return (messages.getMessage().isEmpty()) ? null : messages;
     }
 
     @Override

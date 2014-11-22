@@ -11,13 +11,9 @@ import org.perfcake.pc4idea.editor.designer.innercomponents.ReporterComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -79,45 +75,24 @@ public class ReportingPanel extends AbstractPanel {
                 e.getComponent().repaint();
             }
         });
+    }
 
-        this.setTransferHandler(new TransferHandler(){
-            @Override
-            public boolean canImport(TransferHandler.TransferSupport support){
-                support.setDropAction(COPY);
-                return support.isDataFlavorSupported(DataFlavor.stringFlavor);
-            }
-            @Override
-            public boolean importData(TransferHandler.TransferSupport support){
-                if (!canImport(support)) {
-                    return false;
-                }
-                Transferable t = support.getTransferable();
-                String transferredData = "";
-                try {
-                    transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
-                } catch (UnsupportedFlavorException e) {
-                    e.printStackTrace();   /*TODO log to message*/
-                } catch (IOException e) {
-                    e.printStackTrace();   /*TODO log to message*/
-                }
-                if (transferredData.contains("Reporter")) {
-                    Scenario.Reporting.Reporter reporterClass = new Scenario.Reporting.Reporter();
-                    reporterClass.setClazz(transferredData);
-                    reporterClass.setEnabled(false);
+    @Override
+    protected void performImport(String transferredData){  /*TODO bez dialogu -> just create*/
+        if (transferredData.contains("Reporter")) {
+            Scenario.Reporting.Reporter reporterClass = new Scenario.Reporting.Reporter();
+            reporterClass.setClazz(transferredData);
 
-                    ReporterEditor reporterEditor = new ReporterEditor();
-                    reporterEditor.setReporter(reporterClass);
-                    ScenarioDialogEditor dialog = new ScenarioDialogEditor(reporterEditor);
-                    dialog.show();
-                    if (dialog.getExitCode() == 0) {
-                        reporting.getReporter().add(reporterEditor.getReporter());
-                        setComponentModel(reporting);
-                        scenarioEvent.saveReporting();
-                    }
-                }
-                return true;
+            ReporterEditor reporterEditor = new ReporterEditor();
+            reporterEditor.setReporter(reporterClass);
+            ScenarioDialogEditor dialog = new ScenarioDialogEditor(reporterEditor);
+            dialog.show();
+            if (dialog.getExitCode() == 0) {
+                reporting.getReporter().add(reporterEditor.getReporter());
+                setComponentModel(reporting);
+                scenarioEvent.saveReporting();
             }
-        });
+        }
     }
 
     @Override
@@ -142,19 +117,12 @@ public class ReportingPanel extends AbstractPanel {
     public void setComponentModel(Object componentModel) {
         if (componentModel != null) {
             reporting = (Scenario.Reporting) componentModel;
-
-            panelReporters.removeAll();
-            panelReporters.repaint();
-
             panelReporters.setReporters(reporting.getReporter());
-
-            this.revalidate();
         } else {
             reporting = new Scenario.Reporting();
             panelReporters.setReporters(new ArrayList<Scenario.Reporting.Reporter>());
-
-            this.revalidate();
         }
+        this.revalidate();
     }
 
     @Override
