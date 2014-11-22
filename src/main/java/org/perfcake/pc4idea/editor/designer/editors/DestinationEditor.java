@@ -39,6 +39,7 @@ public class DestinationEditor extends AbstractEditor {
         comboBoxDestinationType.addItem("Log4jDestination");
         comboBoxDestinationType.setSelectedIndex(-1);
         checkBoxEnabled = new JCheckBox();
+        checkBoxEnabled.setSelected(true);
 
         tablePanelPeriods = new EditorTablePanel(new PeriodsTableModel(new ArrayList<Scenario.Reporting.Reporter.Destination.Period>())) {
             @Override

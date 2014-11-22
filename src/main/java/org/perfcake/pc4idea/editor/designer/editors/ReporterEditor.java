@@ -40,6 +40,7 @@ public class ReporterEditor extends AbstractEditor {
         comboBoxReporterType.addItem("WarmUpReporter");
         comboBoxReporterType.setSelectedIndex(-1);
         checkBoxEnabled = new JCheckBox();
+        checkBoxEnabled.setSelected(true);
 
         tablePanelDestinations = new EditorTablePanel(new DestinationsTableModel(new ArrayList<Scenario.Reporting.Reporter.Destination>())) {
             @Override
