@@ -3,17 +3,14 @@ package org.perfcake.pc4idea.editor.designer.innercomponents;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.designer.outercomponents.ReportingPanel;
+import org.perfcake.pc4idea.editor.designer.common.ScenarioImportHandler;
 import org.perfcake.pc4idea.editor.designer.editors.DestinationEditor;
 import org.perfcake.pc4idea.editor.designer.editors.ReporterEditor;
+import org.perfcake.pc4idea.editor.designer.outercomponents.ReportingPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -156,30 +153,12 @@ public class ReporterComponent extends JPanel {
             }
         });
 
-        this.setTransferHandler(new TransferHandler(){
+        this.setTransferHandler(new ScenarioImportHandler() {
             @Override
-            public boolean canImport(TransferHandler.TransferSupport support){
-                support.setDropAction(COPY);
-                return support.isDataFlavorSupported(DataFlavor.stringFlavor);
-            }
-            @Override
-            public boolean importData(TransferHandler.TransferSupport support){
-                if (!canImport(support)) {
-                    return false;
-                }
-                Transferable t = support.getTransferable();
-                String transferredData = "";
-                try {
-                    transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
-                } catch (UnsupportedFlavorException e) {
-                    e.printStackTrace();   /*TODO log*/
-                } catch (IOException e) {
-                    e.printStackTrace();   /*TODO log*/
-                }
+            public void performImport(String transferredData) {    /*TODO bez dialogu -> just create*/
                 if (transferredData.contains("Destination")) {
                     Scenario.Reporting.Reporter.Destination destinationClass = new Scenario.Reporting.Reporter.Destination();
                     destinationClass.setClazz(transferredData);
-                     destinationClass.setEnabled(false);
 
                     DestinationEditor destinationEditor = new DestinationEditor();
                     destinationEditor.setDestination(destinationClass);
@@ -191,7 +170,6 @@ public class ReporterComponent extends JPanel {
                         reportingEvent.saveReporter(id);
                     }
                 }
-                return true;
             }
         });
     }

@@ -1,6 +1,7 @@
 package org.perfcake.pc4idea.editor.designer.outercomponents;
 
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
+import org.perfcake.pc4idea.editor.designer.common.ScenarioImportHandler;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 
 import javax.swing.*;
@@ -58,8 +59,16 @@ public abstract class AbstractPanel extends JPanel {
             }
         });
 
+        this.setTransferHandler(new ScenarioImportHandler() {
+            @Override
+            public void performImport(String transferredData) {
+                AbstractPanel.this.performImport(transferredData);
+            }
+        });
+
     }
 
+    protected abstract void performImport(String transferredData);
     protected abstract Color getColor();
     protected abstract AbstractEditor getEditorPanel();
     protected abstract void applyChanges();

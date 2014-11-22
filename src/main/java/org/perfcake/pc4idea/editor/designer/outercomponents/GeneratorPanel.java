@@ -57,6 +57,11 @@ public class GeneratorPanel extends AbstractPanel {
     }
 
     @Override
+    protected void performImport(String transferredData){
+        // not supported
+    }
+
+    @Override
     protected Color getColor() {
         return generatorColor;
     }
