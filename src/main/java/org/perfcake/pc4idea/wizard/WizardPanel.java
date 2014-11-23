@@ -3,6 +3,7 @@ package org.perfcake.pc4idea.wizard;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBList;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.editors.*;
@@ -24,18 +25,20 @@ class WizardPanel extends JPanel {
     private JPanel panelEditors;
 
     private Map<Integer, AbstractEditor> editors;
-    private boolean running = true;
+    private boolean validationRunning = true;
+    private String defaultURI;
 
     private WizardDialog.WizardEvent wizardEvent;
 
-    WizardPanel(){
+    WizardPanel(String defaultURI){
+        this.defaultURI = defaultURI;
         initComponents();
         this.setPreferredSize(new Dimension(480,240));
     }
 
     private void initComponents(){
         editors = new HashMap<>();
-        editors.put(0, new NameEditor());
+        editors.put(0, new URIEditor(defaultURI));
         editors.put(1, new GeneratorEditor());
         editors.put(2, new SenderEditor());
         editors.put(3, new MessagesEditor());
@@ -46,7 +49,7 @@ class WizardPanel extends JPanel {
         panelEditors = new JPanel(new GridLayout(1,1));
         panelEditors.add(editors.get(0));
 
-        wizardStepList = new JBList(new String[]{"Name","Generator", "Sender", "Messages", "Reporting", "Validation", "Properties"});
+        wizardStepList = new JBList(new String[]{"URI","Generator", "Sender", "Messages", "Reporting", "Validation", "Properties"});
         wizardStepList.setCellRenderer(new DefaultListCellRenderer() {
             private boolean isSelected = false;
 
@@ -128,11 +131,11 @@ class WizardPanel extends JPanel {
         ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
             @Override
             public void run() {
-                while (running){
+                while (validationRunning){
                     try {
                         Thread.sleep(500);
                         wizardStepList.repaint();
-                    } catch (InterruptedException ignore) {
+                    } catch (InterruptedException ignored) {
                     }
                 }
             }
@@ -161,17 +164,21 @@ class WizardPanel extends JPanel {
             info = new ValidationInfo("generator editor isn't complete : "+editors.get(1).areInsertedValuesValid().message);
         }
         if (editors.get(0).areInsertedValuesValid() != null){
-            info = new ValidationInfo("name editor isn't complete : "+editors.get(0).areInsertedValuesValid().message);
+            info = new ValidationInfo("URI editor isn't complete : "+editors.get(0).areInsertedValuesValid().message);
         }
         return info;
     }
 
     public void stopCheckingValidity(){
-        running = false;
+        validationRunning = false;
     }
 
     protected String getScenarioName(){
-        return ((NameEditor)editors.get(0)).getScenarioName();
+        return ((URIEditor)editors.get(0)).getScenarioName();
+    }
+
+    protected VirtualFile getScenarioDirectory(){
+        return ((URIEditor)editors.get(0)).getScenarioDirectory();
     }
 
     protected Scenario getScenarioModel(){
