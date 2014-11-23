@@ -185,7 +185,23 @@ class WizardPanel extends JPanel {
         Scenario model = new Scenario();
         model.setGenerator(((GeneratorEditor)editors.get(1)).getGenerator());
         model.setSender(((SenderEditor)editors.get(2)).getSender());
-        /*TODO atd. + check null rep. etc*/
+
+        Scenario.Messages messages = ((MessagesEditor) editors.get(3)).getMessages();
+        messages = (messages.getMessage().isEmpty()) ? null : messages;
+        model.setMessages(messages);
+
+        Scenario.Reporting reporting = ((ReportingEditor) editors.get(4)).getReporting();
+        reporting = (reporting.getReporter().isEmpty()) ? null : reporting;
+        model.setReporting(reporting);
+
+        Scenario.Validation validation = ((ValidationEditor) editors.get(5)).getValidation();
+        validation = (validation.getValidator().isEmpty()) ? null : validation;
+        model.setValidation(validation);
+
+        Scenario.Properties properties = ((PropertiesEditor) editors.get(6)).getObjProperties();
+        properties = (properties.getProperty().isEmpty()) ? null : properties;
+        model.setProperties(properties);
+
         return model;
     }
 }
