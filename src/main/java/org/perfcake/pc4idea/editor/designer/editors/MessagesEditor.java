@@ -134,10 +134,19 @@ public class MessagesEditor extends AbstractEditor {
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             Scenario.Messages.Message message = messageList.get(rowIndex);
+
+            StringBuilder sb = new StringBuilder();
+            for (Scenario.Messages.Message.ValidatorRef validatorRef : message.getValidatorRef()){
+                if (!sb.toString().equals("")){
+                    sb.append(", ");
+                }
+                sb.append(validatorRef.getId());
+            }
+
             switch (columnIndex){
                 case 0: return message.getUri();
                 case 1: return message.getMultiplicity();
-                case 2: return message.getValidatorRef().toString();  /*TODO nejak pekne upravit*/
+                case 2: return sb.toString();
                 default: return null;
             }
         }
