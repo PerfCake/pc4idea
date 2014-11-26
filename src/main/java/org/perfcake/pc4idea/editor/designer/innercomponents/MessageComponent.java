@@ -2,8 +2,8 @@ package org.perfcake.pc4idea.editor.designer.innercomponents;
 
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.designer.outercomponents.MessagesPanel;
 import org.perfcake.pc4idea.editor.designer.editors.MessageEditor;
+import org.perfcake.pc4idea.editor.designer.outercomponents.MessagesPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,6 +21,7 @@ import java.awt.event.MouseEvent;
 public class MessageComponent extends JPanel{
     private final Color messageColor;
     private final int id;
+    private final Set<String> usedValidatorIDSet;
 
     private MessageEditor messageEditor;
     private Scenario.Messages.Message message;
@@ -32,9 +34,10 @@ public class MessageComponent extends JPanel{
 
     private Dimension messageSize;
 
-    public MessageComponent(Color messagesColor, int id, MessagesPanel.PanelMessages.MessagesEvent messagesEvent){
+    public MessageComponent(Color messagesColor, int id, Set<String> usedValidatorIDSet, MessagesPanel.PanelMessages.MessagesEvent messagesEvent){
         this.messageColor = messagesColor;
         this.id = id;
+        this.usedValidatorIDSet = usedValidatorIDSet;
         this.messagesEvent = messagesEvent;
 
         this.setOpaque(false);
@@ -52,7 +55,7 @@ public class MessageComponent extends JPanel{
         popupOpenEditor.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                messageEditor = new MessageEditor();
+                messageEditor = new MessageEditor(usedValidatorIDSet);
                 messageEditor.setMessage(message);
                 ScenarioDialogEditor editor = new ScenarioDialogEditor(messageEditor);
                 editor.show();
@@ -93,7 +96,7 @@ public class MessageComponent extends JPanel{
             public void mouseClicked(MouseEvent event) {
                 if (event.getButton() == MouseEvent.BUTTON1) {
                     if (event.getClickCount() == 2) {
-                        messageEditor = new MessageEditor();
+                        messageEditor = new MessageEditor(usedValidatorIDSet);
                         messageEditor.setMessage(message);
                         ScenarioDialogEditor editor = new ScenarioDialogEditor(messageEditor);
                         editor.show();

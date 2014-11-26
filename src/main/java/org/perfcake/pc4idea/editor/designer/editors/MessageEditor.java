@@ -1,6 +1,8 @@
 package org.perfcake.pc4idea.editor.designer.editors;
 
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.ui.ScrollPaneFactory;
+import com.intellij.ui.table.JBTable;
 import org.perfcake.model.Header;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.EditorTablePanel;
@@ -8,10 +10,14 @@ import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,6 +25,7 @@ import java.util.List;
  * Date: 28.10.2014
  */
 public class MessageEditor extends AbstractEditor {
+
     private JLabel labelMessageURI;
     private JLabel labelMultiplicity;
     private JLabel labelMessageContent;
@@ -29,8 +36,9 @@ public class MessageEditor extends AbstractEditor {
     private PropertiesEditor panelProperties;
     private AttachedValidatorsEditor panelAttachedValidators;
 
-    public MessageEditor(){
+    public MessageEditor(Set<String> usedValidatorIDSet){
         initComponents();
+        panelAttachedValidators.setUsedValidatorIDSet(usedValidatorIDSet);
     }
 
     private void initComponents(){
@@ -102,7 +110,7 @@ public class MessageEditor extends AbstractEditor {
 
         panelProperties = new PropertiesEditor();
 
-        panelAttachedValidators = new AttachedValidatorsEditor();/*TODO*/
+        panelAttachedValidators = new AttachedValidatorsEditor();
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -144,9 +152,9 @@ public class MessageEditor extends AbstractEditor {
         textFieldMessageURI.setText(message.getUri());
         textFieldMultiplicity.setText(message.getMultiplicity());
         textFieldContent.setText(message.getContent());
-       tablePanelHeaders.getTable().setModel(new HeadersTableModel(message.getHeader()));
+        tablePanelHeaders.getTable().setModel(new HeadersTableModel(message.getHeader()));
         panelProperties.setListProperties(message.getProperty());
-        //panelAttachedValidators message.getValidatorRef()
+        panelAttachedValidators.setValidatorRefs(message.getValidatorRef());
     }
 
     public Scenario.Messages.Message getMessage(){
@@ -157,7 +165,7 @@ public class MessageEditor extends AbstractEditor {
         newMessage.setContent(textFieldContent.getText());
         newMessage.getHeader().addAll(((HeadersTableModel)tablePanelHeaders.getTable().getModel()).getHeaderList());
         newMessage.getProperty().addAll(panelProperties.getListProperties());
-        //newMessage.getValidatorRef().addAll(panelAttachedValidators getatt...)
+        newMessage.getValidatorRef().addAll(panelAttachedValidators.getValidatorRefs());
         return newMessage;
     }
 
@@ -272,6 +280,125 @@ public class MessageEditor extends AbstractEditor {
     }
 
     private class AttachedValidatorsEditor extends JPanel {
-        /*TODO*/
+        Set<String> usedValidatorIDSet;
+
+        private JTable tableAttachedValidators;
+        private JScrollPane scrollPaneTableAttachedValidators;
+        private JButton buttonAttach;
+        private JButton buttonDetach;
+
+        private AttachedValidatorsEditor(){
+            usedValidatorIDSet = new TreeSet<>();
+            initComponents();
+        }
+
+        private void initComponents(){
+            tableAttachedValidators = new JBTable();
+            scrollPaneTableAttachedValidators = ScrollPaneFactory.createScrollPane(tableAttachedValidators);
+            ((DefaultTableCellRenderer)tableAttachedValidators.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.LEFT);
+
+            buttonAttach = new JButton("Attach");
+            buttonAttach.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Set<String> notAttachedID = new TreeSet<>();
+                    for (String id : usedValidatorIDSet){
+                        boolean isRef = false;
+                        for (Scenario.Messages.Message.ValidatorRef ref : AttachedValidatorsEditor.this.getValidatorRefs()){
+                            if(id.equals(ref.getId())){
+                                isRef = true;
+                            }
+                        }
+                        if (!isRef){
+                            notAttachedID.add(id);
+                        }
+                    }
+                    AttachValidatorEditor attachValidatorEditor = new AttachValidatorEditor(notAttachedID);
+                    ScenarioDialogEditor dialog = new ScenarioDialogEditor(attachValidatorEditor);
+                    dialog.show();
+                    if (dialog.getExitCode() == 0) {
+                        Scenario.Messages.Message.ValidatorRef validatorRef = attachValidatorEditor.getAttachedValidator();
+                        ((AttachedValidatorsTableModel)tableAttachedValidators.getModel()).getValidatorRefList().add(validatorRef);
+                        tableAttachedValidators.repaint();
+                        tableAttachedValidators.revalidate();
+                    }
+                }
+            });
+
+            buttonDetach = new JButton("Detach");
+            buttonDetach.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int selectedRow = tableAttachedValidators.getSelectedRow();
+                    if (selectedRow >= 0) {
+                        ((AttachedValidatorsTableModel)tableAttachedValidators.getModel()).getValidatorRefList().remove(selectedRow);
+                        tableAttachedValidators.repaint();
+                        tableAttachedValidators.revalidate();
+                    }
+                }
+            });
+
+            GroupLayout layout = new GroupLayout(this);
+            this.setLayout(layout);
+            layout.setHorizontalGroup(layout.createSequentialGroup()
+                    .addComponent(scrollPaneTableAttachedValidators)
+                    .addGap(5)
+                    .addGroup(layout.createParallelGroup()
+                            .addComponent(buttonAttach, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buttonDetach, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)));
+            layout.setVerticalGroup(layout.createParallelGroup()
+                    .addComponent(scrollPaneTableAttachedValidators)
+                    .addGroup(layout.createSequentialGroup()
+                            .addComponent(buttonAttach)
+                            .addComponent(buttonDetach)));
+        }
+
+        private void setUsedValidatorIDSet(Set<String> usedValidatorIDSet){
+            this.usedValidatorIDSet = usedValidatorIDSet;
+        }
+
+        private void setValidatorRefs(List<Scenario.Messages.Message.ValidatorRef> validatorRefs){
+            tableAttachedValidators.setModel(new AttachedValidatorsTableModel(validatorRefs));
+        }
+
+        private List<Scenario.Messages.Message.ValidatorRef> getValidatorRefs(){
+            return ((AttachedValidatorsTableModel)tableAttachedValidators.getModel()).getValidatorRefList();
+        }
+
+        private class AttachedValidatorsTableModel extends AbstractTableModel {
+            private List<Scenario.Messages.Message.ValidatorRef> validatorRefList = new ArrayList<>();
+
+            private AttachedValidatorsTableModel(List<Scenario.Messages.Message.ValidatorRef> validatorRefs){
+                validatorRefList.addAll(validatorRefs);
+            }
+
+            public List<Scenario.Messages.Message.ValidatorRef> getValidatorRefList(){
+                return validatorRefList;
+            }
+
+            @Override
+            public int getRowCount() {
+                return validatorRefList.size();
+            }
+            @Override
+            public int getColumnCount() {
+                return 1;
+            }
+            @Override
+            public Object getValueAt(int rowIndex, int columnIndex) {
+                Scenario.Messages.Message.ValidatorRef validatorRef = validatorRefList.get(rowIndex);
+                switch (columnIndex){
+                    case 0: return validatorRef.getId();
+                    default: return null;
+                }
+            }
+            @Override
+            public String getColumnName(int columnIndex){
+                switch (columnIndex){
+                    case 0: return "Validator ID";
+                    default: return "";
+                }
+            }
+        }
     }
 }

@@ -11,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,7 +22,10 @@ import java.util.List;
 public class MessagesEditor extends AbstractEditor {
     private EditorTablePanel tablePanelMessages;
 
+    private Set<String> usedValidatorIDSet;
+
     public MessagesEditor(){
+        usedValidatorIDSet = new TreeSet<>();
         initComponents();
     }
 
@@ -32,7 +37,7 @@ public class MessagesEditor extends AbstractEditor {
                     if (e.getClickCount() == 2) {
                         int selectedRow = tablePanelMessages.getTable().getSelectedRow();
                         if (selectedRow >= 0) {
-                            MessageEditor messageEditor = new MessageEditor();
+                            MessageEditor messageEditor = new MessageEditor(usedValidatorIDSet);
                             messageEditor.setMessage(((MessagesTableModel) tablePanelMessages.getTable().getModel()).getMessageList().get(selectedRow));
                             ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
                             dialog.show();
@@ -47,7 +52,7 @@ public class MessagesEditor extends AbstractEditor {
 
             @Override
             public void buttonAddActionPerformed(ActionEvent e) {
-                MessageEditor messageEditor = new MessageEditor();
+                MessageEditor messageEditor = new MessageEditor(usedValidatorIDSet);
                 ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
                 dialog.show();
                 if (dialog.getExitCode() == 0) {
@@ -62,7 +67,7 @@ public class MessagesEditor extends AbstractEditor {
             public void buttonEditActionPerformed(ActionEvent e) {
                 int selectedRow = tablePanelMessages.getTable().getSelectedRow();
                 if (selectedRow >= 0) {
-                    MessageEditor messageEditor = new MessageEditor();
+                    MessageEditor messageEditor = new MessageEditor(usedValidatorIDSet);
                     messageEditor.setMessage(((MessagesTableModel) tablePanelMessages.getTable().getModel()).getMessageList().get(selectedRow));
                     ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
                     dialog.show();
@@ -91,8 +96,10 @@ public class MessagesEditor extends AbstractEditor {
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addComponent(tablePanelMessages));
     }
-    public void setMessages(Scenario.Messages messages){
+    public void setMessages(Scenario.Messages messages, Set<String> usedValidatorIDSet){
         tablePanelMessages.getTable().setModel(new MessagesTableModel(messages.getMessage()));
+
+        this.usedValidatorIDSet = usedValidatorIDSet;
     }
 
     public Scenario.Messages getMessages(){

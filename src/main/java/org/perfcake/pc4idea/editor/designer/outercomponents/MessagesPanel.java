@@ -12,8 +12,8 @@ import org.perfcake.pc4idea.editor.designer.innercomponents.MessageComponent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,6 +25,7 @@ public class MessagesPanel extends AbstractPanel {
 
     private MessagesEditor messagesEditor;
     private Scenario.Messages messages;
+    private Set<String> validatorIDSet;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
 
     private JLabel labelMessages;
@@ -34,6 +35,7 @@ public class MessagesPanel extends AbstractPanel {
 
     public MessagesPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
         this.scenarioEvent = scenarioEvent;
+        validatorIDSet = new TreeSet<>();
         labelMessagesWidth = 0;
 
         initComponents();
@@ -66,10 +68,35 @@ public class MessagesPanel extends AbstractPanel {
         layout.putConstraint(SpringLayout.NORTH, panelMessages,8,SpringLayout.SOUTH, labelMessages);
     }
 
+    public void setValidatorIDSet(Set<String> validatorIDSet){
+        this.validatorIDSet.clear();
+        this.validatorIDSet.addAll(validatorIDSet);
+
+        for (Scenario.Messages.Message message : messages.getMessage()){
+            List<Scenario.Messages.Message.ValidatorRef> tempList = new ArrayList<>();
+            tempList.addAll(message.getValidatorRef());
+
+            for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()){
+                boolean refIsValid = false;
+                for (String id : this.validatorIDSet){
+                    if (id.equals(ref.getId())){
+                        refIsValid = true;
+                    }
+                }
+                if (!refIsValid){
+                    tempList.remove(ref);
+                }
+            }
+
+            message.getValidatorRef().clear();
+            message.getValidatorRef().addAll(tempList);
+        }
+    }
+
     @Override
-    protected void performImport(String transferredData){  /*TODO bez dialogu -> just create*/
+    protected void performImport(String transferredData){
         if (transferredData.equals("Message")){
-            MessageEditor messageEditor = new MessageEditor();
+            MessageEditor messageEditor = new MessageEditor(validatorIDSet);
             ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
             dialog.show();
             if (dialog.getExitCode() == 0) {
@@ -88,7 +115,7 @@ public class MessagesPanel extends AbstractPanel {
     @Override
     protected AbstractEditor getEditorPanel() {
         messagesEditor = new MessagesEditor();
-        messagesEditor.setMessages(messages);
+        messagesEditor.setMessages(messages, validatorIDSet);
         return messagesEditor;
     }
 
@@ -218,7 +245,7 @@ public class MessagesPanel extends AbstractPanel {
             widestMessageWidth = 0;
             int messageId = 0;
             for (Scenario.Messages.Message message : messagesList) {
-                MessageComponent messageComponent = new MessageComponent(messagesColor,messageId,new MessagesEvent());
+                MessageComponent messageComponent = new MessageComponent(messagesColor,messageId, validatorIDSet,new MessagesEvent());
                 messageComponent.setMessage(message);
                 messageComponentList.add(messageComponent);
                 this.add(messageComponent);
