@@ -4,8 +4,8 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.ui.Messages;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.designer.outercomponents.ValidationPanel;
 import org.perfcake.pc4idea.editor.designer.editors.ValidatorEditor;
+import org.perfcake.pc4idea.editor.designer.outercomponents.ValidationPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,6 +24,7 @@ public class ValidatorComponent extends JPanel{
     private final Color validatorColor;
     private final int id;
     private boolean isAttached;
+    private Set<String> usedIDSet;
 
     private ValidatorEditor validatorEditor;
     private Scenario.Validation.Validator validator;
@@ -35,10 +37,11 @@ public class ValidatorComponent extends JPanel{
 
     private Dimension validatorSize;
 
-    public ValidatorComponent(Color validationColor, int id, boolean isAttached, ValidationPanel.PanelValidators.ValidationEvent validationEvent){
+    public ValidatorComponent(Color validationColor, int id, boolean isAttached, Set<String> usedIDSet, ValidationPanel.PanelValidators.ValidationEvent validationEvent){
         this.validatorColor = validationColor;
         this.id = id;
         this.isAttached = isAttached;
+        this.usedIDSet = usedIDSet;
         this.validationEvent = validationEvent;
 
         this.setOpaque(false);
@@ -56,7 +59,7 @@ public class ValidatorComponent extends JPanel{
         popupOpenEditor.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                validatorEditor = new ValidatorEditor();
+                validatorEditor = new ValidatorEditor(usedIDSet);
                 validatorEditor.setValidator(validator,isAttached);
                 ScenarioDialogEditor editor = new ScenarioDialogEditor(validatorEditor);
                 editor.show();
@@ -105,7 +108,7 @@ public class ValidatorComponent extends JPanel{
             public void mouseClicked(MouseEvent event) {
                 if (event.getButton() == MouseEvent.BUTTON1) {
                     if (event.getClickCount() == 2) {
-                        validatorEditor = new ValidatorEditor();
+                        validatorEditor = new ValidatorEditor(usedIDSet);
                         validatorEditor.setValidator(validator,isAttached);
                         ScenarioDialogEditor editor = new ScenarioDialogEditor(validatorEditor);
                         editor.show();

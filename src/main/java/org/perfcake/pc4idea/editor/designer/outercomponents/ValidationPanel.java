@@ -28,6 +28,7 @@ public class ValidationPanel extends AbstractPanel {
     private ValidationEditor validationEditor;
     private Scenario.Validation validation;
     private Set<String> attachedIDs;
+    private Set<String> usedIDSet;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
 
     private JLabel labelValidation;
@@ -38,6 +39,7 @@ public class ValidationPanel extends AbstractPanel {
     public ValidationPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
         this.scenarioEvent = scenarioEvent;
         attachedIDs = new TreeSet<>();
+        usedIDSet = new TreeSet<>();
         labelValidationWidth = 0;
 
         initComponents();
@@ -84,13 +86,17 @@ public class ValidationPanel extends AbstractPanel {
         setComponentModel(validation);
     }
 
+    public Set<String> getUsedIDSet(){
+        return usedIDSet;
+    }
+
     @Override
     protected void performImport(String transferredData){
         if (transferredData.contains("Validator")){
             Scenario.Validation.Validator validatorClass = new Scenario.Validation.Validator();
             validatorClass.setClazz(transferredData);
 
-            ValidatorEditor validatorEditor = new ValidatorEditor();
+            ValidatorEditor validatorEditor = new ValidatorEditor(usedIDSet);
             validatorEditor.setValidator(validatorClass,false);
             ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
             dialog.show();
@@ -110,7 +116,7 @@ public class ValidationPanel extends AbstractPanel {
     @Override
     protected AbstractEditor getEditorPanel() {
         validationEditor = new ValidationEditor(attachedIDs);
-        validationEditor.setValidation(validation);
+        validationEditor.setValidation(validation,usedIDSet);
         return validationEditor;
     }
 
@@ -130,6 +136,11 @@ public class ValidationPanel extends AbstractPanel {
             panelValidators.setValidators(new ArrayList<Scenario.Validation.Validator>());
         }
         this.revalidate();
+
+        usedIDSet.clear();
+        for (Scenario.Validation.Validator validator : validation.getValidator()){
+            usedIDSet.add(validator.getId());
+        }
     }
 
     @Override
@@ -246,7 +257,7 @@ public class ValidationPanel extends AbstractPanel {
                         isAttached = true;
                     }
                 }
-                ValidatorComponent validatorComponent = new ValidatorComponent(validationColor,validatorId,isAttached,new ValidationEvent());
+                ValidatorComponent validatorComponent = new ValidatorComponent(validationColor,validatorId,isAttached,usedIDSet, new ValidationEvent());
                 validatorComponent.setValidator(validator);
                 validatorComponentList.add(validatorComponent);
                 this.add(validatorComponent);

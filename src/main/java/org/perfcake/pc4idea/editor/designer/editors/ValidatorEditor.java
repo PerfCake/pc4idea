@@ -8,6 +8,7 @@ import org.perfcake.model.Scenario;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,13 +16,16 @@ import javax.swing.event.DocumentListener;
  * Date: 28.10.2014
  */
 public class ValidatorEditor extends AbstractEditor {
+    private Set<String> usedIDSet;
+
     private JLabel labelType;
     private JLabel labelId;
     private JComboBox comboBoxType;
     private JTextField textFieldId;
     private PropertiesEditor panelProperties;
 
-    public ValidatorEditor(){
+    public ValidatorEditor(Set<String> usedIDSet){
+        this.usedIDSet = usedIDSet;
         initComponents();
     }
 
@@ -62,6 +66,7 @@ public class ValidatorEditor extends AbstractEditor {
     public void setValidator(Scenario.Validation.Validator validator, boolean isAttached){
         comboBoxType.setSelectedItem(validator.getClazz());
         textFieldId.setText(validator.getId());
+        usedIDSet.remove(validator.getId());
         panelProperties.setListProperties(validator.getProperty());
 
         if (isAttached){
@@ -110,6 +115,11 @@ public class ValidatorEditor extends AbstractEditor {
     @Override
     public ValidationInfo areInsertedValuesValid() {
         ValidationInfo info = null;
+        for (String id : usedIDSet){
+            if (textFieldId.getText().equals(id)){
+                info = new ValidationInfo("ID must be unique! "+id+" is already used.");
+            }
+        }
         if (textFieldId.getText().isEmpty()){
             info = new ValidationInfo("Validator ID text field can't be empty");
         }
