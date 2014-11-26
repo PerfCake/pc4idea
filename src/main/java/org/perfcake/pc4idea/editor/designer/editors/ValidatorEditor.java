@@ -1,10 +1,13 @@
 package org.perfcake.pc4idea.editor.designer.editors;
 
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,6 +35,7 @@ public class ValidatorEditor extends AbstractEditor {
         comboBoxType.addItem("DictionaryValidator");
         comboBoxType.setSelectedIndex(-1);
         textFieldId = new JTextField();
+
         panelProperties = new PropertiesEditor();
 
         GroupLayout layout = new GroupLayout(this);
@@ -55,10 +59,39 @@ public class ValidatorEditor extends AbstractEditor {
                 .addGap(10)
                 .addComponent(panelProperties));
     }
-    public void setValidator(Scenario.Validation.Validator validator){
+    public void setValidator(Scenario.Validation.Validator validator, boolean isAttached){
         comboBoxType.setSelectedItem(validator.getClazz());
         textFieldId.setText(validator.getId());
         panelProperties.setListProperties(validator.getProperty());
+
+        if (isAttached){
+            textFieldId.getDocument().addDocumentListener(new DocumentListener() {
+                private boolean warningShown = false;
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    if (!warningShown){
+                        showWarning();
+                    }
+                }
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    if (!warningShown){
+                        showWarning();
+                    }
+                }
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    if (!warningShown){
+                        showWarning();
+                    }
+                }
+                private void showWarning(){
+                    warningShown = true;
+                    Messages.showWarningDialog("This Validator is attached to some message!\n" +
+                            "Any \"id\" changes will cause interruption of the attachment.", "Warning!");
+                }
+            });
+        }
     }
 
     public Scenario.Validation.Validator getValidator(){
@@ -78,7 +111,7 @@ public class ValidatorEditor extends AbstractEditor {
     public ValidationInfo areInsertedValuesValid() {
         ValidationInfo info = null;
         if (textFieldId.getText().isEmpty()){
-            info = new ValidationInfo("Text field can't be empty");
+            info = new ValidationInfo("Validator ID text field can't be empty");
         }
         if (comboBoxType.getSelectedIndex() == -1){
             info = new ValidationInfo("Validator type isn't selected");

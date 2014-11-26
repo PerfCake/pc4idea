@@ -1,5 +1,7 @@
 package org.perfcake.pc4idea.editor.designer.innercomponents;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.ui.Messages;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.designer.outercomponents.ValidationPanel;
@@ -20,6 +22,7 @@ import java.awt.event.MouseEvent;
 public class ValidatorComponent extends JPanel{
     private final Color validatorColor;
     private final int id;
+    private boolean isAttached;
 
     private ValidatorEditor validatorEditor;
     private Scenario.Validation.Validator validator;
@@ -32,9 +35,10 @@ public class ValidatorComponent extends JPanel{
 
     private Dimension validatorSize;
 
-    public ValidatorComponent(Color validationColor, int id, ValidationPanel.PanelValidators.ValidationEvent validationEvent){
+    public ValidatorComponent(Color validationColor, int id, boolean isAttached, ValidationPanel.PanelValidators.ValidationEvent validationEvent){
         this.validatorColor = validationColor;
         this.id = id;
+        this.isAttached = isAttached;
         this.validationEvent = validationEvent;
 
         this.setOpaque(false);
@@ -53,7 +57,7 @@ public class ValidatorComponent extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e) {
                 validatorEditor = new ValidatorEditor();
-                validatorEditor.setValidator(validator);
+                validatorEditor.setValidator(validator,isAttached);
                 ScenarioDialogEditor editor = new ScenarioDialogEditor(validatorEditor);
                 editor.show();
                 if (editor.getExitCode() == 0) {
@@ -66,6 +70,14 @@ public class ValidatorComponent extends JPanel{
         popupDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (isAttached){
+                    int result = Messages.showOkCancelDialog("This Validator is attached to some message!\n" +
+                            "Are you sure you want to delete this Validator?", "Warning!", AllIcons.General.Warning);
+                    if (result != 0){
+                        return;
+                    }
+                }
+
                 validationEvent.deleteValidator(id);
             }
         });
@@ -94,7 +106,7 @@ public class ValidatorComponent extends JPanel{
                 if (event.getButton() == MouseEvent.BUTTON1) {
                     if (event.getClickCount() == 2) {
                         validatorEditor = new ValidatorEditor();
-                        validatorEditor.setValidator(validator);
+                        validatorEditor.setValidator(validator,isAttached);
                         ScenarioDialogEditor editor = new ScenarioDialogEditor(validatorEditor);
                         editor.show();
                         if (editor.getExitCode() == 0) {

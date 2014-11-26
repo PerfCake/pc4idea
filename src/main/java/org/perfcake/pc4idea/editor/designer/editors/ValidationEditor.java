@@ -1,5 +1,7 @@
 package org.perfcake.pc4idea.editor.designer.editors;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.EditorTablePanel;
@@ -12,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,13 +22,15 @@ import java.util.List;
  * Date: 28.10.2014
  */
 public class ValidationEditor extends AbstractEditor {
+    private Set<String> attachedIDs;
     private JLabel labelEnabled;
     private JLabel labelFastForward;
     private JCheckBox checkBoxEnabled;
     private JCheckBox checkBoxFastForward;
     private EditorTablePanel tablePanelValidators;
 
-    public ValidationEditor(){
+    public ValidationEditor(Set<String> attachedIDs){
+        this.attachedIDs = attachedIDs;
         initComponents();
         this.setPreferredSize(new Dimension(350,0));
     }
@@ -42,8 +47,15 @@ public class ValidationEditor extends AbstractEditor {
                     if (e.getClickCount() == 2) {
                         int selectedRow = tablePanelValidators.getTable().getSelectedRow();
                         if (selectedRow >= 0) {
+                            Scenario.Validation.Validator validator = ((ValidatorsTableModel) tablePanelValidators.getTable().getModel()).getValidatorList().get(selectedRow);
+                            boolean isAttached = false;
+                            for (String id : attachedIDs){
+                                if (id.equals(validator.getId())){
+                                    isAttached = true;
+                                }
+                            }
                             ValidatorEditor validatorEditor = new ValidatorEditor();
-                            validatorEditor.setValidator(((ValidatorsTableModel) tablePanelValidators.getTable().getModel()).getValidatorList().get(selectedRow));
+                            validatorEditor.setValidator(validator,isAttached);
                             ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
                             dialog.show();
                             if (dialog.getExitCode() == 0) {
@@ -72,8 +84,15 @@ public class ValidationEditor extends AbstractEditor {
             public void buttonEditActionPerformed(ActionEvent e) {
                 int selectedRow = tablePanelValidators.getTable().getSelectedRow();
                 if (selectedRow >= 0) {
+                    Scenario.Validation.Validator validator = ((ValidatorsTableModel) tablePanelValidators.getTable().getModel()).getValidatorList().get(selectedRow);
+                    boolean isAttached = false;
+                    for (String id : attachedIDs){
+                        if (id.equals(validator.getId())){
+                            isAttached = true;
+                        }
+                    }
                     ValidatorEditor validatorEditor = new ValidatorEditor();
-                    validatorEditor.setValidator(((ValidatorsTableModel) tablePanelValidators.getTable().getModel()).getValidatorList().get(selectedRow));
+                    validatorEditor.setValidator(validator,isAttached);
                     ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
                     dialog.show();
                     if (dialog.getExitCode() == 0) {
@@ -87,6 +106,21 @@ public class ValidationEditor extends AbstractEditor {
             public void buttonDeleteActionPerformed(ActionEvent e) {
                 int selectedRow = tablePanelValidators.getTable().getSelectedRow();
                 if (selectedRow >= 0) {
+                    Scenario.Validation.Validator validator = ((ValidatorsTableModel) tablePanelValidators.getTable().getModel()).getValidatorList().get(selectedRow);
+                    boolean isAttached = false;
+                    for (String id : attachedIDs){
+                        if (id.equals(validator.getId())){
+                            isAttached = true;
+                        }
+                    }
+                    if (isAttached){
+                        int result = Messages.showOkCancelDialog("This Validator is attached to some message!\n"+
+                                "Are you sure you want to delete this Validator?","Warning!", AllIcons.General.Warning);
+                        if (result != 0){
+                            return;
+                        }
+                    }
+
                     ((ValidatorsTableModel)tablePanelValidators.getTable().getModel()).getValidatorList().remove(selectedRow);
                     tablePanelValidators.getTable().repaint();
                     tablePanelValidators.getTable().revalidate();
