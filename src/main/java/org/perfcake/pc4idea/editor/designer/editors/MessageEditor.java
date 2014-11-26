@@ -20,10 +20,10 @@ import java.util.List;
  */
 public class MessageEditor extends AbstractEditor {
     private JLabel labelMessageURI;
-    private JLabel labelMessageMultiplicity;
+    private JLabel labelMultiplicity;
     private JLabel labelMessageContent;
     private JTextField textFieldMessageURI;
-    private JTextField textFieldMessageMultiplicity;
+    private JTextField textFieldMultiplicity;
     private JTextField textFieldContent;
     private EditorTablePanel tablePanelHeaders;
     private PropertiesEditor panelProperties;
@@ -35,10 +35,10 @@ public class MessageEditor extends AbstractEditor {
 
     private void initComponents(){
         labelMessageURI = new JLabel("URI:");
-        labelMessageMultiplicity = new JLabel("Multiplicity:");
+        labelMultiplicity = new JLabel("Multiplicity:");
         labelMessageContent = new JLabel("Content:");
         textFieldMessageURI = new JTextField();
-        textFieldMessageMultiplicity = new JTextField();
+        textFieldMultiplicity = new JTextField();
         textFieldContent = new JTextField();
 
         tablePanelHeaders = new EditorTablePanel(new HeadersTableModel(new ArrayList<Header>())) {
@@ -111,8 +111,8 @@ public class MessageEditor extends AbstractEditor {
                         .addComponent(labelMessageURI, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
                         .addComponent(textFieldMessageURI))
                 .addGroup(layout.createSequentialGroup()
-                        .addComponent(labelMessageMultiplicity, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(textFieldMessageMultiplicity))
+                        .addComponent(labelMultiplicity, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(textFieldMultiplicity))
                 .addGroup(layout.createSequentialGroup()
                         .addComponent(labelMessageContent,GroupLayout.PREFERRED_SIZE,100,GroupLayout.PREFERRED_SIZE)
                         .addComponent(textFieldContent))
@@ -125,8 +125,8 @@ public class MessageEditor extends AbstractEditor {
                         .addComponent(textFieldMessageURI, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
                 .addGap(10)
                 .addGroup(layout.createParallelGroup()
-                        .addComponent(labelMessageMultiplicity, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(textFieldMessageMultiplicity, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(labelMultiplicity, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(textFieldMultiplicity, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
                 .addGap(10)
                 .addGroup(layout.createParallelGroup()
                         .addComponent(labelMessageContent, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
@@ -142,7 +142,7 @@ public class MessageEditor extends AbstractEditor {
 
     public void setMessage(Scenario.Messages.Message message){
         textFieldMessageURI.setText(message.getUri());
-        textFieldMessageMultiplicity.setText(message.getMultiplicity());
+        textFieldMultiplicity.setText(message.getMultiplicity());
         textFieldContent.setText(message.getContent());
        tablePanelHeaders.getTable().setModel(new HeadersTableModel(message.getHeader()));
         panelProperties.setListProperties(message.getProperty());
@@ -152,7 +152,8 @@ public class MessageEditor extends AbstractEditor {
     public Scenario.Messages.Message getMessage(){
         Scenario.Messages.Message newMessage = new Scenario.Messages.Message();
         newMessage.setUri(textFieldMessageURI.getText());
-        newMessage.setMultiplicity(textFieldMessageMultiplicity.getText());
+        String multiplicity = (textFieldMultiplicity.getText().isEmpty()) ? "1" : textFieldMultiplicity.getText();
+        newMessage.setMultiplicity(multiplicity);
         newMessage.setContent(textFieldContent.getText());
         newMessage.getHeader().addAll(((HeadersTableModel)tablePanelHeaders.getTable().getModel()).getHeaderList());
         newMessage.getProperty().addAll(panelProperties.getListProperties());
@@ -167,7 +168,7 @@ public class MessageEditor extends AbstractEditor {
 
     @Override
     public ValidationInfo areInsertedValuesValid() {
-//        return (textFieldMessageURI.getText().isEmpty() || textFieldMessageMultiplicity.getText().isEmpty()
+//        return (textFieldMessageURI.getText().isEmpty() || textFieldMultiplicity.getText().isEmpty()
 //                || textFieldContent.getText().isEmpty()) ?
 //                new ValidationInfo("Text fields can't be empty") : null;
         return null; /*TODO maybe not need to be filled*/
