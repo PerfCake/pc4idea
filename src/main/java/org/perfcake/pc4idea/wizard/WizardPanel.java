@@ -14,6 +14,8 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,7 +45,7 @@ class WizardPanel extends JPanel {
         editors.put(2, new SenderEditor());
         editors.put(3, new MessagesEditor());
         editors.put(4, new ReportingEditor());
-        editors.put(5, new ValidationEditor());
+        editors.put(5, new ValidationEditor(new TreeSet<String>()));
         editors.put(6, new PropertiesEditor());
 
         panelEditors = new JPanel(new GridLayout(1,1));
@@ -148,6 +150,39 @@ class WizardPanel extends JPanel {
 
     protected void selectEditor(int pointer){
         panelEditors.removeAll();
+
+        if (pointer == 5){
+            Set<String> attachedIDs = new TreeSet<>();
+            for (Scenario.Messages.Message message : ((MessagesEditor)editors.get(3)).getMessages().getMessage()){
+                for (Scenario.Messages.Message.ValidatorRef validatorRef : message.getValidatorRef()){
+                    attachedIDs.add(validatorRef.getId());
+                }
+            }
+            Scenario.Validation validation = ((ValidationEditor) editors.get(5)).getValidation();
+
+            Set<String> usedIDSet = new TreeSet<>();
+            for (Scenario.Validation.Validator validator : validation.getValidator()){
+                usedIDSet.add(validator.getId());
+            }
+
+            ValidationEditor editor = new ValidationEditor(attachedIDs);
+            editor.setValidation(validation,usedIDSet);
+            editors.put(5,editor);
+        }
+        if (pointer == 3){
+            Scenario.Messages messages = ((MessagesEditor) editors.get(3)).getMessages();
+
+            Set<String> usedIDSet = new TreeSet<>();
+            for (Scenario.Validation.Validator validator : ((ValidationEditor)editors.get(5)).getValidation().getValidator()){
+                usedIDSet.add(validator.getId());
+            }
+
+            MessagesEditor editor = new MessagesEditor();
+            editor.setMessages(messages,usedIDSet);
+
+            editors.put(3,editor);
+        }
+
         panelEditors.add(editors.get(pointer));
         wizardStepList.setSelectedIndex(pointer);
         panelEditors.revalidate();

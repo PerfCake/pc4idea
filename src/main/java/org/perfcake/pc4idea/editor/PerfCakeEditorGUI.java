@@ -304,18 +304,28 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
             panelGenerator.setComponentModel(scenarioModel.getGenerator());
             panelSender.setComponentModel(scenarioModel.getSender());
             panelReporting.setComponentModel(scenarioModel.getReporting());
-            panelMessages.setComponentModel(scenarioModel.getMessages());      /*TODO validatorsID for attach*/
+            panelMessages.setComponentModel(scenarioModel.getMessages());
 
-            Set<String> attachedIDs = new TreeSet<>();
-            for (Scenario.Messages.Message message : scenarioModel.getMessages().getMessage()){
-                for (Scenario.Messages.Message.ValidatorRef validatorRef : message.getValidatorRef()){
-                    attachedIDs.add(validatorRef.getId());
+            if (scenarioModel.getValidation() != null) {
+                if (scenarioModel.getMessages() != null) {
+                    Set<String> attachedIDs = new TreeSet<>();
+                    for (Scenario.Messages.Message message : scenarioModel.getMessages().getMessage()) {
+                        for (Scenario.Messages.Message.ValidatorRef validatorRef : message.getValidatorRef()) {
+                            attachedIDs.add(validatorRef.getId());
+                        }
+                    }
+                    ((ValidationPanel) panelValidation).setValidationModel(scenarioModel.getValidation(), attachedIDs);
+                } else {
+                    ((ValidationPanel) panelValidation).setValidationModel(scenarioModel.getValidation(), new TreeSet<String>());
                 }
             }
-            if (attachedIDs.isEmpty()){
-                panelValidation.setComponentModel(scenarioModel.getValidation());
-            } else {
-                ((ValidationPanel)panelValidation).setValidationModel(scenarioModel.getValidation(),attachedIDs);
+
+            if (scenarioModel.getMessages() != null) {
+                if (scenarioModel.getValidation() != null) {
+                    ((MessagesPanel) panelMessages).setValidatorIDSet(((ValidationPanel) panelValidation).getUsedIDSet());
+                } else {
+                    ((MessagesPanel) panelMessages).setValidatorIDSet(new TreeSet<String>());
+                }
             }
 
             panelProperties.setComponentModel(scenarioModel.getProperties());
@@ -431,24 +441,35 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         }
         public void saveMessages(){
             scenarioModel.setMessages((Scenario.Messages) panelMessages.getComponentModel());
-            /*TODO to MesValLayer*/
-            Set<String> attachedIDs = new TreeSet<>();
-            for (Scenario.Messages.Message message : scenarioModel.getMessages().getMessage()){
-                for (Scenario.Messages.Message.ValidatorRef validatorRef : message.getValidatorRef()){
-                    attachedIDs.add(validatorRef.getId());
+
+            if (scenarioModel.getValidation() != null) {
+                if (scenarioModel.getMessages() != null) {
+                    Set<String> attachedIDs = new TreeSet<>();
+                    for (Scenario.Messages.Message message : scenarioModel.getMessages().getMessage()) {
+                        for (Scenario.Messages.Message.ValidatorRef validatorRef : message.getValidatorRef()) {
+                            attachedIDs.add(validatorRef.getId());
+                        }
+                    }
+                    ((ValidationPanel) panelValidation).setValidationModel(scenarioModel.getValidation(), attachedIDs);
+                } else {
+                    ((ValidationPanel) panelValidation).setValidationModel(scenarioModel.getValidation(), new TreeSet<String>());
                 }
-            }
-            if (attachedIDs.isEmpty()){
-                panelValidation.setComponentModel(scenarioModel.getValidation());
-            } else {
-                ((ValidationPanel)panelValidation).setValidationModel(scenarioModel.getValidation(),attachedIDs);
             }
 
             saveScenario("Messages modification");
         }
         public void saveValidation(){
-            scenarioModel.setValidation((Scenario.Validation) panelValidation.getComponentModel());        /*TODO mess. apply ids for att.*/
+            scenarioModel.setValidation((Scenario.Validation) panelValidation.getComponentModel());
 
+            if (scenarioModel.getMessages() != null) {
+                if (scenarioModel.getValidation() != null) {
+                    ((MessagesPanel) panelMessages).setValidatorIDSet(((ValidationPanel) panelValidation).getUsedIDSet());
+                    //if attached validator is deleted, validatorRef will be removed, so messages model needs to be updated
+                    scenarioModel.setMessages((Scenario.Messages) panelMessages.getComponentModel());
+                } else {
+                    ((MessagesPanel) panelMessages).setValidatorIDSet(new TreeSet<String>());
+                }
+            }
 
             saveScenario("Validation modification");
         }
