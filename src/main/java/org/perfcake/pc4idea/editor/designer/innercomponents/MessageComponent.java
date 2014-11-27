@@ -2,6 +2,8 @@ package org.perfcake.pc4idea.editor.designer.innercomponents;
 
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
+import org.perfcake.pc4idea.editor.designer.common.ScenarioImportHandler;
+import org.perfcake.pc4idea.editor.designer.editors.AttachValidatorEditor;
 import org.perfcake.pc4idea.editor.designer.editors.MessageEditor;
 import org.perfcake.pc4idea.editor.designer.outercomponents.MessagesPanel;
 
@@ -12,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created with IntelliJ IDEA.
@@ -121,6 +124,34 @@ public class MessageComponent extends JPanel{
             @Override
             public void mouseReleased(MouseEvent e){
                 ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
+            }
+        });
+
+        this.setTransferHandler(new ScenarioImportHandler() {
+            @Override
+            public void performImport(String transferredData) {
+                if (transferredData.equals("Attach validator")){
+                    Set<String> notAttachedID = new TreeSet<>();
+                    for (String id : usedValidatorIDSet){
+                        boolean isRef = false;
+                        for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()){
+                            if(id.equals(ref.getId())){
+                                isRef = true;
+                            }
+                        }
+                        if (!isRef){
+                            notAttachedID.add(id);
+                        }
+                    }
+                    AttachValidatorEditor attachValidatorEditor = new AttachValidatorEditor(notAttachedID);
+                    ScenarioDialogEditor dialog = new ScenarioDialogEditor(attachValidatorEditor);
+                    dialog.show();
+                    if (dialog.getExitCode() == 0){
+                        message.getValidatorRef().add(attachValidatorEditor.getAttachedValidator());
+                        setMessage(message);
+                        messagesEvent.saveMessage(id);
+                    }
+                }
             }
         });
     }
