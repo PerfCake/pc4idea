@@ -117,7 +117,7 @@ public class ValidatorEditor extends AbstractEditor {
         ValidationInfo info = null;
         for (String id : usedIDSet){
             if (textFieldId.getText().equals(id)){
-                info = new ValidationInfo("ID must be unique! "+id+" is already used.");
+                info = new ValidationInfo("ID must be unique! \""+id+"\" is already used.");
             }
         }
         if (textFieldId.getText().isEmpty()){
