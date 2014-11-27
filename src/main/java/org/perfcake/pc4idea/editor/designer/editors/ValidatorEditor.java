@@ -66,7 +66,9 @@ public class ValidatorEditor extends AbstractEditor {
     public void setValidator(Scenario.Validation.Validator validator, boolean isAttached){
         comboBoxType.setSelectedItem(validator.getClazz());
         textFieldId.setText(validator.getId());
-        usedIDSet.remove(validator.getId());
+        if (validator.getId() != null){
+            usedIDSet.remove(validator.getId());
+        }
         panelProperties.setListProperties(validator.getProperty());
 
         if (isAttached){
@@ -97,6 +99,7 @@ public class ValidatorEditor extends AbstractEditor {
                 }
             });
         }
+
     }
 
     public Scenario.Validation.Validator getValidator(){

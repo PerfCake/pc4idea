@@ -297,7 +297,7 @@ public class MessagesPanel extends AbstractPanel {
             for (MessageComponent messageComponent : messageComponentList){
                 if (messageComponent.getMessage().equals(message)){
                     Point anchorPoint = messageComponent.getLocation();
-                    anchorPoint.setLocation(anchorPoint.getX()+this.getX()+4+messageComponent.getWidth()/2,anchorPoint.getY()+this.getY()+36);
+                    anchorPoint.setLocation(anchorPoint.getX()+this.getX()+4+messageComponent.getWidth()/2,anchorPoint.getY()+this.getY()+37);
                     return anchorPoint;
                 }
             }
