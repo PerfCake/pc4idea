@@ -90,6 +90,12 @@ public class ValidationPanel extends AbstractPanel {
         return usedIDSet;
     }
 
+    public Point getValidatorAnchorPoint(String validatorID){
+        Point anchorPoint = panelValidators.getValidatorAnchorPoint(validatorID);
+        anchorPoint.setLocation(anchorPoint.getX()+this.getX(),anchorPoint.getY()+this.getY());
+        return anchorPoint;
+    }
+
     @Override
     protected void performImport(String transferredData){
         if (transferredData.contains("Validator")){
@@ -297,6 +303,17 @@ public class ValidationPanel extends AbstractPanel {
                 }
                 validatorsRowCount = (expectedRows != validatorsRowCount) ? expectedRows : validatorsRowCount;
             }
+        }
+
+        private Point getValidatorAnchorPoint(String validatorID){
+            for (ValidatorComponent validatorComponent : validatorComponentList){
+                if (validatorComponent.getValidator().getId().equals(validatorID)){
+                    Point anchorPoint = validatorComponent.getLocation();
+                    anchorPoint.setLocation(anchorPoint.getX()+this.getX()+4+validatorComponent.getWidth()/2,anchorPoint.getY()+this.getY()+4);
+                    return anchorPoint;
+                }
+            }
+            return null;
         }
 
         @Override

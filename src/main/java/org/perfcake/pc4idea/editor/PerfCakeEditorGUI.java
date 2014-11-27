@@ -71,6 +71,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
     private Scenario scenarioModel;
 
     private boolean documentModifiedInSource;
+    private boolean savingScenario;
 
     private JTabbedPane tabbedPane;
     private JComponent tabSource;
@@ -104,6 +105,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         scenarioDocumentListener = new ScenarioDocumentListener();
         document.addDocumentListener(scenarioDocumentListener);
         documentModifiedInSource = false;
+        savingScenario = false;
 
         //psiFile = PsiManager.getInstance(project).findFile(file);
 
@@ -257,31 +259,38 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         });
 
         panelDesignerScenario.setBackground(EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground());
-        GroupLayout panelPCCompsDesignerLayout = new GroupLayout(panelDesignerScenario);
-        panelDesignerScenario.setLayout(panelPCCompsDesignerLayout);
-        panelPCCompsDesignerLayout.setHorizontalGroup(
-                panelPCCompsDesignerLayout.createParallelGroup()
+        GroupLayout panelDesignerScenarioLayout= new GroupLayout(panelDesignerScenario);
+        panelDesignerScenario.setLayout(panelDesignerScenarioLayout);
+        panelDesignerScenarioLayout.setHorizontalGroup(
+                panelDesignerScenarioLayout.createParallelGroup()
                         .addComponent(panelGenerator)
                         .addComponent(panelSender)
-                        .addGroup(panelPCCompsDesignerLayout.createSequentialGroup()
-                                .addGroup(panelPCCompsDesignerLayout.createParallelGroup()
+                        .addGroup(panelDesignerScenarioLayout.createSequentialGroup()
+                                .addGroup(panelDesignerScenarioLayout.createParallelGroup()
                                         .addComponent(panelMessages)
                                         .addComponent(panelValidation))
                                 .addComponent(panelReporting))
                         .addComponent(panelProperties)
         );
-        panelPCCompsDesignerLayout.setVerticalGroup(
-                panelPCCompsDesignerLayout.createSequentialGroup()
+        panelDesignerScenarioLayout.setVerticalGroup(
+                panelDesignerScenarioLayout.createSequentialGroup()
                         .addComponent(panelGenerator)
                         .addComponent(panelSender)
-                        .addGroup(panelPCCompsDesignerLayout.createParallelGroup()
-                                .addGroup(panelPCCompsDesignerLayout.createSequentialGroup()
+                        .addGroup(panelDesignerScenarioLayout.createParallelGroup()
+                                .addGroup(panelDesignerScenarioLayout.createSequentialGroup()
                                         .addComponent(panelMessages)
                                         .addComponent(panelValidation))
                                 .addComponent(panelReporting))
                         .addComponent(panelProperties)
-                        //.addContainerGap(0, Short.MAX_VALUE) /*TODO decide*/
+                //.addContainerGap(0, Short.MAX_VALUE) /*TODO decide*/
         );
+
+        layerDesigner.getSecondComponent().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                repaintLayerDependencies();
+            }
+        });
     }
 
     private void loadScenario(){
@@ -331,8 +340,26 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
             panelProperties.setComponentModel(scenarioModel.getProperties());
 
             /*TODO for testing purpose*/System.out.println("TEST LOG: designer was set");
+            repaintLayerDependencies();
             layerDesigner.setVisible(true);
             layerDependencies.setVisible(true);
+        }
+    }
+
+    private void repaintLayerDependencies(){
+        layerDependencies.removeAllDependencyLines();
+
+        System.out.println(scrollPaneDesignerScenario.getVerticalScrollBar().getValue()); /*TODO to fit scroll pane view*/
+
+        for (Scenario.Messages.Message message : scenarioModel.getMessages().getMessage()){
+            Point messagePoint = ((MessagesPanel)panelMessages).getMessageAnchorPoint(message);
+            messagePoint.setLocation(messagePoint.getX()+scrollPaneDesignerScenario.getX(),messagePoint.getY()+scrollPaneDesignerScenario.getY());
+
+            for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()){
+                Point validatorPoint = ((ValidationPanel)panelValidation).getValidatorAnchorPoint(ref.getId());
+                validatorPoint.setLocation(validatorPoint.getX()+scrollPaneDesignerScenario.getX(),validatorPoint.getY()+scrollPaneDesignerScenario.getY());
+                layerDependencies.addDependencyLine(messagePoint,validatorPoint);
+            }
         }
     }
 
@@ -355,8 +382,6 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         /*TODO maven cant find method*///EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
 
     }
-
-    private boolean savingScenario = false;
 
     private final class ScenarioDocumentListener extends DocumentAdapter {
         @Override
@@ -482,7 +507,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                 /*TODO psi rewrte - to doc or doc change*///final Document doc = PsiDocumentManager.getInstance(project).getCachedDocument(psiFile);
 
             /*TODO uklada do undo zasobnika ale neaktivuje undo menu, az source to aktivuje...*/
-            /*TODO undo redo problem - backspace/reload config*/
+            /*TODO undo redo problem - backspace/reload config- (undo last config not apply to doc.)*/
             CommandProcessor.getInstance().executeCommand(project, new Runnable() {
                 @Override
                 public void run() {
@@ -527,6 +552,14 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                     });
                 }
             }, source, null, UndoConfirmationPolicy.DEFAULT, document);
+
+            ApplicationManager.getApplication().invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    /*TODO maybe if model != null*/
+                    repaintLayerDependencies();
+                }
+            });
         }
     }
 

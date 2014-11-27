@@ -93,6 +93,12 @@ public class MessagesPanel extends AbstractPanel {
         }
     }
 
+    public Point getMessageAnchorPoint(Scenario.Messages.Message message){
+        Point anchorPoint = panelMessages.getMessageAnchorPoint(message);
+        anchorPoint.setLocation(anchorPoint.getX()+this.getX(),anchorPoint.getY()+this.getY());
+        return anchorPoint;
+    }
+
     @Override
     protected void performImport(String transferredData){
         if (transferredData.equals("Message")){
@@ -285,6 +291,17 @@ public class MessagesPanel extends AbstractPanel {
                 }
                 messagesRowCount = (expectedRows != messagesRowCount) ? expectedRows : messagesRowCount;
             }
+        }
+
+        private Point getMessageAnchorPoint(Scenario.Messages.Message message){
+            for (MessageComponent messageComponent : messageComponentList){
+                if (messageComponent.getMessage().equals(message)){
+                    Point anchorPoint = messageComponent.getLocation();
+                    anchorPoint.setLocation(anchorPoint.getX()+this.getX()+4+messageComponent.getWidth()/2,anchorPoint.getY()+this.getY()+36);
+                    return anchorPoint;
+                }
+            }
+            return null;
         }
 
         @Override
