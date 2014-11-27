@@ -44,6 +44,8 @@ import javax.xml.validation.SchemaFactory;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
@@ -291,6 +293,18 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                 repaintLayerDependencies();
             }
         });
+        scrollPaneDesignerScenario.getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+            @Override
+            public void adjustmentValueChanged(AdjustmentEvent e) {
+                repaintLayerDependencies();
+            }
+        });
+        scrollPaneDesignerScenario.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+            @Override
+            public void adjustmentValueChanged(AdjustmentEvent e) {
+                repaintLayerDependencies();
+            }
+        });
     }
 
     private void loadScenario(){
@@ -349,16 +363,20 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
     private void repaintLayerDependencies(){
         layerDependencies.removeAllDependencyLines();
 
-        System.out.println(scrollPaneDesignerScenario.getVerticalScrollBar().getValue()); /*TODO to fit scroll pane view*/
+        int adjustmentX = scrollPaneDesignerScenario.getX()-scrollPaneDesignerScenario.getHorizontalScrollBar().getValue();
+        int adjustmentY = scrollPaneDesignerScenario.getY()-scrollPaneDesignerScenario.getVerticalScrollBar().getValue();
 
-        for (Scenario.Messages.Message message : scenarioModel.getMessages().getMessage()){
-            Point messagePoint = ((MessagesPanel)panelMessages).getMessageAnchorPoint(message);
-            messagePoint.setLocation(messagePoint.getX()+scrollPaneDesignerScenario.getX(),messagePoint.getY()+scrollPaneDesignerScenario.getY());
+        if (scenarioModel.getMessages() != null && scenarioModel.getValidation() != null) {
+            for (Scenario.Messages.Message message : scenarioModel.getMessages().getMessage()) {
+                Point messagePoint = ((MessagesPanel) panelMessages).getMessageAnchorPoint(message);
+                messagePoint.setLocation(messagePoint.getX() + adjustmentX, messagePoint.getY() + adjustmentY);
 
-            for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()){
-                Point validatorPoint = ((ValidationPanel)panelValidation).getValidatorAnchorPoint(ref.getId());
-                validatorPoint.setLocation(validatorPoint.getX()+scrollPaneDesignerScenario.getX(),validatorPoint.getY()+scrollPaneDesignerScenario.getY());
-                layerDependencies.addDependencyLine(messagePoint,validatorPoint);
+                for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()) {
+                    Point validatorPoint = ((ValidationPanel) panelValidation).getValidatorAnchorPoint(ref.getId());
+                    validatorPoint.setLocation(validatorPoint.getX() + adjustmentX, validatorPoint.getY() + adjustmentY);
+
+                    layerDependencies.addDependencyLine(messagePoint, validatorPoint);
+                }
             }
         }
     }
