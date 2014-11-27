@@ -293,7 +293,7 @@ public class MessageEditor extends AbstractEditor {
         }
 
         private void initComponents(){
-            tableAttachedValidators = new JBTable();
+            tableAttachedValidators = new JBTable(new AttachedValidatorsTableModel(new ArrayList<Scenario.Messages.Message.ValidatorRef>()));
             scrollPaneTableAttachedValidators = ScrollPaneFactory.createScrollPane(tableAttachedValidators);
             ((DefaultTableCellRenderer)tableAttachedValidators.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.LEFT);
 
