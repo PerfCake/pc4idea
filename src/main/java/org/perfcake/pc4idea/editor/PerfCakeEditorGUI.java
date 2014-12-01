@@ -162,6 +162,15 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                         FileDocumentManager.getInstance().saveDocument(document);
                         loadScenario();
                         setDesignerComponents();
+
+                        ApplicationManager.getApplication().invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (scenarioModel != null) {
+                                    repaintLayerDependencies();
+                                }
+                            }
+                        });
                     }
                 }
                 if (tabbedPane.getSelectedIndex() == 1) {
@@ -574,8 +583,9 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
             ApplicationManager.getApplication().invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    /*TODO maybe if model != null*/
-                    repaintLayerDependencies();
+                    if (scenarioModel != null) {
+                        repaintLayerDependencies();
+                    }
                 }
             });
         }
