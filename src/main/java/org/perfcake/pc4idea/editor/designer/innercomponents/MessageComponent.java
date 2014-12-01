@@ -167,9 +167,13 @@ public class MessageComponent extends JPanel{
 
     public void setMessage(Scenario.Messages.Message m) {
         message = m;
-        messageAttr.setText(message.getUri());/*TODO mozny aj druhy typ message!!*/
-        FontMetrics fontMetrics = messageAttr.getFontMetrics(messageAttr.getFont());
-        messageSize.width = fontMetrics.stringWidth(messageAttr.getText()) + 30;
+        messageAttr.setText(message.getUri());
+        if (messageAttr.getText() == null){
+            messageSize.width = 40;
+        } else {
+            FontMetrics fontMetrics = messageAttr.getFontMetrics(messageAttr.getFont());
+            messageSize.width = fontMetrics.stringWidth(messageAttr.getText()) + 30;
+        }
     }
 
     public Scenario.Messages.Message getMessage() {

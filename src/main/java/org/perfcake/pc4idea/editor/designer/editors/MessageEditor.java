@@ -1,5 +1,7 @@
 package org.perfcake.pc4idea.editor.designer.editors;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.table.JBTable;
@@ -25,7 +27,6 @@ import java.util.TreeSet;
  * Date: 28.10.2014
  */
 public class MessageEditor extends AbstractEditor {
-
     private JLabel labelMessageURI;
     private JLabel labelMultiplicity;
     private JLabel labelMessageContent;
@@ -36,7 +37,12 @@ public class MessageEditor extends AbstractEditor {
     private PropertiesEditor panelProperties;
     private AttachedValidatorsEditor panelAttachedValidators;
 
+    private boolean nullTextFieldsWarningShowed;
+    private boolean ambiguousWarningShowed;
+
     public MessageEditor(Set<String> usedValidatorIDSet){
+        nullTextFieldsWarningShowed = false;
+        ambiguousWarningShowed  = false;
         initComponents();
         panelAttachedValidators.setUsedValidatorIDSet(usedValidatorIDSet);
     }
@@ -45,9 +51,9 @@ public class MessageEditor extends AbstractEditor {
         labelMessageURI = new JLabel("URI:");
         labelMultiplicity = new JLabel("Multiplicity:");
         labelMessageContent = new JLabel("Content:");
-        textFieldMessageURI = new JTextField();
-        textFieldMultiplicity = new JTextField();
-        textFieldContent = new JTextField();
+        textFieldMessageURI = new JTextField(null);
+        textFieldMultiplicity = new JTextField(null);
+        textFieldContent = new JTextField(null);
 
         tablePanelHeaders = new EditorTablePanel(new HeadersTableModel(new ArrayList<Header>())) {
             @Override
@@ -159,10 +165,22 @@ public class MessageEditor extends AbstractEditor {
 
     public Scenario.Messages.Message getMessage(){
         Scenario.Messages.Message newMessage = new Scenario.Messages.Message();
-        newMessage.setUri(textFieldMessageURI.getText());
-        String multiplicity = (textFieldMultiplicity.getText().isEmpty()) ? "1" : textFieldMultiplicity.getText();
-        newMessage.setMultiplicity(multiplicity);
-        newMessage.setContent(textFieldContent.getText());
+        boolean uriIsEmpty = (textFieldMessageURI.getText().isEmpty() || textFieldMessageURI.getText().trim().isEmpty());
+        newMessage.setUri(uriIsEmpty ? null : textFieldMessageURI.getText());
+        boolean multiplicityIsEmpty = (textFieldMultiplicity.getText().isEmpty() || textFieldMultiplicity.getText().trim().isEmpty());
+        newMessage.setMultiplicity(multiplicityIsEmpty ? "1" : textFieldMultiplicity.getText());
+
+        boolean contentIsEmpty = (textFieldContent.getText().isEmpty() || textFieldContent.getText().trim().isEmpty());
+        if (contentIsEmpty){
+            if (uriIsEmpty){
+                newMessage.setContent("");
+            } else {
+                newMessage.setContent(null);
+            }
+        } else {
+            newMessage.setContent(textFieldContent.getText());
+        }
+
         newMessage.getHeader().addAll(((HeadersTableModel)tablePanelHeaders.getTable().getModel()).getHeaderList());
         newMessage.getProperty().addAll(panelProperties.getListProperties());
         newMessage.getValidatorRef().addAll(panelAttachedValidators.getValidatorRefs());
@@ -176,10 +194,41 @@ public class MessageEditor extends AbstractEditor {
 
     @Override
     public ValidationInfo areInsertedValuesValid() {
-//        return (textFieldMessageURI.getText().isEmpty() || textFieldMultiplicity.getText().isEmpty()
-//                || textFieldContent.getText().isEmpty()) ?
-//                new ValidationInfo("Text fields can't be empty") : null;
-        return null; /*TODO maybe not need to be filled*/
+        ValidationInfo info = null;
+        boolean uriIsEmpty = (textFieldMessageURI.getText().isEmpty() || textFieldMessageURI.getText().trim().isEmpty());      /*TODO white space?*/
+        boolean contentIsEmpty = (textFieldContent.getText().isEmpty() || textFieldContent.getText().trim().isEmpty());
+
+        if (uriIsEmpty && contentIsEmpty){
+            if (!nullTextFieldsWarningShowed) {
+                int result = Messages.showYesNoDialog("Both URI and Content are empty!\n" +
+                        "This will lead to message specified\n" +
+                        "by content with value \"\" (empty string).\n\n" +
+                        "Would you like to continue?", "Empty Text Fields!",AllIcons.General.QuestionDialog);
+                nullTextFieldsWarningShowed = true;
+                if (result != 0) {
+                    info = new ValidationInfo("OK Interrupted...");
+                }
+            }
+        }
+
+        if (!uriIsEmpty && contentIsEmpty){
+            if (!ambiguousWarningShowed){
+                int result = Messages.showYesNoDialog("URI is set and Content is empty.\n" +
+                        "While PerfCake prioritizes Content and\n" +
+                        "Content with empty string value is valid,\n" +
+                        "this configuration is ambiguous.\n" +
+                        "If you continue, Content will be set to null\n " +
+                        "and URI will be used.\n\n" +
+                        "Would you like to continue?\n\n" +
+                        "Hint: If you want to use Content with empty string value,\n"+
+                        "please remove URI value.", "Input Ambiguous", AllIcons.General.QuestionDialog);
+                ambiguousWarningShowed = true;
+                if (result != 0) {
+                    info = new ValidationInfo("OK Interrupted...");
+                }
+            }
+        }
+        return info;
     }
 
     private class HeadersTableModel extends AbstractTableModel {
