@@ -2,6 +2,8 @@ package org.perfcake.pc4idea.editor.designer.innercomponents;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,14 +13,34 @@ import java.awt.*;
 public class EnabledComponent extends JComponent {
     private final Color color;
     private boolean state;
+    private DestinationComponent.DestinationEvent destinationEvent;
+    private ReporterComponent.ReporterEvent reporterEvent;
 
     private Dimension enabledSize;
 
-    public EnabledComponent(Color color){
+    public EnabledComponent(Color color, DestinationComponent.DestinationEvent destEvent, ReporterComponent.ReporterEvent repEvent){
         this.color = color;
+        this.destinationEvent = destEvent;
+        this.reporterEvent = repEvent;
         state = true;
 
         enabledSize = new Dimension(15,20);
+
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2){
+                    state = !state;
+                    EnabledComponent.this.repaint();
+                    if (destinationEvent != null){
+                        destinationEvent.saveEnabled(state);
+                    }
+                    if (reporterEvent != null){
+                        reporterEvent.saveEnabled(state);
+                    }
+                }
+            }
+        });
     }
 
     @Override
