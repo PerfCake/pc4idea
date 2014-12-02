@@ -203,7 +203,7 @@ public class MessageEditor extends AbstractEditor {
                 int result = Messages.showYesNoDialog("Both URI and Content are empty!\n" +
                         "This will lead to message specified\n" +
                         "by content with value \"\" (empty string).\n\n" +
-                        "Would you like to continue?", "Empty Text Fields!",AllIcons.General.QuestionDialog);
+                        "Would you like to continue?", "Empty Text Fields!", AllIcons.General.QuestionDialog);
                 nullTextFieldsWarningShowed = true;
                 if (result != 0) {
                     info = new ValidationInfo("OK Interrupted...");
@@ -220,7 +220,7 @@ public class MessageEditor extends AbstractEditor {
                         "If you continue, Content will be set to null\n " +
                         "and URI will be used.\n\n" +
                         "Would you like to continue?\n\n" +
-                        "Hint: If you want to use Content with empty string value,\n"+
+                        "Hint: If you want to use Content with empty string value,\n" +
                         "please remove URI value.", "Input Ambiguous", AllIcons.General.QuestionDialog);
                 ambiguousWarningShowed = true;
                 if (result != 0) {
@@ -269,65 +269,6 @@ public class MessageEditor extends AbstractEditor {
         }
     }
 
-    private class HeaderEditor extends AbstractEditor {
-        private JLabel labelHeaderName;
-        private JLabel labelHeaderValue;
-        private JTextField textFieldHeaderName;
-        private JTextField textFieldHeaderValue;
-
-        private HeaderEditor(){
-            initComponents();
-        }
-
-        private void initComponents(){
-            labelHeaderName  = new JLabel("Name:");
-            labelHeaderValue = new JLabel("Value:");
-            textFieldHeaderName = new JTextField();
-            textFieldHeaderValue = new JTextField();
-
-            GroupLayout layout = new GroupLayout(this);
-            this.setLayout(layout);
-            layout.setHorizontalGroup(layout.createParallelGroup()
-                    .addGroup(layout.createSequentialGroup()
-                            .addComponent(labelHeaderName,GroupLayout.PREFERRED_SIZE,50,GroupLayout.PREFERRED_SIZE)
-                            .addComponent(textFieldHeaderName))
-                    .addGroup(layout.createSequentialGroup()
-                            .addComponent(labelHeaderValue,GroupLayout.PREFERRED_SIZE,50,GroupLayout.PREFERRED_SIZE)
-                            .addComponent(textFieldHeaderValue)));
-            layout.setVerticalGroup(layout.createSequentialGroup()
-                    .addGroup(layout.createParallelGroup()
-                            .addComponent(labelHeaderName, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(textFieldHeaderName, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
-                    .addGap(10)
-                    .addGroup(layout.createParallelGroup()
-                            .addComponent(labelHeaderValue, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(textFieldHeaderValue, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)));
-        }
-
-        private void setHeader(Header header){
-            textFieldHeaderName.setText(header.getName());
-            textFieldHeaderValue.setText(header.getValue());
-        }
-
-        private Header getHeader(){
-            Header newHeader = new Header();
-            newHeader.setName(textFieldHeaderName.getText());
-            newHeader.setValue(textFieldHeaderValue.getText());
-            return newHeader;
-        }
-
-        @Override
-        public String getTitle(){
-            return "Header Editor";
-        }
-
-        @Override
-        public ValidationInfo areInsertedValuesValid() {
-            return (textFieldHeaderName.getText().isEmpty() || textFieldHeaderValue.getText().isEmpty()) ?
-                    new ValidationInfo("Text fields can't be empty") : null;
-        }
-    }
-
     private class AttachedValidatorsEditor extends JPanel {
         Set<String> usedValidatorIDSet;
 
@@ -366,7 +307,7 @@ public class MessageEditor extends AbstractEditor {
                     ScenarioDialogEditor dialog = new ScenarioDialogEditor(attachValidatorEditor);
                     dialog.show();
                     if (dialog.getExitCode() == 0) {
-                        Scenario.Messages.Message.ValidatorRef validatorRef = attachValidatorEditor.getAttachedValidator();
+                        Scenario.Messages.Message.ValidatorRef validatorRef = attachValidatorEditor.getAttachedValidatorRef();
                         ((AttachedValidatorsTableModel)tableAttachedValidators.getModel()).getValidatorRefList().add(validatorRef);
                         tableAttachedValidators.repaint();
                         tableAttachedValidators.revalidate();
