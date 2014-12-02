@@ -131,6 +131,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         this.setLayout(layout);
         this.add(tabbedPane,new GridLayout(1,1));
 
+        repaintLayerDependencies();/*TODO not repainting after initialization*/
     }
 
     private void initComponents() {
@@ -363,7 +364,6 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
             panelProperties.setComponentModel(scenarioModel.getProperties());
 
             /*TODO for testing purpose*/System.out.println("TEST LOG: designer was set");
-            repaintLayerDependencies();
             layerDesigner.setVisible(true);
             layerDependencies.setVisible(true);
         }
@@ -427,7 +427,24 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                     FileDocumentManager.getInstance().saveDocument(document);
                     loadScenario();
                     setDesignerComponents();
+                    ApplicationManager.getApplication().invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (scenarioModel != null) {
+                                repaintLayerDependencies();
+                            }
+                        }
+                    });
                 }
+
+                ApplicationManager.getApplication().invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (scenarioModel != null) {
+                            repaintLayerDependencies();
+                        }
+                    }
+                });
             }
         }
     }
@@ -580,14 +597,6 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                 }
             }, source, null, UndoConfirmationPolicy.DEFAULT, document);
 
-            ApplicationManager.getApplication().invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    if (scenarioModel != null) {
-                        repaintLayerDependencies();
-                    }
-                }
-            });
         }
     }
 
