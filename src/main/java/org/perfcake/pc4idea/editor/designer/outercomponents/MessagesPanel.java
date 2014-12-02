@@ -11,6 +11,8 @@ import org.perfcake.pc4idea.editor.designer.innercomponents.MessageComponent;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
@@ -100,6 +102,44 @@ public class MessagesPanel extends AbstractPanel {
     }
 
     @Override
+    protected List<JMenuItem> getPopupMenuItems(){
+        List<JMenuItem> menuItems = new ArrayList<>();
+
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ScenarioDialogEditor editor = new ScenarioDialogEditor(getEditorPanel());
+                editor.show();
+                if (editor.getExitCode() == 0) {
+                    applyChanges();
+                }
+            }
+        });
+        menuItems.add(itemOpenEditor);
+
+        JMenuItem itemAddMessage = new JMenuItem("Add Message");
+        itemAddMessage.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MessageEditor messageEditor = new MessageEditor(validatorIDSet);
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Scenario.Messages.Message message = messageEditor.getMessage();
+                    messages.getMessage().add(message);
+                    MessagesPanel.this.setComponentModel(messages);
+                    scenarioEvent.saveMessages();
+                    /*TODO open dialog to create file if needed*/
+                }
+            }
+        });
+        menuItems.add(itemAddMessage);
+
+        return menuItems;
+    }
+
+    @Override
     protected void performImport(String transferredData){
         if (transferredData.equals("Message")){
             MessageEditor messageEditor = new MessageEditor(validatorIDSet);
@@ -109,6 +149,7 @@ public class MessagesPanel extends AbstractPanel {
                 messages.getMessage().add(messageEditor.getMessage());
                 setComponentModel(messages);
                 scenarioEvent.saveMessages();
+                /*TODO open dialog to create file if needed*/
             }
         }
     }

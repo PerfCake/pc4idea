@@ -1,5 +1,7 @@
 package org.perfcake.pc4idea.editor.designer.innercomponents;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.ui.Messages;
 import org.perfcake.model.Property;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.designer.outercomponents.PropertiesPanel;
@@ -29,8 +31,6 @@ public class PropertyComponent extends JPanel {
 
     private JLabel propertyAttr;
     private JPopupMenu popupMenu;
-    private JMenuItem popupOpenEditor;
-    private JMenuItem popupDelete;
 
     private Dimension propertySize;
 
@@ -64,35 +64,45 @@ public class PropertyComponent extends JPanel {
 
         propertySize = new Dimension(40, 40);
 
-        popupOpenEditor = new JMenuItem("Open Editor");
-        popupOpenEditor.addActionListener(new ActionListener() {
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 propertyEditor = new PropertyEditor();
                 propertyEditor.setProperty(property);
-                ScenarioDialogEditor editor = new ScenarioDialogEditor(propertyEditor);
-                editor.show();
-                if (editor.getExitCode() == 0) {
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
                     setProperty(propertyEditor.getProperty());
-                    if (senderEvent != null) {senderEvent.saveProperty(id);}
-                    if (propertiesEvent != null) {propertiesEvent.saveProperty(id);}
+                    if (senderEvent != null) {
+                        senderEvent.saveProperty(id);
+                    }
+                    if (propertiesEvent != null) {
+                        propertiesEvent.saveProperty(id);
+                    }
                 }
             }
         });
-        popupDelete = new JMenuItem("Delete");
-        popupDelete.addActionListener(new ActionListener() {
+        JMenuItem itemDelete = new JMenuItem("Delete");
+        itemDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (senderEvent != null) {senderEvent.deleteProperty(id);}
-                if (propertiesEvent != null) {propertiesEvent.deleteProperty(id);}
+                int result = Messages.showYesNoDialog("Are you sure you want to delete this Property?", "Delete Property", AllIcons.Actions.Delete);
+                if (result == 0) {
+                    if (senderEvent != null) {
+                        senderEvent.deleteProperty(id);
+                    }
+                    if (propertiesEvent != null) {
+                        propertiesEvent.deleteProperty(id);
+                    }
+                }
             }
         });
 
         popupMenu = new JPopupMenu();
-        popupMenu.add(popupOpenEditor);
+        popupMenu.add(itemOpenEditor);
         popupMenu.add(new JPopupMenu.Separator());
-        popupMenu.add(popupDelete);
-        /*TODO dalsie?*/
+        popupMenu.add(itemDelete);
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -113,9 +123,9 @@ public class PropertyComponent extends JPanel {
                     if (event.getClickCount() == 2) {
                         propertyEditor = new PropertyEditor();
                         propertyEditor.setProperty(property);
-                        ScenarioDialogEditor editor = new ScenarioDialogEditor(propertyEditor);
-                        editor.show();
-                        if (editor.getExitCode() == 0) {
+                        ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+                        dialog.show();
+                        if (dialog.getExitCode() == 0) {
                             setProperty(propertyEditor.getProperty());
                             if (senderEvent != null) {senderEvent.saveProperty(id);}
                             if (propertiesEvent != null) {propertiesEvent.saveProperty(id);}

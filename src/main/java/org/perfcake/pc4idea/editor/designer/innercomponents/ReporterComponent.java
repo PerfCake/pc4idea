@@ -1,10 +1,14 @@
 package org.perfcake.pc4idea.editor.designer.innercomponents;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.ui.Messages;
+import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioImportHandler;
 import org.perfcake.pc4idea.editor.designer.editors.DestinationEditor;
+import org.perfcake.pc4idea.editor.designer.editors.PropertyEditor;
 import org.perfcake.pc4idea.editor.designer.editors.ReporterEditor;
 import org.perfcake.pc4idea.editor.designer.outercomponents.ReportingPanel;
 
@@ -32,8 +36,7 @@ public class ReporterComponent extends JPanel {
     private EnabledComponent reporterEnabled;
     private PanelDestinations panelDestinations;
     private JPopupMenu popupMenu;
-    private JMenuItem popupOpenEditor;
-    private JMenuItem popupDelete;
+    private JMenuItem itemEnabledDisabled;
 
     private int labelReporterClassWidth;
     private int requiredWidth;
@@ -57,37 +60,83 @@ public class ReporterComponent extends JPanel {
         labelReporterClass.setFont(new Font(labelReporterClass.getFont().getName(), 0, 15));
         labelReporterClass.setForeground(reporterColor);
 
-        reporterEnabled = new EnabledComponent(reporterColor);
+        reporterEnabled = new EnabledComponent(reporterColor, null, new ReporterEvent());
 
         panelDestinations = new PanelDestinations();
 
-        popupOpenEditor = new JMenuItem("Open Editor");
-        popupOpenEditor.addActionListener(new ActionListener() {
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 reporterEditor = new ReporterEditor();
                 reporterEditor.setReporter(reporter);
-                ScenarioDialogEditor editor = new ScenarioDialogEditor(reporterEditor);
-                editor.show();
-                if (editor.getExitCode() == 0) {
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(reporterEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
                     setReporter(reporterEditor.getReporter());
                     reportingEvent.saveReporter(id);
                 }
             }
         });
-        popupDelete = new JMenuItem("Delete");
-        popupDelete.addActionListener(new ActionListener() {
+        JMenuItem itemDelete = new JMenuItem("Delete");
+        itemDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                reportingEvent.deleteReporter(id);
+                int result = Messages.showYesNoDialog("Are you sure you want to delete this Reporter?","Delete Reporter", AllIcons.Actions.Delete);
+                if (result == 0) {
+                    reportingEvent.deleteReporter(id);
+                }
+            }
+        });
+        JMenuItem itemAddDestination = new JMenuItem("Add Destination");
+        itemAddDestination.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DestinationEditor destinationEditor = new DestinationEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(destinationEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Scenario.Reporting.Reporter.Destination destination = destinationEditor.getDestination();
+                    reporter.getDestination().add(destination);
+                    ReporterComponent.this.setReporter(reporter);
+                    reportingEvent.saveReporter(id);
+                }
+            }
+        });
+        JMenuItem itemAddProperty = new JMenuItem("Add Property");
+        itemAddProperty.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PropertyEditor propertyEditor = new PropertyEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Property property = propertyEditor.getProperty();
+                    reporter.getProperty().add(property);
+                    ReporterComponent.this.setReporter(reporter);
+                    reportingEvent.saveReporter(id);
+                }
+            }
+        });
+        itemEnabledDisabled = new JMenuItem("-");
+        itemEnabledDisabled.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reporter.setEnabled(!reporter.isEnabled());
+                ReporterComponent.this.setReporter(reporter);
+                reportingEvent.saveReporter(id);
             }
         });
 
         popupMenu = new JPopupMenu();
-        popupMenu.add(popupOpenEditor);
+        popupMenu.add(itemOpenEditor);
         popupMenu.add(new JPopupMenu.Separator());
-        popupMenu.add(popupDelete);
-        /*TODO dalsie?*/
+        popupMenu.add(itemEnabledDisabled);
+        popupMenu.add(itemAddDestination);
+        popupMenu.add(itemAddProperty);
+        popupMenu.add(new JPopupMenu.Separator());
+        popupMenu.add(itemDelete);
+
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -119,9 +168,9 @@ public class ReporterComponent extends JPanel {
                     if (event.getClickCount() == 2) {
                         reporterEditor = new ReporterEditor();
                         reporterEditor.setReporter(reporter);
-                        ScenarioDialogEditor editor = new ScenarioDialogEditor(reporterEditor);
-                        editor.show();
-                        if (editor.getExitCode() == 0) {
+                        ScenarioDialogEditor dialog = new ScenarioDialogEditor(reporterEditor);
+                        dialog.show();
+                        if (dialog.getExitCode() == 0) {
                             setReporter(reporterEditor.getReporter());
                             reportingEvent.saveReporter(id);
                         }
@@ -191,6 +240,7 @@ public class ReporterComponent extends JPanel {
         labelReporterClassWidth = fontMetrics.stringWidth(labelReporterClass.getText());
 
         reporterEnabled.setState(reporter.isEnabled());
+        itemEnabledDisabled.setText((reporter.isEnabled()) ? "Disable" : "Enable");
 
         requiredWidth = Short.MAX_VALUE;
         panelDestinations.setDestinations(reporter.getDestination());
@@ -419,4 +469,11 @@ public class ReporterComponent extends JPanel {
         }
     }
 
+    public final class ReporterEvent{
+        public void saveEnabled(boolean isEnabled){
+            reporter.setEnabled(isEnabled);
+            ReporterComponent.this.setReporter(reporter);
+            reportingEvent.saveReporter(id);
+        }
+    }
 }

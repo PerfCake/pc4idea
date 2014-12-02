@@ -2,8 +2,10 @@ package org.perfcake.pc4idea.editor.designer.innercomponents;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.ui.Messages;
+import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
+import org.perfcake.pc4idea.editor.designer.editors.PropertyEditor;
 import org.perfcake.pc4idea.editor.designer.editors.ValidatorEditor;
 import org.perfcake.pc4idea.editor.designer.outercomponents.ValidationPanel;
 
@@ -32,8 +34,6 @@ public class ValidatorComponent extends JPanel{
 
     private JLabel validatorAttr;
     private JPopupMenu popupMenu;
-    private JMenuItem popupOpenEditor;
-    private JMenuItem popupDelete;
 
     private Dimension validatorSize;
 
@@ -55,41 +55,58 @@ public class ValidatorComponent extends JPanel{
         validatorAttr.setForeground(validatorColor);
         validatorSize = new Dimension(40,40);
 
-        popupOpenEditor = new JMenuItem("Open Editor");
-        popupOpenEditor.addActionListener(new ActionListener() {
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 validatorEditor = new ValidatorEditor(usedIDSet);
-                validatorEditor.setValidator(validator,isAttached);
-                ScenarioDialogEditor editor = new ScenarioDialogEditor(validatorEditor);
-                editor.show();
-                if (editor.getExitCode() == 0) {
+                validatorEditor.setValidator(validator, isAttached);
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
                     setValidator(validatorEditor.getValidator());
                     validationEvent.saveValidator(id);
                 }
             }
         });
-        popupDelete = new JMenuItem("Delete");
-        popupDelete.addActionListener(new ActionListener() {
+        JMenuItem itemDelete = new JMenuItem("Delete");
+        itemDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (isAttached){
-                    int result = Messages.showOkCancelDialog("This Validator is attached to some message!\n" +
-                            "Are you sure you want to delete this Validator?", "Warning!", AllIcons.General.Warning);
-                    if (result != 0){
-                        return;
-                    }
+                int result = -1;
+                if (isAttached) {
+                    result = Messages.showYesNoDialog("This Validator is attached to some message!\n" +
+                            "Are you sure you want to delete this Validator?", "Warning!", AllIcons.General.WarningDialog);
+                } else {
+                    result = Messages.showYesNoDialog("Are you sure you want to delete this Validator?","Delete Validator", AllIcons.Actions.Delete);
                 }
-
-                validationEvent.deleteValidator(id);
+                if (result == 0) {
+                    validationEvent.deleteValidator(id);
+                }
+            }
+        });
+        JMenuItem itemAddProperty = new JMenuItem("Add Property");
+        itemAddProperty.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PropertyEditor propertyEditor = new PropertyEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Property property = propertyEditor.getProperty();
+                    validator.getProperty().add(property);
+                    ValidatorComponent.this.setValidator(validator);
+                    validationEvent.saveValidator(id);
+                }
             }
         });
 
         popupMenu = new JPopupMenu();
-        popupMenu.add(popupOpenEditor);
+        popupMenu.add(itemOpenEditor);
         popupMenu.add(new JPopupMenu.Separator());
-        popupMenu.add(popupDelete);
-        /*TODO dalsie?*/
+        popupMenu.add(itemAddProperty);
+        popupMenu.add(new JPopupMenu.Separator());
+        popupMenu.add(itemDelete);
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -110,9 +127,9 @@ public class ValidatorComponent extends JPanel{
                     if (event.getClickCount() == 2) {
                         validatorEditor = new ValidatorEditor(usedIDSet);
                         validatorEditor.setValidator(validator,isAttached);
-                        ScenarioDialogEditor editor = new ScenarioDialogEditor(validatorEditor);
-                        editor.show();
-                        if (editor.getExitCode() == 0) {
+                        ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
+                        dialog.show();
+                        if (dialog.getExitCode() == 0) {
                             setValidator(validatorEditor.getValidator());
                             validationEvent.saveValidator(id);
                         }

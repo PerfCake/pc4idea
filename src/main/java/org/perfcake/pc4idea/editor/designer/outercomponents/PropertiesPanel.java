@@ -12,11 +12,10 @@ import org.perfcake.pc4idea.editor.designer.innercomponents.PropertyComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -74,6 +73,43 @@ public class PropertiesPanel extends AbstractPanel {
                 e.getComponent().repaint();
             }
         });
+    }
+
+    @Override
+    protected List<JMenuItem> getPopupMenuItems(){
+        List<JMenuItem> menuItems = new ArrayList<>();
+
+        JMenuItem popupOpenEditor = new JMenuItem("Open Editor");
+        popupOpenEditor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ScenarioDialogEditor editor = new ScenarioDialogEditor(getEditorPanel());
+                editor.show();
+                if (editor.getExitCode() == 0) {
+                    applyChanges();
+                }
+            }
+        });
+        menuItems.add(popupOpenEditor);
+
+        JMenuItem itemAddProperty = new JMenuItem("Add Property");
+        itemAddProperty.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PropertyEditor propertyEditor = new PropertyEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Property property = propertyEditor.getProperty();
+                    properties.getProperty().add(property);
+                    PropertiesPanel.this.setComponentModel(properties);
+                    scenarioEvent.saveProperties();
+                }
+            }
+        });
+        menuItems.add(itemAddProperty);
+
+        return menuItems;
     }
 
     @Override

@@ -1,19 +1,19 @@
 package org.perfcake.pc4idea.editor.designer.outercomponents;
 
+import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
+import org.perfcake.pc4idea.editor.designer.editors.PropertyEditor;
 import org.perfcake.pc4idea.editor.designer.editors.ReporterEditor;
 import org.perfcake.pc4idea.editor.designer.editors.ReportingEditor;
 import org.perfcake.pc4idea.editor.designer.innercomponents.ReporterComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -78,6 +78,60 @@ public class ReportingPanel extends AbstractPanel {
     }
 
     @Override
+    protected List<JMenuItem> getPopupMenuItems(){
+        List<JMenuItem> menuItems = new ArrayList<>();
+
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ScenarioDialogEditor editor = new ScenarioDialogEditor(getEditorPanel());
+                editor.show();
+                if (editor.getExitCode() == 0) {
+                    applyChanges();
+                }
+            }
+        });
+        menuItems.add(itemOpenEditor);
+
+        JMenuItem itemAddReporter = new JMenuItem("Add Reporter");
+        itemAddReporter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ReporterEditor reporterEditor = new ReporterEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(reporterEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Scenario.Reporting.Reporter reporter = reporterEditor.getReporter();
+                    reporting.getReporter().add(reporter);
+                    ReportingPanel.this.setComponentModel(reporting);
+                    scenarioEvent.saveReporting();
+                }
+            }
+        });
+        menuItems.add(itemAddReporter);
+
+        JMenuItem itemAddProperty = new JMenuItem("Add Property");
+        itemAddProperty.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PropertyEditor propertyEditor = new PropertyEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Property property = propertyEditor.getProperty();
+                    reporting.getProperty().add(property);
+                    ReportingPanel.this.setComponentModel(reporting);
+                    scenarioEvent.saveReporting();
+                }
+            }
+        });
+        menuItems.add(itemAddProperty);
+
+        return menuItems;
+    }
+
+    @Override
     protected void performImport(String transferredData){  /*TODO bez dialogu -> just create*/
         if (transferredData.contains("Reporter")) {
             Scenario.Reporting.Reporter reporterClass = new Scenario.Reporting.Reporter();
@@ -127,7 +181,7 @@ public class ReportingPanel extends AbstractPanel {
 
     @Override
     public Object getComponentModel() {
-        return (reporting.getReporter().isEmpty()) ? null : reporting;   /*TODO if (!reporting.getProperty().isEmpty) log warning properties removed*/
+        return (reporting.getReporter().isEmpty()) ? null : reporting;   /*TODO if (!reporting.getProperty().isEmpty) message warning properties removed*/
     }
 
     @Override
@@ -343,7 +397,6 @@ public class ReportingPanel extends AbstractPanel {
                     }
                 }
             }
-            /*TODO save Property Maybe,after right click addProp.*/
         }
     }
 }

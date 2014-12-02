@@ -11,9 +11,7 @@ import org.perfcake.pc4idea.editor.designer.innercomponents.ValidatorComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
@@ -94,6 +92,43 @@ public class ValidationPanel extends AbstractPanel {
         Point anchorPoint = panelValidators.getValidatorAnchorPoint(validatorID);
         anchorPoint.setLocation(anchorPoint.getX()+this.getX(),anchorPoint.getY()+this.getY());
         return anchorPoint;
+    }
+
+    @Override
+    protected List<JMenuItem> getPopupMenuItems(){
+        List<JMenuItem> menuItems = new ArrayList<>();
+
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ScenarioDialogEditor editor = new ScenarioDialogEditor(getEditorPanel());
+                editor.show();
+                if (editor.getExitCode() == 0) {
+                    applyChanges();
+                }
+            }
+        });
+        menuItems.add(itemOpenEditor);
+
+        JMenuItem itemAddValidator = new JMenuItem("Add Validator");
+        itemAddValidator.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ValidatorEditor validatorEditor = new ValidatorEditor(usedIDSet);
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Scenario.Validation.Validator validator = validatorEditor.getValidator();
+                    validation.getValidator().add(validator);
+                    ValidationPanel.this.setComponentModel(validation);
+                    scenarioEvent.saveValidation();
+                }
+            }
+        });
+        menuItems.add(itemAddValidator);
+
+        return menuItems;
     }
 
     @Override

@@ -1,10 +1,16 @@
 package org.perfcake.pc4idea.editor.designer.innercomponents;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.ui.Messages;
+import org.perfcake.model.Header;
+import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioImportHandler;
 import org.perfcake.pc4idea.editor.designer.editors.AttachValidatorEditor;
+import org.perfcake.pc4idea.editor.designer.editors.HeaderEditor;
 import org.perfcake.pc4idea.editor.designer.editors.MessageEditor;
+import org.perfcake.pc4idea.editor.designer.editors.PropertyEditor;
 import org.perfcake.pc4idea.editor.designer.outercomponents.MessagesPanel;
 
 import javax.swing.*;
@@ -32,8 +38,6 @@ public class MessageComponent extends JPanel{
 
     private JLabel messageAttr;
     private JPopupMenu popupMenu;
-    private JMenuItem popupOpenEditor;
-    private JMenuItem popupDelete;
 
     private Dimension messageSize;
 
@@ -54,33 +58,86 @@ public class MessageComponent extends JPanel{
         messageAttr.setForeground(messageColor);
         messageSize = new Dimension(40,40);
 
-        popupOpenEditor = new JMenuItem("Open Editor");
-        popupOpenEditor.addActionListener(new ActionListener() {
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 messageEditor = new MessageEditor(usedValidatorIDSet);
                 messageEditor.setMessage(message);
-                ScenarioDialogEditor editor = new ScenarioDialogEditor(messageEditor);
-                editor.show();
-                if (editor.getExitCode() == 0) {
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
                     setMessage(messageEditor.getMessage());
+                    messagesEvent.saveMessage(id);
+                    /*TODO open dialog to create file if needed (EDIT=DECIDE)*/
+                }
+            }
+        });
+        JMenuItem itemDelete = new JMenuItem("Delete");
+        itemDelete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int result = Messages.showYesNoDialog("Are you sure you want to delete this Message?", "Delete Message", AllIcons.Actions.Delete);
+                if (result == 0) {
+                    messagesEvent.deleteMessage(id);
+                }
+
+            }
+        });
+        JMenuItem itemAddHeader = new JMenuItem("Add Header");
+        itemAddHeader.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HeaderEditor headerEditor = new HeaderEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(headerEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Header header = headerEditor.getHeader();
+                    message.getHeader().add(header);
+                    MessageComponent.this.setMessage(message);
                     messagesEvent.saveMessage(id);
                 }
             }
         });
-        popupDelete = new JMenuItem("Delete");
-        popupDelete.addActionListener(new ActionListener() {
+        JMenuItem itemAddProperty = new JMenuItem("Add Property");
+        itemAddProperty.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                messagesEvent.deleteMessage(id);
+                PropertyEditor propertyEditor = new PropertyEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Property property = propertyEditor.getProperty();
+                    message.getProperty().add(property);
+                    MessageComponent.this.setMessage(message);
+                    messagesEvent.saveMessage(id);
+                }
+            }
+        });
+        JMenuItem itemAttachValidator = new JMenuItem("Attach Validator");
+        itemAttachValidator.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AttachValidatorEditor attachValidatorEditor = new AttachValidatorEditor(usedValidatorIDSet);
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(attachValidatorEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Scenario.Messages.Message.ValidatorRef ref = attachValidatorEditor.getAttachedValidatorRef();
+                    message.getValidatorRef().add(ref);
+                    MessageComponent.this.setMessage(message);
+                    messagesEvent.saveMessage(id);
+                }
             }
         });
 
         popupMenu = new JPopupMenu();
-        popupMenu.add(popupOpenEditor);
+        popupMenu.add(itemOpenEditor);
         popupMenu.add(new JPopupMenu.Separator());
-        popupMenu.add(popupDelete);
-        /*TODO dalsie?*/
+        popupMenu.add(itemAddHeader);
+        popupMenu.add(itemAddProperty);
+        popupMenu.add(itemAttachValidator);
+        popupMenu.add(new JPopupMenu.Separator());
+        popupMenu.add(itemDelete);
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -101,11 +158,12 @@ public class MessageComponent extends JPanel{
                     if (event.getClickCount() == 2) {
                         messageEditor = new MessageEditor(usedValidatorIDSet);
                         messageEditor.setMessage(message);
-                        ScenarioDialogEditor editor = new ScenarioDialogEditor(messageEditor);
-                        editor.show();
-                        if (editor.getExitCode() == 0) {
+                        ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
+                        dialog.show();
+                        if (dialog.getExitCode() == 0) {
                             setMessage(messageEditor.getMessage());
                             messagesEvent.saveMessage(id);
+                            /*TODO open dialog to create file if needed (EDIT=DECIDE)*/
                         }
                     }
                 }
@@ -147,7 +205,7 @@ public class MessageComponent extends JPanel{
                     ScenarioDialogEditor dialog = new ScenarioDialogEditor(attachValidatorEditor);
                     dialog.show();
                     if (dialog.getExitCode() == 0){
-                        message.getValidatorRef().add(attachValidatorEditor.getAttachedValidator());
+                        message.getValidatorRef().add(attachValidatorEditor.getAttachedValidatorRef());
                         setMessage(message);
                         messagesEvent.saveMessage(id);
                     }

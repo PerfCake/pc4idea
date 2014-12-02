@@ -1,8 +1,13 @@
 package org.perfcake.pc4idea.editor.designer.innercomponents;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.ui.Messages;
+import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.designer.editors.DestinationEditor;
+import org.perfcake.pc4idea.editor.designer.editors.PeriodEditor;
+import org.perfcake.pc4idea.editor.designer.editors.PropertyEditor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,8 +32,7 @@ public class DestinationComponent extends JPanel {
     private JLabel destinationAttr;
     private EnabledComponent destinationEnabled;
     private JPopupMenu popupMenu;
-    private JMenuItem popupOpenEditor;
-    private JMenuItem popupDelete;
+    private JMenuItem itemEnabledDisabled;
 
     private Dimension destinationSize;
 
@@ -47,37 +51,83 @@ public class DestinationComponent extends JPanel {
         destinationAttr.setFont(new Font(destinationAttr.getFont().getName(), 0, 15));
         destinationAttr.setForeground(destinationColor);
 
-        destinationEnabled = new EnabledComponent(destinationColor);
+        destinationEnabled = new EnabledComponent(destinationColor, new DestinationEvent(),null);
 
         destinationSize = new Dimension(40, 40);
 
-        popupOpenEditor = new JMenuItem("Open Editor");
-        popupOpenEditor.addActionListener(new ActionListener() {
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 destinationEditor = new DestinationEditor();
                 destinationEditor.setDestination(destination);
-                ScenarioDialogEditor editor = new ScenarioDialogEditor(destinationEditor);
-                editor.show();
-                if (editor.getExitCode() == 0) {
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(destinationEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
                     setDestination(destinationEditor.getDestination());
                     reporterEvent.saveDestination(id);
                 }
             }
         });
-        popupDelete = new JMenuItem("Delete");
-        popupDelete.addActionListener(new ActionListener() {
+        JMenuItem itemDelete = new JMenuItem("Delete");
+        itemDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                reporterEvent.deleteDestination(id);
+                int result = Messages.showYesNoDialog("Are you sure you want to delete this Destination?", "Delete Destination", AllIcons.Actions.Delete);
+                if (result == 0) {
+                    reporterEvent.deleteDestination(id);
+                }
+            }
+        });
+        JMenuItem itemAddPeriod = new JMenuItem("Add Period");
+        itemAddPeriod.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PeriodEditor periodEditor = new PeriodEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(periodEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Scenario.Reporting.Reporter.Destination.Period period = periodEditor.getPeriod();
+                    destination.getPeriod().add(period);
+                    DestinationComponent.this.setDestination(destination);
+                    reporterEvent.saveDestination(id);
+                }
+            }
+        });
+        JMenuItem itemAddProperty = new JMenuItem("Add Property");
+        itemAddProperty.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PropertyEditor propertyEditor = new PropertyEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Property property = propertyEditor.getProperty();
+                    destination.getProperty().add(property);
+                    DestinationComponent.this.setDestination(destination);
+                    reporterEvent.saveDestination(id);
+                }
+            }
+        });
+        itemEnabledDisabled = new JMenuItem("-");
+        itemEnabledDisabled.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                destination.setEnabled(!destination.isEnabled());
+                DestinationComponent.this.setDestination(destination);
+                reporterEvent.saveDestination(id);
             }
         });
 
         popupMenu = new JPopupMenu();
-        popupMenu.add(popupOpenEditor);
+        popupMenu.add(itemOpenEditor);
         popupMenu.add(new JPopupMenu.Separator());
-        popupMenu.add(popupDelete);
-        /*TODO dalsie?*/
+        popupMenu.add(itemEnabledDisabled);
+        popupMenu.add(itemAddPeriod);
+        popupMenu.add(itemAddProperty);
+        popupMenu.add(new JPopupMenu.Separator());
+        popupMenu.add(itemDelete);
+
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -105,9 +155,9 @@ public class DestinationComponent extends JPanel {
                     if (event.getClickCount() == 2) {
                         destinationEditor = new DestinationEditor();
                         destinationEditor.setDestination(destination);
-                        ScenarioDialogEditor editor = new ScenarioDialogEditor(destinationEditor);
-                        editor.show();
-                        if (editor.getExitCode() == 0) {
+                        ScenarioDialogEditor dialog = new ScenarioDialogEditor(destinationEditor);
+                        dialog.show();
+                        if (dialog.getExitCode() == 0) {
                             setDestination(destinationEditor.getDestination());
                             reporterEvent.saveDestination(id);
                         }
@@ -148,6 +198,7 @@ public class DestinationComponent extends JPanel {
         destinationSize.width = fontMetrics.stringWidth(destinationAttr.getText()) + 25 + 20;
 
         destinationEnabled.setState(destination.isEnabled());
+        itemEnabledDisabled.setText((destination.isEnabled()) ? "Disable" : "Enable");
     }
 
     public Scenario.Reporting.Reporter.Destination getDestination() {
@@ -171,5 +222,13 @@ public class DestinationComponent extends JPanel {
     @Override
     public Dimension getMaximumSize(){
         return destinationSize;
+    }
+
+    public final class DestinationEvent {
+        public void saveEnabled(boolean isEnabled){
+            destination.setEnabled(isEnabled);
+            DestinationComponent.this.setDestination(destination);
+            reporterEvent.saveDestination(id);
+        }
     }
 }
