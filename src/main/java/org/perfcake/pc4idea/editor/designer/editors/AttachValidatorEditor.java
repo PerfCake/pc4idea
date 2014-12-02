@@ -23,7 +23,7 @@ public class AttachValidatorEditor extends AbstractEditor {
         this.add(validatorIDList);
     }
 
-    public Scenario.Messages.Message.ValidatorRef getAttachedValidator(){
+    public Scenario.Messages.Message.ValidatorRef getAttachedValidatorRef(){
         Scenario.Messages.Message.ValidatorRef newRef = new Scenario.Messages.Message.ValidatorRef();
         newRef.setId(validatorIDList.getSelectedValue());
         return newRef;
