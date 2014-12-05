@@ -1,5 +1,7 @@
 package org.perfcake.pc4idea.editor.designer.outercomponents;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.ui.Messages;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
@@ -29,8 +31,8 @@ public class ReportingPanel extends AbstractPanel {
     private ReportingEditor reportingEditor;
     private Scenario.Reporting reporting;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
+    private JMenuItem itemAddProperty;
 
-    private JLabel labelReporting;
     private PanelReporters panelReporters;
 
     private int labelReportingWidth;
@@ -43,7 +45,7 @@ public class ReportingPanel extends AbstractPanel {
     }
 
     private void initComponents(){
-        labelReporting = new JLabel("Reporting");
+        JLabel labelReporting = new JLabel("Reporting");
         labelReporting.setFont(new Font(labelReporting.getFont().getName(),0,15));
         labelReporting.setForeground(reportingColor);
         FontMetrics fontMetrics = labelReporting.getFontMetrics(labelReporting.getFont());
@@ -111,7 +113,7 @@ public class ReportingPanel extends AbstractPanel {
         });
         menuItems.add(itemAddReporter);
 
-        JMenuItem itemAddProperty = new JMenuItem("Add Property");
+        itemAddProperty = new JMenuItem("Add Property");
         itemAddProperty.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -132,7 +134,7 @@ public class ReportingPanel extends AbstractPanel {
     }
 
     @Override
-    protected void performImport(String transferredData){  /*TODO bez dialogu -> just create*/
+    protected void performImport(String transferredData){
         if (transferredData.contains("Reporter")) {
             Scenario.Reporting.Reporter reporterClass = new Scenario.Reporting.Reporter();
             reporterClass.setClazz(transferredData);
@@ -163,7 +165,8 @@ public class ReportingPanel extends AbstractPanel {
 
     @Override
     protected void applyChanges() {
-        this.setComponentModel(reportingEditor.getReporting());
+        this.setComponentModel((reportingEditor.getReporting().getReporter().isEmpty()) ?
+                null : reportingEditor.getReporting());
         scenarioEvent.saveReporting();
     }
 
@@ -172,16 +175,18 @@ public class ReportingPanel extends AbstractPanel {
         if (componentModel != null) {
             reporting = (Scenario.Reporting) componentModel;
             panelReporters.setReporters(reporting.getReporter());
+            itemAddProperty.setEnabled(true);
         } else {
             reporting = new Scenario.Reporting();
             panelReporters.setReporters(new ArrayList<Scenario.Reporting.Reporter>());
+            itemAddProperty.setEnabled(false);
         }
         this.revalidate();
     }
 
     @Override
     public Object getComponentModel() {
-        return (reporting.getReporter().isEmpty()) ? null : reporting;   /*TODO if (!reporting.getProperty().isEmpty) message warning properties removed*/
+        return (reporting.getReporter().isEmpty()) ? null : reporting;
     }
 
     @Override
@@ -192,22 +197,6 @@ public class ReportingPanel extends AbstractPanel {
         dimension.height = panelReporters.getReportersRowHeight() + 50;
         return dimension;
     }
-/*TODO Reporting able to fit Validation+Messages*/
-//    @Override
-//    public Dimension getPreferredSize(){
-//        Dimension dimension = new Dimension();
-//        dimension.width = super.getPreferredSize().width;   /*TODO ak presne polku potom parent getsize.width/2*/
-//        dimension.height = panelValidators.getValidatorsRowCount()*40 + 50;   /*TODO potom aj super.get width*/
-//        return dimension;
-//    }
-//
-//    @Override
-//    public Dimension getMaximumSize(){
-//        Dimension dimension = new Dimension();
-//        dimension.width = super.getMaximumSize().width;
-//        dimension.height = panelValidators.getValidatorsRowCount()*40 + 50;  /*TODO -//-*/
-//        return dimension;
-//    }
 
     public class PanelReporters extends JPanel {
         private List<ReporterComponent> reporterComponentList;
@@ -342,13 +331,13 @@ public class ReportingPanel extends AbstractPanel {
                     expectedRowsHeight += nRowHeight;
                 }
                 reportersRowHeight = (expectedRowsHeight != reportersRowHeight) ? expectedRowsHeight : reportersRowHeight;
-            }   /*TODO mozno este dokoncit vysku reportrov v riadku*/
+            }
         }
 
         @Override
         public Dimension getMinimumSize(){
             Dimension dimension = new Dimension();
-            dimension.width = widestReporterMinimumWidth; /*TODO vo vsetkych vnut.P. ReportingPanel.this.getSize().width-20;*/
+            dimension.width = widestReporterMinimumWidth;
             dimension.height = reportersRowHeight;
             return dimension;
         }
@@ -388,12 +377,25 @@ public class ReportingPanel extends AbstractPanel {
             public void deleteReporter(int reporterId){
                 for (int i = 0; i<reporterComponentList.size();i++){
                     if (reporterComponentList.get(i).getId() == reporterId){
-                        reporterList.remove(i);
+                        int result = 0;
+                        if ((reporterList.size() == 1) && !reporting.getProperty().isEmpty()) {
+                            result = Messages.showYesNoDialog("All reporters were removed, but there are still\n" +
+                                            "some properties and its not valid. If you continue,\n" +
+                                            "properties will be also removed.\n\n" +
+                                            "Would you like to continue?",
+                                    "Removing Properties", AllIcons.General.WarningDialog);
+                            if (result == 0) {
+                                reporting.getProperty().clear();
+                            }
+                        }
+                        if (result == 0) {
+                            reporterList.remove(i);
 
-                        reporting.getReporter().clear();
-                        reporting.getReporter().addAll(reporterList);
-                        ReportingPanel.this.setComponentModel(reporting);
-                        scenarioEvent.saveReporting();
+                            reporting.getReporter().clear();
+                            reporting.getReporter().addAll(reporterList);
+                            ReportingPanel.this.setComponentModel(reporting);
+                            scenarioEvent.saveReporting();
+                        }
                     }
                 }
             }

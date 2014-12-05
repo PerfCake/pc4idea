@@ -1,5 +1,7 @@
 package org.perfcake.pc4idea.editor.designer.editors;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.EditorTablePanel;
@@ -20,6 +22,8 @@ import java.util.List;
 public class ReportingEditor extends AbstractEditor {
     private EditorTablePanel tablePanelReporters;
     private PropertiesEditor panelProperties;
+
+    private boolean warningShown = false;
 
     public ReportingEditor(){
         initComponents();
@@ -118,8 +122,22 @@ public class ReportingEditor extends AbstractEditor {
 
     @Override
     public ValidationInfo areInsertedValuesValid() {
-        // always valid
-        return null;
+        ValidationInfo info = null;
+        boolean noneReporter = ((ReportersTableModel) tablePanelReporters.getTable().getModel()).getReporterList().isEmpty();
+
+        if (noneReporter && !panelProperties.getListProperties().isEmpty() && !warningShown){
+            int result = Messages.showYesNoDialog("There are no reporters, but there are some properties\n" +
+                                                  "and its not valid. If you continue, properties will be\n" +
+                                                  "removed.\n\n" +
+                            "Would you like to continue?",
+                    "Removing Properties", AllIcons.General.WarningDialog);
+            if (result != 0){
+                info = new ValidationInfo("OK Interrupted...");
+                warningShown = true;
+            }
+        }
+
+        return info;
     }
 
     private class ReportersTableModel extends AbstractTableModel {
