@@ -9,7 +9,6 @@ import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -23,8 +22,6 @@ import java.util.TreeSet;
  * Date: 28.10.2014
  */
 public class ValidationEditor extends AbstractEditor {
-    private JLabel labelEnabled;
-    private JLabel labelFastForward;
     private JCheckBox checkBoxEnabled;
     private JCheckBox checkBoxFastForward;
     private EditorTablePanel tablePanelValidators;
@@ -36,12 +33,11 @@ public class ValidationEditor extends AbstractEditor {
         this.attachedIDs = attachedIDs;
         usedIDSet = new TreeSet<>();
         initComponents();
-        this.setPreferredSize(new Dimension(350,0));
     }
 
     private void initComponents(){
-        labelEnabled = new JLabel("Enabled:");
-        labelFastForward = new JLabel("Fast Forward:");
+        JLabel labelEnabled = new JLabel("Enabled:");
+        JLabel labelFastForward = new JLabel("Fast Forward:");
         checkBoxEnabled = new JCheckBox();
         checkBoxFastForward = new JCheckBox();
         tablePanelValidators = new EditorTablePanel(new ValidatorsTableModel(new ArrayList<Scenario.Validation.Validator>())) {

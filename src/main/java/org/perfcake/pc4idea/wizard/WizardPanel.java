@@ -43,7 +43,7 @@ class WizardPanel extends JPanel {
         editors.put(0, new URIEditor(defaultURI));
         editors.put(1, new GeneratorEditor());
         editors.put(2, new SenderEditor());
-        editors.put(3, new MessagesEditor());
+        editors.put(3, new MessagesEditor(null));
         editors.put(4, new ReportingEditor());
         editors.put(5, new ValidationEditor(new TreeSet<String>()));
         editors.put(6, new PropertiesEditor());
@@ -177,7 +177,7 @@ class WizardPanel extends JPanel {
                 usedIDSet.add(validator.getId());
             }
 
-            MessagesEditor editor = new MessagesEditor();
+            MessagesEditor editor = new MessagesEditor(null);
             editor.setMessages(messages,usedIDSet);
 
             editors.put(3,editor);

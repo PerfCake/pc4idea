@@ -27,9 +27,6 @@ import java.util.TreeSet;
  * Date: 28.10.2014
  */
 public class MessageEditor extends AbstractEditor {
-    private JLabel labelMessageURI;
-    private JLabel labelMultiplicity;
-    private JLabel labelMessageContent;
     private JTextField textFieldMessageURI;
     private JTextField textFieldMultiplicity;
     private JTextField textFieldContent;
@@ -37,20 +34,20 @@ public class MessageEditor extends AbstractEditor {
     private PropertiesEditor panelProperties;
     private AttachedValidatorsEditor panelAttachedValidators;
 
-    private boolean nullTextFieldsWarningShowed;
-    private boolean ambiguousWarningShowed;
+    private boolean nullTextFieldsWarningShown;
+    private boolean ambiguousWarningShown;
 
     public MessageEditor(Set<String> usedValidatorIDSet){
-        nullTextFieldsWarningShowed = false;
-        ambiguousWarningShowed  = false;
+        nullTextFieldsWarningShown = false;
+        ambiguousWarningShown = false;
         initComponents();
         panelAttachedValidators.setUsedValidatorIDSet(usedValidatorIDSet);
     }
 
     private void initComponents(){
-        labelMessageURI = new JLabel("URI:");
-        labelMultiplicity = new JLabel("Multiplicity:");
-        labelMessageContent = new JLabel("Content:");
+        JLabel labelMessageURI = new JLabel("URI:");
+        JLabel labelMultiplicity = new JLabel("Multiplicity:");
+        JLabel labelMessageContent = new JLabel("Content:");
         textFieldMessageURI = new JTextField(null);
         textFieldMultiplicity = new JTextField(null);
         textFieldContent = new JTextField(null);
@@ -195,16 +192,16 @@ public class MessageEditor extends AbstractEditor {
     @Override
     public ValidationInfo areInsertedValuesValid() {
         ValidationInfo info = null;
-        boolean uriIsEmpty = (textFieldMessageURI.getText().isEmpty() || textFieldMessageURI.getText().trim().isEmpty());      /*TODO white space?*/
+        boolean uriIsEmpty = (textFieldMessageURI.getText().isEmpty() || textFieldMessageURI.getText().trim().isEmpty());
         boolean contentIsEmpty = (textFieldContent.getText().isEmpty() || textFieldContent.getText().trim().isEmpty());
 
         if (uriIsEmpty && contentIsEmpty){
-            if (!nullTextFieldsWarningShowed) {
+            if (!nullTextFieldsWarningShown) {
                 int result = Messages.showYesNoDialog("Both URI and Content are empty!\n" +
                         "This will lead to message specified\n" +
                         "by content with value \"\" (empty string).\n\n" +
                         "Would you like to continue?", "Empty Text Fields!", AllIcons.General.QuestionDialog);
-                nullTextFieldsWarningShowed = true;
+                nullTextFieldsWarningShown = true;
                 if (result != 0) {
                     info = new ValidationInfo("OK Interrupted...");
                 }
@@ -212,7 +209,7 @@ public class MessageEditor extends AbstractEditor {
         }
 
         if (!uriIsEmpty && contentIsEmpty){
-            if (!ambiguousWarningShowed){
+            if (!ambiguousWarningShown){
                 int result = Messages.showYesNoDialog("URI is set and Content is empty.\n" +
                         "While PerfCake prioritizes Content and\n" +
                         "Content with empty string value is valid,\n" +
@@ -222,7 +219,7 @@ public class MessageEditor extends AbstractEditor {
                         "Would you like to continue?\n\n" +
                         "Hint: If you want to use Content with empty string value,\n" +
                         "please remove URI value.", "Input Ambiguous", AllIcons.General.QuestionDialog);
-                ambiguousWarningShowed = true;
+                ambiguousWarningShown = true;
                 if (result != 0) {
                     info = new ValidationInfo("OK Interrupted...");
                 }

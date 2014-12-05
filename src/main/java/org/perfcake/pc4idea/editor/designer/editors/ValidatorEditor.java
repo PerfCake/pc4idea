@@ -16,13 +16,11 @@ import java.util.Set;
  * Date: 28.10.2014
  */
 public class ValidatorEditor extends AbstractEditor {
-    private Set<String> usedIDSet;
-
-    private JLabel labelType;
-    private JLabel labelId;
     private JComboBox comboBoxType;
     private JTextField textFieldId;
     private PropertiesEditor panelProperties;
+
+    private Set<String> usedIDSet;
 
     public ValidatorEditor(Set<String> usedIDSet){
         this.usedIDSet = usedIDSet;
@@ -30,8 +28,8 @@ public class ValidatorEditor extends AbstractEditor {
     }
 
     private void initComponents(){
-        labelType = new JLabel("Validator type:");
-        labelId = new JLabel("Validator id:");
+        JLabel labelType = new JLabel("Validator type:");
+        JLabel labelId = new JLabel("Validator id:");
         comboBoxType = new ComboBox();
         comboBoxType.addItem("ScriptValidator");        /*TODO load from classpath?*/
         comboBoxType.addItem("RulesValidator");
@@ -129,7 +127,6 @@ public class ValidatorEditor extends AbstractEditor {
         if (comboBoxType.getSelectedIndex() == -1){
             info = new ValidationInfo("Validator type isn't selected");
         }
-        /*TODO valid id must be uniqe*/
         return info;
     }
 }

@@ -12,7 +12,6 @@ import javax.swing.*;
  * Date: 23.10.2014
  */
 public class SenderEditor extends AbstractEditor {
-    private JLabel labelSenderType;
     private JComboBox comboBoxSenderType;
     private PropertiesEditor panelProperties;
 
@@ -21,7 +20,7 @@ public class SenderEditor extends AbstractEditor {
     }
 
     private void initComponents(){
-        labelSenderType = new JLabel("Sender type:");
+        JLabel labelSenderType = new JLabel("Sender type:");
         comboBoxSenderType = new ComboBox();
         comboBoxSenderType.addItem("GroovySender");          /*TODO load from classpath*/
         comboBoxSenderType.addItem("RequestResponseJmsSender");

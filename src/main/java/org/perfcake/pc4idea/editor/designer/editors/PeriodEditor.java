@@ -12,8 +12,6 @@ import javax.swing.*;
  * Date: 2.12.2014
  */
 public class PeriodEditor extends  AbstractEditor{
-    private JLabel labelPeriodType;
-    private JLabel labelPeriodValue;
     private JComboBox comboBoxPeriodType;
     private JTextField textFieldPeriodValue;
 
@@ -22,8 +20,8 @@ public class PeriodEditor extends  AbstractEditor{
     }
 
     private void initComponents(){
-        labelPeriodType = new JLabel("Period type:");
-        labelPeriodValue = new JLabel("Value:");
+        JLabel labelPeriodType = new JLabel("Period type:");
+        JLabel labelPeriodValue = new JLabel("Value:");
         comboBoxPeriodType = new ComboBox();
         comboBoxPeriodType.addItem("iteration");
         comboBoxPeriodType.addItem("time");
