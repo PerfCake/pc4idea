@@ -1,8 +1,10 @@
 package org.perfcake.pc4idea.editor.designer.editors;
 
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.EditorTablePanel;
+import org.perfcake.pc4idea.editor.designer.common.MessageFileCreator;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 
 import javax.swing.*;
@@ -23,8 +25,10 @@ public class MessagesEditor extends AbstractEditor {
     private EditorTablePanel tablePanelMessages;
 
     private Set<String> usedValidatorIDSet;
+    private Module module;
 
-    public MessagesEditor(){
+    public MessagesEditor(Module module){
+        this.module = module;
         usedValidatorIDSet = new TreeSet<>();
         initComponents();
     }
@@ -60,6 +64,8 @@ public class MessagesEditor extends AbstractEditor {
                     ((MessagesTableModel)tablePanelMessages.getTable().getModel()).getMessageList().add(message);
                     tablePanelMessages.getTable().repaint();
                     tablePanelMessages.getTable().revalidate();
+                    MessageFileCreator.createMessageFile(message, module);
+
                 }
             }
 

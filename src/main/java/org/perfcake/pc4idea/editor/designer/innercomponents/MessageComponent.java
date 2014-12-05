@@ -69,7 +69,6 @@ public class MessageComponent extends JPanel{
                 if (dialog.getExitCode() == 0) {
                     setMessage(messageEditor.getMessage());
                     messagesEvent.saveMessage(id);
-                    /*TODO open dialog to create file if needed (EDIT=DECIDE)*/
                 }
             }
         });
@@ -163,7 +162,6 @@ public class MessageComponent extends JPanel{
                         if (dialog.getExitCode() == 0) {
                             setMessage(messageEditor.getMessage());
                             messagesEvent.saveMessage(id);
-                            /*TODO open dialog to create file if needed (EDIT=DECIDE)*/
                         }
                     }
                 }

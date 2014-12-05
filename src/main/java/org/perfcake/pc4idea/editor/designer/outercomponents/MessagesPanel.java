@@ -1,8 +1,10 @@
 package org.perfcake.pc4idea.editor.designer.outercomponents;
 
+import com.intellij.openapi.module.Module;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
+import org.perfcake.pc4idea.editor.designer.common.MessageFileCreator;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.editors.MessageEditor;
@@ -29,14 +31,16 @@ public class MessagesPanel extends AbstractPanel {
     private Scenario.Messages messages;
     private Set<String> validatorIDSet;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
+    private Module module;
 
     private JLabel labelMessages;
     private PanelMessages panelMessages;
 
     private int labelMessagesWidth;
 
-    public MessagesPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
+    public MessagesPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent, Module module){
         this.scenarioEvent = scenarioEvent;
+        this.module = module;
         validatorIDSet = new TreeSet<>();
         labelMessagesWidth = 0;
 
@@ -130,7 +134,7 @@ public class MessagesPanel extends AbstractPanel {
                     messages.getMessage().add(message);
                     MessagesPanel.this.setComponentModel(messages);
                     scenarioEvent.saveMessages();
-                    /*TODO open dialog to create file if needed*/
+                    MessageFileCreator.createMessageFile(message,module);
                 }
             }
         });
@@ -146,10 +150,11 @@ public class MessagesPanel extends AbstractPanel {
             ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
             dialog.show();
             if (dialog.getExitCode() == 0) {
-                messages.getMessage().add(messageEditor.getMessage());
+                Scenario.Messages.Message message = messageEditor.getMessage();
+                messages.getMessage().add(message);
                 setComponentModel(messages);
                 scenarioEvent.saveMessages();
-                /*TODO open dialog to create file if needed*/
+                MessageFileCreator.createMessageFile(message,module);
             }
         }
     }
@@ -161,7 +166,7 @@ public class MessagesPanel extends AbstractPanel {
 
     @Override
     protected AbstractEditor getEditorPanel() {
-        messagesEditor = new MessagesEditor();
+        messagesEditor = new MessagesEditor(module);
         messagesEditor.setMessages(messages, validatorIDSet);
         return messagesEditor;
     }
