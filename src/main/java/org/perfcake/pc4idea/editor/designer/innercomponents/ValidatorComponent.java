@@ -73,7 +73,7 @@ public class ValidatorComponent extends JPanel{
         itemDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int result = -1;
+                int result;
                 if (isAttached) {
                     result = Messages.showYesNoDialog("This Validator is attached to some message!\n" +
                             "Are you sure you want to delete this Validator?", "Warning!", AllIcons.General.WarningDialog);

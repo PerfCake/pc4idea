@@ -22,15 +22,13 @@ import java.util.List;
  */
 public class ValidationPanel extends AbstractPanel {
     private Color validationColor = Color.getHSBColor(320/360f,0.75f,0.75f);
+    private PanelValidators panelValidators;
 
     private ValidationEditor validationEditor;
     private Scenario.Validation validation;
     private Set<String> attachedIDs;
     private Set<String> usedIDSet;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
-
-    private JLabel labelValidation;
-    private PanelValidators panelValidators;
 
     private int labelValidationWidth;
 
@@ -44,7 +42,7 @@ public class ValidationPanel extends AbstractPanel {
     }
 
     private void initComponents(){
-        labelValidation = new JLabel("Validation");
+        JLabel labelValidation = new JLabel("Validation");
         labelValidation.setFont(new Font(labelValidation.getFont().getName(),0,15));
         labelValidation.setForeground(validationColor);
         FontMetrics fontMetrics = labelValidation.getFontMetrics(labelValidation.getFont());
@@ -197,22 +195,6 @@ public class ValidationPanel extends AbstractPanel {
         dimension.height = panelValidators.getValidatorsRowCount()*40 + 50;
         return dimension;
     }
-/*TODO Validation able to fit Reporting*/
-//    @Override
-//    public Dimension getPreferredSize(){
-//        Dimension dimension = new Dimension();
-//        dimension.width = super.getPreferredSize().width;
-//        dimension.height = panelValidators.getValidatorsRowCount()*40 + 50;
-//        return dimension;
-//    }
-//
-//    @Override
-//    public Dimension getMaximumSize(){
-//        Dimension dimension = new Dimension();
-//        dimension.width = super.getMaximumSize().width;
-//        dimension.height = panelValidators.getValidatorsRowCount()*40 + 50;
-//        return dimension;
-//    }
 
     public class PanelValidators extends JPanel {
         private List<ValidatorComponent> validatorComponentList;

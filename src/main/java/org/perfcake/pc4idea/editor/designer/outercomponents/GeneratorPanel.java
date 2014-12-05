@@ -21,14 +21,14 @@ import java.util.List;
  * Date: 28.9.2014
  */
 public class GeneratorPanel extends AbstractPanel {
-    private Color generatorColor = Color.getHSBColor(120/360f,0.75f,0.75f);/* TODO default but able to change in settings*/
+    private Color generatorColor = Color.getHSBColor(120/360f,0.75f,0.75f);
+    private JLabel generatorAttr;
+    private JLabel generatorRunAttr;
 
     private GeneratorEditor panelEditor;
     private Scenario.Generator generator;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
 
-    private JLabel generatorAttr;
-    private JLabel generatorRunAttr;
     private int minimumWidth = 0;
 
     public GeneratorPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent){

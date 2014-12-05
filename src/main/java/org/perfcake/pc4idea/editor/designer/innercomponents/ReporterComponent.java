@@ -204,7 +204,7 @@ public class ReporterComponent extends JPanel {
 
         this.setTransferHandler(new ScenarioImportHandler() {
             @Override
-            public void performImport(String transferredData) {    /*TODO bez dialogu -> just create*/
+            public void performImport(String transferredData) {
                 if (transferredData.contains("Destination")) {
                     Scenario.Reporting.Reporter.Destination destinationClass = new Scenario.Reporting.Reporter.Destination();
                     destinationClass.setClazz(transferredData);

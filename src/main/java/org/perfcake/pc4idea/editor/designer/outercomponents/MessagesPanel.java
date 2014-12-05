@@ -26,15 +26,13 @@ import java.util.List;
  */
 public class MessagesPanel extends AbstractPanel {
     private Color messagesColor = Color.getHSBColor(40/360f,0.75f,0.75f);
+    private PanelMessages panelMessages;
 
     private MessagesEditor messagesEditor;
     private Scenario.Messages messages;
     private Set<String> validatorIDSet;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
     private Module module;
-
-    private JLabel labelMessages;
-    private PanelMessages panelMessages;
 
     private int labelMessagesWidth;
 
@@ -48,7 +46,7 @@ public class MessagesPanel extends AbstractPanel {
     }
 
     private void initComponents(){
-        labelMessages = new JLabel("Messages");
+        JLabel labelMessages = new JLabel("Messages");
         labelMessages.setFont(new Font(labelMessages.getFont().getName(),0,15));
         labelMessages.setForeground(messagesColor);
         FontMetrics fontMetrics = labelMessages.getFontMetrics(labelMessages.getFont());

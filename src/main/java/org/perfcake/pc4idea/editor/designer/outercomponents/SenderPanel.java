@@ -24,13 +24,12 @@ import java.util.List;
  */
 public class SenderPanel extends AbstractPanel {
     private Color senderColor = Color.getHSBColor(220/360f,0.75f,0.75f);
+    private JLabel labelSenderClass;
+    private PanelProperties panelProperties;
 
     private SenderEditor senderEditor;
     private Scenario.Sender sender;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
-
-    private JLabel labelSenderClass;
-    private PanelProperties panelProperties;
 
     private int labelSenderClassWidth;
 
@@ -112,7 +111,7 @@ public class SenderPanel extends AbstractPanel {
     }
 
     @Override
-    protected void performImport(String transferredData){  /*TODO bez dialogu -> just create*/
+    protected void performImport(String transferredData){
         if (transferredData.equals("Property")) {
             PropertyEditor propertyEditor = new PropertyEditor();
             ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
@@ -308,7 +307,7 @@ public class SenderPanel extends AbstractPanel {
         @Override
         public Dimension getMinimumSize(){
             Dimension dimension = new Dimension();
-            dimension.width = widestPropertyWidth;   /*TODO maybe same as pref,max*/
+            dimension.width = widestPropertyWidth;
             dimension.height = propertiesRowCount*40;
             return dimension;
         }

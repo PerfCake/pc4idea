@@ -24,13 +24,11 @@ import java.util.List;
  */
 public class PropertiesPanel extends AbstractPanel {
     private Color propertiesColor = Color.getHSBColor(160/360f,0.75f,0.75f);
+    private PanelProperties panelProperties;
 
     private PropertiesEditor propertiesEditor;
     private Scenario.Properties properties;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
-
-    private JLabel labelProperties;
-    private PanelProperties panelProperties;
 
     private int labelPropertiesWidth;
 
@@ -41,7 +39,7 @@ public class PropertiesPanel extends AbstractPanel {
     }
 
     private void initComponents(){
-        labelProperties = new JLabel("Scenario Properties");
+        JLabel labelProperties = new JLabel("Scenario Properties");
         labelProperties.setFont(new Font(labelProperties.getFont().getName(),0,15));
         labelProperties.setForeground(propertiesColor);
         FontMetrics fontMetrics = labelProperties.getFontMetrics(labelProperties.getFont());
@@ -113,7 +111,7 @@ public class PropertiesPanel extends AbstractPanel {
     }
 
     @Override
-    protected void performImport(String transferredData){  /*TODO bez dialogu -> just create*/
+    protected void performImport(String transferredData){
         if (transferredData.equals("Property")) {
             PropertyEditor propertyEditor = new PropertyEditor();
             ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);

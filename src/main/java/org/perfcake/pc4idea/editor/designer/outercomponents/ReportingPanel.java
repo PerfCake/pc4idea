@@ -27,13 +27,12 @@ import java.util.List;
  */
 public class ReportingPanel extends AbstractPanel {
     private Color reportingColor = Color.getHSBColor(0 / 360f, 0.75f, 0.75f);
+    private PanelReporters panelReporters;
 
     private ReportingEditor reportingEditor;
     private Scenario.Reporting reporting;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
     private JMenuItem itemAddProperty;
-
-    private PanelReporters panelReporters;
 
     private int labelReportingWidth;
 
