@@ -59,16 +59,15 @@ import java.util.TreeSet;
  * User: Stanislav Kaleta
  * Date: 17.9.2014
  */
-public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider TODO ??? */{
+public class PerfCakeEditorGUI extends JPanel {
     private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.editor.PerfCakeEditorGUI");
 
     private final Project project;
-    private final Module module;
     @NotNull private final VirtualFile file;
+    @NotNull private final Module module;
     private final ScenarioVirtualFileListener scenarioVirtualFileListener;
     private final Document document;
     private final ScenarioDocumentListener scenarioDocumentListener;
-//    private PsiFile psiFile;
     private final FileEditor xmlEditor;
     private Scenario scenarioModel;
 
@@ -109,29 +108,18 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         documentModifiedInSource = false;
         savingScenario = false;
 
-        //psiFile = PsiManager.getInstance(project).findFile(file);
-
-
-        xmlEditor = TextEditorProvider.getInstance().createEditor(project, this.file);  /*TODO first assert accept then create*/
+        xmlEditor = TextEditorProvider.getInstance().createEditor(project, this.file);
 
         initComponents();
 
         loadScenario();
         setDesignerComponents();
 
-        //Notifications.Bus.register("PerfCake Plugin", NotificationDisplayType.NONE);  /*TODO decide*/
-
-
-
-
-
-
-
         GridLayout layout = new GridLayout(1,1);
         this.setLayout(layout);
         this.add(tabbedPane,new GridLayout(1,1));
 
-        repaintLayerDependencies();/*TODO not repainting after initialization*/
+        LOG.info("PerfCake Scenario "+this.file.getName()+" successfully loaded");
     }
 
     private void initComponents() {
@@ -148,7 +136,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         treeAdditiveCompsForScenario = new Tree(new DefaultTreeModel(new DefaultMutableTreeNode("root")));
         panelGenerator = new GeneratorPanel(new ScenarioEvent());
         panelSender = new SenderPanel(new ScenarioEvent());
-        panelMessages = new MessagesPanel(new ScenarioEvent());
+        panelMessages = new MessagesPanel(new ScenarioEvent(),module);
         panelValidation = new ValidationPanel(new ScenarioEvent());
         panelReporting = new ReportingPanel(new ScenarioEvent());
         panelProperties = new PropertiesPanel(new ScenarioEvent());
@@ -164,14 +152,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                         loadScenario();
                         setDesignerComponents();
 
-                        ApplicationManager.getApplication().invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (scenarioModel != null) {
-                                    repaintLayerDependencies();
-                                }
-                            }
-                        });
+                        repaintLayerDependencies();
                     }
                 }
                 if (tabbedPane.getSelectedIndex() == 1) {
@@ -294,9 +275,15 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                                         .addComponent(panelValidation))
                                 .addComponent(panelReporting))
                         .addComponent(panelProperties)
-                //.addContainerGap(0, Short.MAX_VALUE) /*TODO decide*/
+                        .addContainerGap(0, Short.MAX_VALUE)
         );
 
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                repaintLayerDependencies();
+            }
+        });
         layerDesigner.getSecondComponent().addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -370,23 +357,30 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
     }
 
     private void repaintLayerDependencies(){
-        layerDependencies.removeAllDependencyLines();
+        if (scenarioModel != null) {
+            ApplicationManager.getApplication().invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    layerDependencies.removeAllDependencyLines();
 
-        int adjustmentX = scrollPaneDesignerScenario.getX()-scrollPaneDesignerScenario.getHorizontalScrollBar().getValue();
-        int adjustmentY = scrollPaneDesignerScenario.getY()-scrollPaneDesignerScenario.getVerticalScrollBar().getValue();
+                    int adjustmentX = scrollPaneDesignerScenario.getX() - scrollPaneDesignerScenario.getHorizontalScrollBar().getValue();
+                    int adjustmentY = scrollPaneDesignerScenario.getY() - scrollPaneDesignerScenario.getVerticalScrollBar().getValue();
 
-        if (scenarioModel.getMessages() != null && scenarioModel.getValidation() != null) {
-            for (Scenario.Messages.Message message : scenarioModel.getMessages().getMessage()) {
-                Point messagePoint = ((MessagesPanel) panelMessages).getMessageAnchorPoint(message);
-                messagePoint.setLocation(messagePoint.getX() + adjustmentX, messagePoint.getY() + adjustmentY);
+                    if (scenarioModel.getMessages() != null && scenarioModel.getValidation() != null) {
+                        for (Scenario.Messages.Message message : scenarioModel.getMessages().getMessage()) {
+                            Point messagePoint = ((MessagesPanel) panelMessages).getMessageAnchorPoint(message);
+                            messagePoint.setLocation(messagePoint.getX() + adjustmentX, messagePoint.getY() + adjustmentY);
 
-                for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()) {
-                    Point validatorPoint = ((ValidationPanel) panelValidation).getValidatorAnchorPoint(ref.getId());
-                    validatorPoint.setLocation(validatorPoint.getX() + adjustmentX, validatorPoint.getY() + adjustmentY);
+                            for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()) {
+                                Point validatorPoint = ((ValidationPanel) panelValidation).getValidatorAnchorPoint(ref.getId());
+                                validatorPoint.setLocation(validatorPoint.getX() + adjustmentX, validatorPoint.getY() + adjustmentY);
 
-                    layerDependencies.addDependencyLine(messagePoint, validatorPoint);
+                                layerDependencies.addDependencyLine(messagePoint, validatorPoint);
+                            }
+                        }
+                    }
                 }
-            }
+            });
         }
     }
 
@@ -395,9 +389,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
     }
 
     public void dispose() {
-//
-//        myConnection.disconnect();
-//        editor.removeEditorMouseListener(myEditorMouseListener);
+
 //        System.out.println(Thread.activeCount() + " " +
 //                Thread.currentThread().getName());
         /*TODO threadIntrpted exc.(dispose in porgress?)*/
@@ -427,24 +419,9 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                     FileDocumentManager.getInstance().saveDocument(document);
                     loadScenario();
                     setDesignerComponents();
-                    ApplicationManager.getApplication().invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (scenarioModel != null) {
-                                repaintLayerDependencies();
-                            }
-                        }
-                    });
                 }
 
-                ApplicationManager.getApplication().invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (scenarioModel != null) {
-                            repaintLayerDependencies();
-                        }
-                    }
-                });
+                repaintLayerDependencies();
             }
         }
     }
@@ -495,7 +472,6 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
     }
 
     public final class ScenarioEvent {
-        /*TODO sources*/
         public void saveGenerator(){
             scenarioModel.setGenerator((Scenario.Generator)panelGenerator.getComponentModel());
             saveScenario("Generator modification");
@@ -548,8 +524,6 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         }
 
         private void saveScenario(final String source) {
-                /*TODO psi rewrte - to doc or doc change*///final Document doc = PsiDocumentManager.getInstance(project).getCachedDocument(psiFile);
-
             /*TODO uklada do undo zasobnika ale neaktivuje undo menu, az source to aktivuje...*/
             /*TODO undo redo problem - backspace/reload config- (undo last config not apply to doc.)*/
             CommandProcessor.getInstance().executeCommand(project, new Runnable() {
@@ -560,7 +534,8 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                         public void run() {
                             try {
                                 SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-                                Schema schema = schemaFactory.newSchema(this.getClass().getResource("/schemas/" + "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd"));
+                                Schema schema = schemaFactory.newSchema(PerfCakeEditorGUI.this.getClass().getResource(
+                                        "/schemas/" + "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd"));
 
                                 JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
                                 Marshaller marshaller = context.createMarshaller();
@@ -570,36 +545,19 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                                 StringWriter stringWriter = new StringWriter();
 
                                 marshaller.marshal(scenarioModel, stringWriter);
-                                if (!stringWriter.toString().equals("")) {
+                                if (!stringWriter.toString().trim().isEmpty() && stringWriter.toString() != null) {
                                     savingScenario = true;
-                                        /*TODO log */
-                                    System.out.println("SAVE: " + source);
+                                    /*TODO for testing purpose*/System.out.println("SAVE: " + source);
                                     document.setText(stringWriter.toString());
-
-                                } else {
-                                    //some error
-                                    System.out.println("wtf");
                                 }
                                 stringWriter.close();
-                                //file.refresh(true, false);
-                            } catch (JAXBException e) {      /*TODO nemoze nastat -> LOG*/
-                                System.out.println("ERROR:" + e.getClass().getName()); /*TODO schema*/
-                                e.printStackTrace();
-                            } catch (SAXException e) {
-                                System.out.println("ERROR:" + e.getClass().getName()); /*TODO nevalidne xml*/
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                System.out.println("ERROR:" + e.getClass().getName()); /*TODO stringWriter.close */
-                                e.printStackTrace();
+                            } catch (JAXBException | SAXException | IOException e) {
+                                LOG.error(e.getCause());
                             }
                         }
                     });
                 }
             }, source, null, UndoConfirmationPolicy.DEFAULT, document);
-
         }
     }
-
-
-
 }
