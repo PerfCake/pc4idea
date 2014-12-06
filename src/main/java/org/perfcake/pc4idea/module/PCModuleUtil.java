@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.editor.designer.common;
+package org.perfcake.pc4idea.module;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.notification.Notification;
@@ -18,8 +18,8 @@ import java.io.IOException;
  * User: Stanislav Kaleta
  * Date: 4.12.2014
  */
-public class MessageFileCreator {
-    private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.editor.designer.common.MessageFileCreator");
+public class PCModuleUtil {
+    private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.module.PCModuleUtil");
 
     public static void createMessageFile(Scenario.Messages.Message message, final Module module) {
         final String fileName;
@@ -77,7 +77,6 @@ public class MessageFileCreator {
             return;
         }
 
-
         int result = Messages.showYesNoDialog("Message is local and doesn't exist in messages directory.\n" +
                         "Would you like to create empty file " + fileName + " in messages directory?", "Create Message?",
                 AllIcons.General.QuestionDialog);
@@ -86,16 +85,43 @@ public class MessageFileCreator {
             ApplicationManager.getApplication().runWriteAction(new Runnable() {
                 public void run() {
                     try {
-                        dir.createChildData(MessageFileCreator.class, fileName);
+                        dir.createChildData(PCModuleUtil.class, fileName);
                     } catch (IOException e) {
                         LOG.info(e.getMessage() + " Message will not be created!");
                         Notifications.Bus.notify(new Notification("PerfCake Plugin", "IOException",
                                 e.getMessage() + " Message " + fileName + " will not be created!",
                                 NotificationType.INFORMATION), module.getProject());
                     }
-
                 }
             });
         }
+    }
+
+    public static VirtualFile findScenario(String fileName, Module module){
+        VirtualFile scenariosDir = null;
+        if (module != null) {
+            String type = module.getOptionValue("type");
+            if (type != null) {
+                if (type.equals("PERFCAKE_MODULE")) {
+                    VirtualFile moduleFile = module.getModuleFile();
+                    if (moduleFile != null) {
+                        for (VirtualFile file : moduleFile.getParent().getChildren()) {
+                            if (file.getName().equals("scenarios")) {
+                                scenariosDir = file;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (scenariosDir == null){
+            return null;
+        }
+        for (VirtualFile scenario : scenariosDir.getChildren()){
+            if (scenario.getName().equals(fileName)){
+                return scenario;
+            }
+        }
+        return null;
     }
 }
