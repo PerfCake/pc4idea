@@ -4,7 +4,7 @@ import com.intellij.openapi.module.Module;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
-import org.perfcake.pc4idea.editor.designer.common.MessageFileCreator;
+import org.perfcake.pc4idea.module.PCModuleUtil;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.editors.MessageEditor;
@@ -132,7 +132,7 @@ public class MessagesPanel extends AbstractPanel {
                     messages.getMessage().add(message);
                     MessagesPanel.this.setComponentModel(messages);
                     scenarioEvent.saveMessages();
-                    MessageFileCreator.createMessageFile(message,module);
+                    PCModuleUtil.createMessageFile(message, module);
                 }
             }
         });
@@ -152,7 +152,7 @@ public class MessagesPanel extends AbstractPanel {
                 messages.getMessage().add(message);
                 setComponentModel(messages);
                 scenarioEvent.saveMessages();
-                MessageFileCreator.createMessageFile(message,module);
+                PCModuleUtil.createMessageFile(message, module);
             }
         }
     }

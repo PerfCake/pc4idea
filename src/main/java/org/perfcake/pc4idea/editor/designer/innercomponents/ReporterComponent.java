@@ -41,7 +41,6 @@ public class ReporterComponent extends JPanel {
     private int labelReporterClassWidth;
     private int requiredWidth;
 
-
     public ReporterComponent(Color reportingColor, int id, ReportingPanel.PanelReporters.ReportingEvent reportingEvent){
         this.reporterColor = reportingColor;
         this.id = id;
@@ -136,7 +135,6 @@ public class ReporterComponent extends JPanel {
         popupMenu.add(itemAddProperty);
         popupMenu.add(new JPopupMenu.Separator());
         popupMenu.add(itemDelete);
-
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);

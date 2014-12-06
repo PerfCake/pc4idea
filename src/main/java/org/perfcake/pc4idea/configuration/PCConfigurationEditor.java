@@ -16,20 +16,21 @@ public class PCConfigurationEditor extends SettingsEditor<PCRunConfiguration> {
 
     @Override
     protected void resetEditorFrom(PCRunConfiguration pcRunConfig) {
-        textFieldScenarioName.setText(pcRunConfig.getScenarioName());
+        String text = (pcRunConfig.getScenarioFile() == null) ? "" : pcRunConfig.getScenarioFile().getName();
+        textFieldScenarioName.setText(text);
         pcRunConfig.setInitialized(true);
     }
 
     @Override
     protected void applyEditorTo(PCRunConfiguration pcRunConfig) throws ConfigurationException {
-        pcRunConfig.setScenarioName(textFieldScenarioName.getText());
+        pcRunConfig.findScenarioFileByName(textFieldScenarioName.getText());
         pcRunConfig.setInitialized(true);
     }
 
     @NotNull
     @Override
     protected JComponent createEditor() {
-        JLabel label = new JLabel("Scenario name:");
+        JLabel label = new JLabel("Scenario file:");
         textFieldScenarioName = new JTextField();
 
         JPanel bg = new JPanel();
@@ -37,7 +38,7 @@ public class PCConfigurationEditor extends SettingsEditor<PCRunConfiguration> {
         bg.setLayout(layout);
         layout.setHorizontalGroup(layout.createParallelGroup()
                 .addGroup(layout.createSequentialGroup()
-                        .addComponent(label, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(label, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
                         .addComponent(textFieldScenarioName)));
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup()

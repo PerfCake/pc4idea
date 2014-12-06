@@ -3,6 +3,7 @@ package org.perfcake.pc4idea.configuration;
 import com.intellij.execution.actions.ConfigurationContext;
 import com.intellij.execution.actions.RunConfigurationProducer;
 import com.intellij.openapi.util.Ref;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import org.perfcake.pc4idea.editor.PerfCakeEditorProvider;
 
@@ -22,9 +23,9 @@ public class PCRunConfigurationProducer extends RunConfigurationProducer<PCRunCo
         if ((configContext.getLocation() != null) && (configContext.getLocation().getVirtualFile() != null) &&
                 new PerfCakeEditorProvider().accept(configContext.getProject(), configContext.getLocation().getVirtualFile())){
             if (!pcRunConfig.isInitialized()) {
-                String fileName = configContext.getLocation().getVirtualFile().getName();
-                pcRunConfig.setScenarioName(fileName);
-                pcRunConfig.setName(fileName);
+                VirtualFile file = configContext.getLocation().getVirtualFile();
+                pcRunConfig.setScenarioFile(file);
+                pcRunConfig.setName(file.getName());
             }
             return true;
         } else {
@@ -35,8 +36,8 @@ public class PCRunConfigurationProducer extends RunConfigurationProducer<PCRunCo
     @Override
     public boolean isConfigurationFromContext(PCRunConfiguration pcRunConfig, ConfigurationContext configContext) {
         if ((configContext.getLocation() != null) && (configContext.getLocation().getVirtualFile() != null)){
-            String fileName = configContext.getLocation().getVirtualFile().getName();
-            return fileName.equals(pcRunConfig.getScenarioName()) && pcRunConfig.isInitialized();
+            VirtualFile file = configContext.getLocation().getVirtualFile();
+            return file.equals(pcRunConfig.getScenarioFile()) && pcRunConfig.isInitialized();
         } else {
             return false;
         }

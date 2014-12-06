@@ -4,7 +4,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.EditorTablePanel;
-import org.perfcake.pc4idea.editor.designer.common.MessageFileCreator;
+import org.perfcake.pc4idea.module.PCModuleUtil;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 
 import javax.swing.*;
@@ -64,7 +64,7 @@ public class MessagesEditor extends AbstractEditor {
                     ((MessagesTableModel)tablePanelMessages.getTable().getModel()).getMessageList().add(message);
                     tablePanelMessages.getTable().repaint();
                     tablePanelMessages.getTable().revalidate();
-                    MessageFileCreator.createMessageFile(message, module);
+                    PCModuleUtil.createMessageFile(message, module);
 
                 }
             }
