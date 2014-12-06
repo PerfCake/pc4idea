@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.execution;
+package org.perfcake.pc4idea.configuration;
 
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationType;
@@ -15,7 +15,7 @@ import javax.swing.*;
  * Date: 6.12.2014
  */
 public class PCConfigurationType implements ConfigurationType {
-    private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.execution.PCConfigurationType");
+    private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.configuration.PCConfigurationType");
 
     public static PCConfigurationType getInstance() {
         PCConfigurationType pcConfigurationType = null;

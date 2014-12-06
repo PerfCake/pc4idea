@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.execution;
+package org.perfcake.pc4idea.configuration;
 
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationType;
