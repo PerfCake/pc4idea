@@ -20,8 +20,8 @@
         <moduleType id="PERFCAKE_MODULE" implementationClass="org.perfcake.pc4idea.module.PCModuleType"/>
         <fileEditorProvider implementation="org.perfcake.pc4idea.editor.PerfCakeEditorProvider"/>
         <fileIconPatcher implementation="org.perfcake.pc4idea.editor.designer.common.PerfCakeIconPatcher"/>
-        <runConfigurationProducer implementation="org.perfcake.pc4idea.execution.PCRunConfigurationProducer"/>
-        <configurationType implementation="org.perfcake.pc4idea.execution.PCConfigurationType"/>
+        <runConfigurationProducer implementation="org.perfcake.pc4idea.configuration.PCRunConfigurationProducer"/>
+        <configurationType implementation="org.perfcake.pc4idea.configuration.PCConfigurationType"/>
         <programRunner implementation="org.perfcake.pc4idea.execution.PCProgramRunner"/>
     </extensions>
 
