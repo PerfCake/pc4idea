@@ -26,9 +26,18 @@ public class PerfCakeIconPatcher implements FileIconPatcher {
         if (project != null && virtualFile != null){
             accepting = new PerfCakeEditorProvider().accept(project,virtualFile);
         }
-        Icon perfCakeIcon = null;
+        Icon perfCakeIcon = loadIcon();
+        if (perfCakeIcon == null){
+            accepting = false;
+        }
+
+        return (accepting) ? perfCakeIcon : icon;
+    }
+
+    public static Icon loadIcon(){
+        Icon perfCakeIcon;
         try {
-            final BufferedImage image = ImageIO.read(new File(getClass().getResource("/file-logo.png").getPath()));
+            final BufferedImage image = ImageIO.read(new File(PerfCakeIconPatcher.class.getResource("/file-logo.png").getPath()));
             perfCakeIcon = new Icon() {
                 @Override
                 public void paintIcon(Component c, Graphics g, int x, int y) {
@@ -46,8 +55,8 @@ public class PerfCakeIconPatcher implements FileIconPatcher {
                 }
             };
         } catch (IOException e) {
-            accepting = false;
+            perfCakeIcon = null;
         }
-        return (accepting) ? perfCakeIcon : icon;
+        return perfCakeIcon;
     }
 }

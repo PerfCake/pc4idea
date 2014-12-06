@@ -14,7 +14,7 @@ import java.io.IOException;
 public abstract class ScenarioImportHandler extends TransferHandler{
     @Override
     public boolean canImport(TransferHandler.TransferSupport support){
-        support.setDropAction(COPY);
+        //support.setDropAction(COPY);
         return support.isDataFlavorSupported(DataFlavor.stringFlavor);
     }
 

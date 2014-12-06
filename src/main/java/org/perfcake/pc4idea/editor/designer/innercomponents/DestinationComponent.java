@@ -128,7 +128,6 @@ public class DestinationComponent extends JPanel {
         popupMenu.add(new JPopupMenu.Separator());
         popupMenu.add(itemDelete);
 
-
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
         this.add(destinationAttr);
