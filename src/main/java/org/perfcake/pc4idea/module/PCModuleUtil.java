@@ -24,6 +24,10 @@ public class PCModuleUtil {
     public static void createMessageFile(Scenario.Messages.Message message, final Module module) {
         final String fileName;
         String uri = message.getUri();
+        if (uri == null){
+            LOG.info("URI isn't null. Message can't be created.");
+            return;
+        }
         if (!uri.contains("/")) {
             fileName = (uri.contains(".")) ? uri : uri + ".txt";
         } else {
