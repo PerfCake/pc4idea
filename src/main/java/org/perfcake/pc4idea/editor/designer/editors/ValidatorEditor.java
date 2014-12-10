@@ -1,10 +1,14 @@
 package org.perfcake.pc4idea.editor.designer.editors;
 
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,19 +16,20 @@ import javax.swing.*;
  * Date: 28.10.2014
  */
 public class ValidatorEditor extends AbstractEditor {
-    private JLabel labelType;
-    private JLabel labelId;
     private JComboBox comboBoxType;
     private JTextField textFieldId;
     private PropertiesEditor panelProperties;
 
-    public ValidatorEditor(){
+    private Set<String> usedIDSet;
+
+    public ValidatorEditor(Set<String> usedIDSet){
+        this.usedIDSet = usedIDSet;
         initComponents();
     }
 
     private void initComponents(){
-        labelType = new JLabel("Validator type:");
-        labelId = new JLabel("Validator id:");
+        JLabel labelType = new JLabel("Validator type:");
+        JLabel labelId = new JLabel("Validator id:");
         comboBoxType = new ComboBox();
         comboBoxType.addItem("ScriptValidator");        /*TODO load from classpath?*/
         comboBoxType.addItem("RulesValidator");
@@ -32,6 +37,7 @@ public class ValidatorEditor extends AbstractEditor {
         comboBoxType.addItem("DictionaryValidator");
         comboBoxType.setSelectedIndex(-1);
         textFieldId = new JTextField();
+
         panelProperties = new PropertiesEditor();
 
         GroupLayout layout = new GroupLayout(this);
@@ -55,10 +61,43 @@ public class ValidatorEditor extends AbstractEditor {
                 .addGap(10)
                 .addComponent(panelProperties));
     }
-    public void setValidator(Scenario.Validation.Validator validator){
+    public void setValidator(Scenario.Validation.Validator validator, boolean isAttached){
         comboBoxType.setSelectedItem(validator.getClazz());
         textFieldId.setText(validator.getId());
+        if (validator.getId() != null){
+            usedIDSet.remove(validator.getId());
+        }
         panelProperties.setListProperties(validator.getProperty());
+
+        if (isAttached){
+            textFieldId.getDocument().addDocumentListener(new DocumentListener() {
+                private boolean warningShown = false;
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    if (!warningShown){
+                        showWarning();
+                    }
+                }
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    if (!warningShown){
+                        showWarning();
+                    }
+                }
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    if (!warningShown){
+                        showWarning();
+                    }
+                }
+                private void showWarning(){
+                    warningShown = true;
+                    Messages.showWarningDialog("This Validator is attached to some message!\n" +
+                            "Any \"id\" changes will cause interruption of the attachment.", "Warning!");
+                }
+            });
+        }
+
     }
 
     public Scenario.Validation.Validator getValidator(){
@@ -77,13 +116,17 @@ public class ValidatorEditor extends AbstractEditor {
     @Override
     public ValidationInfo areInsertedValuesValid() {
         ValidationInfo info = null;
+        for (String id : usedIDSet){
+            if (textFieldId.getText().equals(id)){
+                info = new ValidationInfo("ID must be unique! \""+id+"\" is already used.");
+            }
+        }
         if (textFieldId.getText().isEmpty()){
-            info = new ValidationInfo("Text field can't be empty");
+            info = new ValidationInfo("Validator ID text field can't be empty");
         }
         if (comboBoxType.getSelectedIndex() == -1){
             info = new ValidationInfo("Validator type isn't selected");
         }
-        /*TODO valid id must be uniqe*/
         return info;
     }
 }

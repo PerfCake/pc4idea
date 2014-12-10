@@ -4,22 +4,15 @@ import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.designer.innercomponents.ValidatorComponent;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.editors.ValidationEditor;
 import org.perfcake.pc4idea.editor.designer.editors.ValidatorEditor;
+import org.perfcake.pc4idea.editor.designer.innercomponents.ValidatorComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.awt.event.*;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -29,25 +22,27 @@ import java.util.List;
  */
 public class ValidationPanel extends AbstractPanel {
     private Color validationColor = Color.getHSBColor(320/360f,0.75f,0.75f);
+    private PanelValidators panelValidators;
 
     private ValidationEditor validationEditor;
     private Scenario.Validation validation;
+    private Set<String> attachedIDs;
+    private Set<String> usedIDSet;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
-
-    private JLabel labelValidation;
-    private PanelValidators panelValidators;
 
     private int labelValidationWidth;
 
     public ValidationPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
         this.scenarioEvent = scenarioEvent;
+        attachedIDs = new TreeSet<>();
+        usedIDSet = new TreeSet<>();
         labelValidationWidth = 0;
 
         initComponents();
     }
 
     private void initComponents(){
-        labelValidation = new JLabel("Validation");
+        JLabel labelValidation = new JLabel("Validation");
         labelValidation.setFont(new Font(labelValidation.getFont().getName(),0,15));
         labelValidation.setForeground(validationColor);
         FontMetrics fontMetrics = labelValidation.getFontMetrics(labelValidation.getFont());
@@ -79,44 +74,77 @@ public class ValidationPanel extends AbstractPanel {
                 e.getComponent().repaint();
             }
         });
+    }
 
-        this.setTransferHandler(new TransferHandler(){
-            @Override
-            public boolean canImport(TransferHandler.TransferSupport support){
-                support.setDropAction(COPY);
-                return support.isDataFlavorSupported(DataFlavor.stringFlavor);
-            }
-            @Override
-            public boolean importData(TransferHandler.TransferSupport support){
-                if (!canImport(support)) {
-                    return false;
-                }
-                Transferable t = support.getTransferable();
-                String transferredData = "";
-                try {
-                    transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
-                } catch (UnsupportedFlavorException e) {
-                    e.printStackTrace();   /*TODO log*/
-                } catch (IOException e) {
-                    e.printStackTrace();   /*TODO log*/
-                }
-                if (transferredData.contains("Validator")){
-                    Scenario.Validation.Validator validatorClass = new Scenario.Validation.Validator();
-                    validatorClass.setClazz(transferredData);
+    public void setValidationModel(Scenario.Validation validation, Set<String> attachedIDs){
+        this.attachedIDs.clear();
+        this.attachedIDs.addAll(attachedIDs);
+        setComponentModel(validation);
+    }
 
-                    ValidatorEditor validatorEditor = new ValidatorEditor();
-                    validatorEditor.setValidator(validatorClass);
-                    ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
-                    dialog.show();
-                    if (dialog.getExitCode() == 0) {
-                        validation.getValidator().add(validatorEditor.getValidator());
-                        setComponentModel(validation);
-                        scenarioEvent.saveValidation();
-                    }
+    public Set<String> getUsedIDSet(){
+        return usedIDSet;
+    }
+
+    public Point getValidatorAnchorPoint(String validatorID){
+        Point anchorPoint = panelValidators.getValidatorAnchorPoint(validatorID);
+        anchorPoint.setLocation(anchorPoint.getX()+this.getX(),anchorPoint.getY()+this.getY());
+        return anchorPoint;
+    }
+
+    @Override
+    protected List<JMenuItem> getPopupMenuItems(){
+        List<JMenuItem> menuItems = new ArrayList<>();
+
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ScenarioDialogEditor editor = new ScenarioDialogEditor(getEditorPanel());
+                editor.show();
+                if (editor.getExitCode() == 0) {
+                    applyChanges();
                 }
-                return true;
             }
         });
+        menuItems.add(itemOpenEditor);
+
+        JMenuItem itemAddValidator = new JMenuItem("Add Validator");
+        itemAddValidator.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ValidatorEditor validatorEditor = new ValidatorEditor(usedIDSet);
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Scenario.Validation.Validator validator = validatorEditor.getValidator();
+                    validation.getValidator().add(validator);
+                    ValidationPanel.this.setComponentModel(validation);
+                    scenarioEvent.saveValidation();
+                }
+            }
+        });
+        menuItems.add(itemAddValidator);
+
+        return menuItems;
+    }
+
+    @Override
+    protected void performImport(String transferredData){
+        if (transferredData.contains("Validator")){
+            Scenario.Validation.Validator validatorClass = new Scenario.Validation.Validator();
+            validatorClass.setClazz(transferredData);
+
+            ValidatorEditor validatorEditor = new ValidatorEditor(usedIDSet);
+            validatorEditor.setValidator(validatorClass,false);
+            ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
+            dialog.show();
+            if (dialog.getExitCode() == 0) {
+                validation.getValidator().add(validatorEditor.getValidator());
+                setComponentModel(validation);
+                scenarioEvent.saveValidation();
+            }
+        }
     }
 
     @Override
@@ -126,8 +154,8 @@ public class ValidationPanel extends AbstractPanel {
 
     @Override
     protected AbstractEditor getEditorPanel() {
-        validationEditor = new ValidationEditor();
-        validationEditor.setValidation(validation);
+        validationEditor = new ValidationEditor(attachedIDs);
+        validationEditor.setValidation(validation,usedIDSet);
         return validationEditor;
     }
 
@@ -139,16 +167,24 @@ public class ValidationPanel extends AbstractPanel {
 
     @Override
     public void setComponentModel(Object componentModel) {
-        validation = (Scenario.Validation) componentModel;
-
-        panelValidators.setValidators(validation.getValidator());
-
+        if (componentModel != null) {
+            validation = (Scenario.Validation) componentModel;
+            panelValidators.setValidators(validation.getValidator());
+        } else {
+            validation = new Scenario.Validation();
+            panelValidators.setValidators(new ArrayList<Scenario.Validation.Validator>());
+        }
         this.revalidate();
+
+        usedIDSet.clear();
+        for (Scenario.Validation.Validator validator : validation.getValidator()){
+            usedIDSet.add(validator.getId());
+        }
     }
 
     @Override
     public Object getComponentModel() {
-        return validation;
+        return (validation.getValidator().isEmpty()) ? null : validation;
     }
 
     @Override
@@ -159,22 +195,6 @@ public class ValidationPanel extends AbstractPanel {
         dimension.height = panelValidators.getValidatorsRowCount()*40 + 50;
         return dimension;
     }
-/*TODO Validation able to fit Reporting*/
-//    @Override
-//    public Dimension getPreferredSize(){
-//        Dimension dimension = new Dimension();
-//        dimension.width = super.getPreferredSize().width;
-//        dimension.height = panelValidators.getValidatorsRowCount()*40 + 50;
-//        return dimension;
-//    }
-//
-//    @Override
-//    public Dimension getMaximumSize(){
-//        Dimension dimension = new Dimension();
-//        dimension.width = super.getMaximumSize().width;
-//        dimension.height = panelValidators.getValidatorsRowCount()*40 + 50;
-//        return dimension;
-//    }
 
     public class PanelValidators extends JPanel {
         private List<ValidatorComponent> validatorComponentList;
@@ -254,7 +274,13 @@ public class ValidationPanel extends AbstractPanel {
             widestValidatorWidth = 0;
             int validatorId = 0;
             for (Scenario.Validation.Validator validator : validatorList) {
-                ValidatorComponent validatorComponent = new ValidatorComponent(validationColor,validatorId,new ValidationEvent());
+                boolean isAttached = false;
+                for (String id : attachedIDs){
+                    if (validator.getId().equals(id)){
+                        isAttached = true;
+                    }
+                }
+                ValidatorComponent validatorComponent = new ValidatorComponent(validationColor,validatorId,isAttached,usedIDSet, new ValidationEvent());
                 validatorComponent.setValidator(validator);
                 validatorComponentList.add(validatorComponent);
                 this.add(validatorComponent);
@@ -294,6 +320,17 @@ public class ValidationPanel extends AbstractPanel {
                 }
                 validatorsRowCount = (expectedRows != validatorsRowCount) ? expectedRows : validatorsRowCount;
             }
+        }
+
+        private Point getValidatorAnchorPoint(String validatorID){
+            for (ValidatorComponent validatorComponent : validatorComponentList){
+                if (validatorComponent.getValidator().getId().equals(validatorID)){
+                    Point anchorPoint = validatorComponent.getLocation();
+                    anchorPoint.setLocation(anchorPoint.getX()+this.getX()+4+validatorComponent.getWidth()/2,anchorPoint.getY()+this.getY()+4);
+                    return anchorPoint;
+                }
+            }
+            return null;
         }
 
         @Override

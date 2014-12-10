@@ -1,23 +1,23 @@
 package org.perfcake.pc4idea.editor.designer.outercomponents;
 
+import com.intellij.openapi.module.Module;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
+import org.perfcake.pc4idea.module.PCModuleUtil;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.designer.innercomponents.MessageComponent;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.editors.MessageEditor;
 import org.perfcake.pc4idea.editor.designer.editors.MessagesEditor;
+import org.perfcake.pc4idea.editor.designer.innercomponents.MessageComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,25 +26,27 @@ import java.util.Collections;
  */
 public class MessagesPanel extends AbstractPanel {
     private Color messagesColor = Color.getHSBColor(40/360f,0.75f,0.75f);
+    private PanelMessages panelMessages;
 
     private MessagesEditor messagesEditor;
     private Scenario.Messages messages;
+    private Set<String> validatorIDSet;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
-
-    private JLabel labelMessages;
-    private PanelMessages panelMessages;
+    private Module module;
 
     private int labelMessagesWidth;
 
-    public MessagesPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
+    public MessagesPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent, Module module){
         this.scenarioEvent = scenarioEvent;
+        this.module = module;
+        validatorIDSet = new TreeSet<>();
         labelMessagesWidth = 0;
 
         initComponents();
     }
 
     private void initComponents(){
-        labelMessages = new JLabel("Messages");
+        JLabel labelMessages = new JLabel("Messages");
         labelMessages.setFont(new Font(labelMessages.getFont().getName(),0,15));
         labelMessages.setForeground(messagesColor);
         FontMetrics fontMetrics = labelMessages.getFontMetrics(labelMessages.getFont());
@@ -68,51 +70,102 @@ public class MessagesPanel extends AbstractPanel {
                 10,
                 SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, panelMessages,8,SpringLayout.SOUTH, labelMessages);
+    }
 
-        this.setTransferHandler(new TransferHandler(){
-            @Override
-            public boolean canImport(TransferHandler.TransferSupport support){
-                support.setDropAction(COPY);
-                return support.isDataFlavorSupported(DataFlavor.stringFlavor);
-            }
-            @Override
-            public boolean importData(TransferHandler.TransferSupport support){
-                if (!canImport(support)) {
-                    return false;
-                }
-                Transferable t = support.getTransferable();
-                String transferredData = "";
-                try {
-                    transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
-                } catch (UnsupportedFlavorException e) {
-                    e.printStackTrace();   /*TODO log*/
-                } catch (IOException e) {
-                    e.printStackTrace();   /*TODO log*/
-                }
-                if (transferredData.equals("Message")){
-                    MessageEditor messageEditor = new MessageEditor();
-                    ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
-                    dialog.show();
-                    if (dialog.getExitCode() == 0) {
-                        messages.getMessage().add(messageEditor.getMessage());
-                        setComponentModel(messages);
-                        scenarioEvent.saveMessages();
+    public void setValidatorIDSet(Set<String> validatorIDSet){
+        this.validatorIDSet.clear();
+        this.validatorIDSet.addAll(validatorIDSet);
+
+        for (Scenario.Messages.Message message : messages.getMessage()){
+            List<Scenario.Messages.Message.ValidatorRef> tempList = new ArrayList<>();
+            tempList.addAll(message.getValidatorRef());
+
+            for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()){
+                boolean refIsValid = false;
+                for (String id : this.validatorIDSet){
+                    if (id.equals(ref.getId())){
+                        refIsValid = true;
                     }
                 }
-                return true;
+                if (!refIsValid){
+                    tempList.remove(ref);
+                }
             }
-        });
+
+            message.getValidatorRef().clear();
+            message.getValidatorRef().addAll(tempList);
+        }
+    }
+
+    public Point getMessageAnchorPoint(Scenario.Messages.Message message){
+        Point anchorPoint = panelMessages.getMessageAnchorPoint(message);
+        anchorPoint.setLocation(anchorPoint.getX()+this.getX(),anchorPoint.getY()+this.getY());
+        return anchorPoint;
     }
 
     @Override
-   protected Color getColor() {
+    protected List<JMenuItem> getPopupMenuItems(){
+        List<JMenuItem> menuItems = new ArrayList<>();
+
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ScenarioDialogEditor editor = new ScenarioDialogEditor(getEditorPanel());
+                editor.show();
+                if (editor.getExitCode() == 0) {
+                    applyChanges();
+                }
+            }
+        });
+        menuItems.add(itemOpenEditor);
+
+        JMenuItem itemAddMessage = new JMenuItem("Add Message");
+        itemAddMessage.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MessageEditor messageEditor = new MessageEditor(validatorIDSet);
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Scenario.Messages.Message message = messageEditor.getMessage();
+                    messages.getMessage().add(message);
+                    MessagesPanel.this.setComponentModel(messages);
+                    scenarioEvent.saveMessages();
+                    PCModuleUtil.createMessageFile(message, module);
+                }
+            }
+        });
+        menuItems.add(itemAddMessage);
+
+        return menuItems;
+    }
+
+    @Override
+    protected void performImport(String transferredData){
+        if (transferredData.equals("Message")){
+            MessageEditor messageEditor = new MessageEditor(validatorIDSet);
+            ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
+            dialog.show();
+            if (dialog.getExitCode() == 0) {
+                Scenario.Messages.Message message = messageEditor.getMessage();
+                messages.getMessage().add(message);
+                setComponentModel(messages);
+                scenarioEvent.saveMessages();
+                PCModuleUtil.createMessageFile(message, module);
+            }
+        }
+    }
+
+    @Override
+    protected Color getColor() {
         return messagesColor;
     }
 
     @Override
     protected AbstractEditor getEditorPanel() {
-        messagesEditor = new MessagesEditor();
-        messagesEditor.setMessages(messages);
+        messagesEditor = new MessagesEditor(module);
+        messagesEditor.setMessages(messages, validatorIDSet);
         return messagesEditor;
     }
 
@@ -124,16 +177,19 @@ public class MessagesPanel extends AbstractPanel {
 
     @Override
     public void setComponentModel(Object componentModel) {
-        messages = (Scenario.Messages) componentModel;
-
-        panelMessages.setMessages(messages.getMessage());
-
+        if (componentModel != null) {
+            messages = (Scenario.Messages) componentModel;
+            panelMessages.setMessages(messages.getMessage());
+        } else {
+            messages = new Scenario.Messages();
+            panelMessages.setMessages(new ArrayList<Scenario.Messages.Message>());
+        }
         this.revalidate();
     }
 
     @Override
     public Object getComponentModel() {
-        return messages;
+        return (messages.getMessage().isEmpty()) ? null : messages;
     }
 
     @Override
@@ -239,7 +295,7 @@ public class MessagesPanel extends AbstractPanel {
             widestMessageWidth = 0;
             int messageId = 0;
             for (Scenario.Messages.Message message : messagesList) {
-                MessageComponent messageComponent = new MessageComponent(messagesColor,messageId,new MessagesEvent());
+                MessageComponent messageComponent = new MessageComponent(messagesColor,messageId, validatorIDSet,new MessagesEvent());
                 messageComponent.setMessage(message);
                 messageComponentList.add(messageComponent);
                 this.add(messageComponent);
@@ -279,6 +335,17 @@ public class MessagesPanel extends AbstractPanel {
                 }
                 messagesRowCount = (expectedRows != messagesRowCount) ? expectedRows : messagesRowCount;
             }
+        }
+
+        private Point getMessageAnchorPoint(Scenario.Messages.Message message){
+            for (MessageComponent messageComponent : messageComponentList){
+                if (messageComponent.getMessage().equals(message)){
+                    Point anchorPoint = messageComponent.getLocation();
+                    anchorPoint.setLocation(anchorPoint.getX()+this.getX()+4+messageComponent.getWidth()/2,anchorPoint.getY()+this.getY()+37);
+                    return anchorPoint;
+                }
+            }
+            return null;
         }
 
         @Override

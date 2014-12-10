@@ -1,14 +1,14 @@
 package org.perfcake.pc4idea.editor.designer.outercomponents;
 
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
+import org.perfcake.pc4idea.editor.designer.common.ScenarioImportHandler;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,29 +17,19 @@ import java.awt.event.MouseEvent;
  */
 public abstract class AbstractPanel extends JPanel {
     private JPopupMenu popupMenu;
-    private JMenuItem popupOpenEditor;
 
     public AbstractPanel() {
         this.setOpaque(false);
 
-        popupOpenEditor = new JMenuItem();
-        popupOpenEditor.setText("Open Editor");
-        popupOpenEditor.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ScenarioDialogEditor editor = new ScenarioDialogEditor(getEditorPanel());
-                editor.show();
-                if (editor.getExitCode() == 0) {
-                    applyChanges();
-                }
-            }
-        });
-
         popupMenu = new JPopupMenu();
-        popupMenu.add(popupOpenEditor);
-        popupMenu.add(new JPopupMenu.Separator());
-        /*TODO dalsie?*/
-
+        boolean separatorAfterFirst = false;
+        for (JMenuItem item : getPopupMenuItems()){
+            popupMenu.add(item);
+            if (!separatorAfterFirst) {
+                popupMenu.add(new JPopupMenu.Separator());
+                separatorAfterFirst = true;
+            }
+        }
 
         this.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
@@ -58,8 +48,17 @@ public abstract class AbstractPanel extends JPanel {
             }
         });
 
+        this.setTransferHandler(new ScenarioImportHandler() {
+            @Override
+            public void performImport(String transferredData) {
+                AbstractPanel.this.performImport(transferredData);
+            }
+        });
+
     }
 
+    protected abstract List<JMenuItem> getPopupMenuItems();
+    protected abstract void performImport(String transferredData);
     protected abstract Color getColor();
     protected abstract AbstractEditor getEditorPanel();
     protected abstract void applyChanges();

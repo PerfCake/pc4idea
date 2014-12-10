@@ -2,6 +2,7 @@ package org.perfcake.pc4idea.editor;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.module.ModuleUtil;
@@ -12,13 +13,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.LightVirtualFile;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 
 
 /**
@@ -27,8 +21,8 @@ import java.io.IOException;
  * Date: 17.9.2014
  */
 public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
-    private static final Logger LOG = Logger.getInstance("#...PerfCakeEditorProvider");
-    private final String EDITOR_TYPE_ID = "PerfCakeDesigner";
+    private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.editor.PerfCakeEditorProvider");
+    private static final String EDITOR_TYPE_ID = "PerfCakeEditor";
 
     public static PerfCakeEditorProvider getInstance() {
         return ApplicationManager.getApplication().getComponent(PerfCakeEditorProvider.class);
@@ -37,37 +31,17 @@ public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
     // accepting perfcake-scenario-3.0 xml
     @Override
     public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
-
         if (virtualFile.getFileType() == StdFileTypes.XML && !StdFileTypes.XML.isBinary() &&
-            (ModuleUtil.findModuleForFile(virtualFile, project) != null || virtualFile instanceof LightVirtualFile) ) {
-            String xmlnsAttr = "";
-            try {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                Document temp = builder.parse(virtualFile.getPath());
-
-                xmlnsAttr = temp.getDocumentElement().getAttribute("xmlns");
-            } catch (ParserConfigurationException ignored) {
-                // will return false
-            } catch (SAXException ignored) {
-                // will return false
-            } catch (IOException ignored) {
-                // will return false
-            }
-            if (xmlnsAttr.equals("urn:perfcake:scenario:3.0")) {
-                if (ModuleUtil.findModuleForFile(virtualFile, project).getOptionValue("type").equals("PERFCAKE_MODULE")) {
+                (ModuleUtil.findModuleForFile(virtualFile, project) != null || virtualFile instanceof LightVirtualFile) ) {
+            Document document = FileDocumentManager.getInstance().getDocument(virtualFile);
+            if (document != null){
+                String text = document.getText();
+                if (text.contains("<scenario xmlns=\"urn:perfcake:scenario:3.0\">")){
                     return true;
-                } else {
-                    /*TODO log message that file type is perfcake but module type isnt perfcake*/
-                    return false;
                 }
-            } else {
-                return false;
             }
-        } else {
-            return false;
         }
-
+        return false;
     }
 
     @NotNull
@@ -95,7 +69,7 @@ public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
 
     @Override
     public void writeState(@NotNull FileEditorState fileEditorState, @NotNull Project project, @NotNull Element element) {
-
+        // not used
     }
 
     @NotNull

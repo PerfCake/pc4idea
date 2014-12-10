@@ -11,8 +11,6 @@ import javax.swing.*;
  * Date: 19.10.2014
  */
 public class PropertyEditor extends AbstractEditor {
-    private JLabel labelName;
-    private JLabel labelValue;
     private JTextField textFieldName;
     private JTextField textFieldValue;
 
@@ -21,8 +19,8 @@ public class PropertyEditor extends AbstractEditor {
     }
 
     private void initComponents(){
-        labelName = new JLabel("Name:");
-        labelValue = new JLabel("Value:");
+        JLabel labelName = new JLabel("Name:");
+        JLabel labelValue = new JLabel("Value:");
         textFieldName = new JTextField();
         textFieldValue = new JTextField();
 

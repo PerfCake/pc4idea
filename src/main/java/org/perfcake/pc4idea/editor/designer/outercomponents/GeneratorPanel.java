@@ -1,12 +1,19 @@
 package org.perfcake.pc4idea.editor.designer.outercomponents;
 
+import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
+import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.editors.GeneratorEditor;
+import org.perfcake.pc4idea.editor.designer.editors.PropertyEditor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,14 +21,14 @@ import java.awt.*;
  * Date: 28.9.2014
  */
 public class GeneratorPanel extends AbstractPanel {
-    private Color generatorColor = Color.getHSBColor(120/360f,0.75f,0.75f);/* TODO default but able to change in settings*/
+    private Color generatorColor = Color.getHSBColor(120/360f,0.75f,0.75f);
+    private JLabel generatorAttr;
+    private JLabel generatorRunAttr;
 
     private GeneratorEditor panelEditor;
     private Scenario.Generator generator;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
 
-    private JLabel generatorAttr;
-    private JLabel generatorRunAttr;
     private int minimumWidth = 0;
 
     public GeneratorPanel(PerfCakeEditorGUI.ScenarioEvent scenarioEvent){
@@ -54,6 +61,48 @@ public class GeneratorPanel extends AbstractPanel {
                 15,
                 SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, generatorRunAttr,8,SpringLayout.SOUTH, generatorAttr);
+    }
+
+    @Override
+    protected List<JMenuItem> getPopupMenuItems(){
+        List<JMenuItem> menuItems = new ArrayList<>();
+
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ScenarioDialogEditor editor = new ScenarioDialogEditor(getEditorPanel());
+                editor.show();
+                if (editor.getExitCode() == 0) {
+                    applyChanges();
+                }
+            }
+        });
+        menuItems.add(itemOpenEditor);
+
+        JMenuItem itemAddProperty = new JMenuItem("Add Property");
+        itemAddProperty.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PropertyEditor propertyEditor = new PropertyEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Property property = propertyEditor.getProperty();
+                    generator.getProperty().add(property);
+                    GeneratorPanel.this.setComponentModel(generator);
+                    scenarioEvent.saveGenerator();
+                }
+            }
+        });
+        menuItems.add(itemAddProperty);
+
+        return menuItems;
+    }
+
+    @Override
+    protected void performImport(String transferredData){
+        // not supported
     }
 
     @Override

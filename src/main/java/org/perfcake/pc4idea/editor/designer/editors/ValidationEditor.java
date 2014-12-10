@@ -1,5 +1,7 @@
 package org.perfcake.pc4idea.editor.designer.editors;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.EditorTablePanel;
@@ -7,11 +9,12 @@ import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,20 +22,22 @@ import java.util.List;
  * Date: 28.10.2014
  */
 public class ValidationEditor extends AbstractEditor {
-    private JLabel labelEnabled;
-    private JLabel labelFastForward;
     private JCheckBox checkBoxEnabled;
     private JCheckBox checkBoxFastForward;
     private EditorTablePanel tablePanelValidators;
 
-    public ValidationEditor(){
+    private Set<String> attachedIDs;
+    private Set<String> usedIDSet;
+
+    public ValidationEditor(Set<String> attachedIDs){
+        this.attachedIDs = attachedIDs;
+        usedIDSet = new TreeSet<>();
         initComponents();
-        this.setPreferredSize(new Dimension(350,0));
     }
 
     private void initComponents(){
-        labelEnabled = new JLabel("Enabled: ");
-        labelFastForward = new JLabel("Fast Forward: ");
+        JLabel labelEnabled = new JLabel("Enabled:");
+        JLabel labelFastForward = new JLabel("Fast Forward:");
         checkBoxEnabled = new JCheckBox();
         checkBoxFastForward = new JCheckBox();
         tablePanelValidators = new EditorTablePanel(new ValidatorsTableModel(new ArrayList<Scenario.Validation.Validator>())) {
@@ -42,8 +47,15 @@ public class ValidationEditor extends AbstractEditor {
                     if (e.getClickCount() == 2) {
                         int selectedRow = tablePanelValidators.getTable().getSelectedRow();
                         if (selectedRow >= 0) {
-                            ValidatorEditor validatorEditor = new ValidatorEditor();
-                            validatorEditor.setValidator(((ValidatorsTableModel) tablePanelValidators.getTable().getModel()).getValidatorList().get(selectedRow));
+                            Scenario.Validation.Validator validator = ((ValidatorsTableModel) tablePanelValidators.getTable().getModel()).getValidatorList().get(selectedRow);
+                            boolean isAttached = false;
+                            for (String id : attachedIDs){
+                                if (id.equals(validator.getId())){
+                                    isAttached = true;
+                                }
+                            }
+                            ValidatorEditor validatorEditor = new ValidatorEditor(usedIDSet);
+                            validatorEditor.setValidator(validator,isAttached);
                             ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
                             dialog.show();
                             if (dialog.getExitCode() == 0) {
@@ -57,7 +69,7 @@ public class ValidationEditor extends AbstractEditor {
 
             @Override
             public void buttonAddActionPerformed(ActionEvent e) {
-                ValidatorEditor validatorEditor = new ValidatorEditor();
+                ValidatorEditor validatorEditor = new ValidatorEditor(usedIDSet);
                 ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
                 dialog.show();
                 if (dialog.getExitCode() == 0) {
@@ -72,8 +84,15 @@ public class ValidationEditor extends AbstractEditor {
             public void buttonEditActionPerformed(ActionEvent e) {
                 int selectedRow = tablePanelValidators.getTable().getSelectedRow();
                 if (selectedRow >= 0) {
-                    ValidatorEditor validatorEditor = new ValidatorEditor();
-                    validatorEditor.setValidator(((ValidatorsTableModel) tablePanelValidators.getTable().getModel()).getValidatorList().get(selectedRow));
+                    Scenario.Validation.Validator validator = ((ValidatorsTableModel) tablePanelValidators.getTable().getModel()).getValidatorList().get(selectedRow);
+                    boolean isAttached = false;
+                    for (String id : attachedIDs){
+                        if (id.equals(validator.getId())){
+                            isAttached = true;
+                        }
+                    }
+                    ValidatorEditor validatorEditor = new ValidatorEditor(usedIDSet);
+                    validatorEditor.setValidator(validator,isAttached);
                     ScenarioDialogEditor dialog = new ScenarioDialogEditor(validatorEditor);
                     dialog.show();
                     if (dialog.getExitCode() == 0) {
@@ -87,6 +106,21 @@ public class ValidationEditor extends AbstractEditor {
             public void buttonDeleteActionPerformed(ActionEvent e) {
                 int selectedRow = tablePanelValidators.getTable().getSelectedRow();
                 if (selectedRow >= 0) {
+                    Scenario.Validation.Validator validator = ((ValidatorsTableModel) tablePanelValidators.getTable().getModel()).getValidatorList().get(selectedRow);
+                    boolean isAttached = false;
+                    for (String id : attachedIDs){
+                        if (id.equals(validator.getId())){
+                            isAttached = true;
+                        }
+                    }
+                    if (isAttached){
+                        int result = Messages.showOkCancelDialog("This Validator is attached to some message!\n"+
+                                "Are you sure you want to delete this Validator?","Warning!", AllIcons.General.Warning);
+                        if (result != 0){
+                            return;
+                        }
+                    }
+
                     ((ValidatorsTableModel)tablePanelValidators.getTable().getModel()).getValidatorList().remove(selectedRow);
                     tablePanelValidators.getTable().repaint();
                     tablePanelValidators.getTable().revalidate();
@@ -116,10 +150,12 @@ public class ValidationEditor extends AbstractEditor {
                 .addComponent(tablePanelValidators));
     }
 
-    public void setValidation(Scenario.Validation validation){
+    public void setValidation(Scenario.Validation validation, Set<String> usedIDSet){
         checkBoxEnabled.setSelected(validation.isEnabled());
         checkBoxFastForward.setSelected(validation.isFastForward());
         tablePanelValidators.getTable().setModel(new ValidatorsTableModel(validation.getValidator()));
+
+        this.usedIDSet = usedIDSet;
     }
 
     public Scenario.Validation getValidation(){

@@ -19,8 +19,6 @@ import java.util.List;
  * Date: 25.10.2014
  */
 public class ReporterEditor extends AbstractEditor {
-    private JLabel labelReporterType;
-    private JLabel labelEnabled;
     private JComboBox comboBoxReporterType;
     private JCheckBox checkBoxEnabled;
     private EditorTablePanel tablePanelDestinations;
@@ -31,8 +29,8 @@ public class ReporterEditor extends AbstractEditor {
     }
 
     private void initComponents(){
-        labelReporterType = new JLabel("Reporter type:");
-        labelEnabled = new JLabel("Enabled:");
+        JLabel labelReporterType = new JLabel("Reporter type:");
+        JLabel labelEnabled = new JLabel("Enabled:");
         comboBoxReporterType = new ComboBox();
         comboBoxReporterType.addItem("ThroughputStatsReporter");          /*TODO from classpath*/
         comboBoxReporterType.addItem("MemoryUsageReporter");
@@ -40,6 +38,7 @@ public class ReporterEditor extends AbstractEditor {
         comboBoxReporterType.addItem("WarmUpReporter");
         comboBoxReporterType.setSelectedIndex(-1);
         checkBoxEnabled = new JCheckBox();
+        checkBoxEnabled.setSelected(true);
 
         tablePanelDestinations = new EditorTablePanel(new DestinationsTableModel(new ArrayList<Scenario.Reporting.Reporter.Destination>())) {
             @Override

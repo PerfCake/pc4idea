@@ -5,22 +5,17 @@ import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.designer.innercomponents.PropertyComponent;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.editors.PropertiesEditor;
 import org.perfcake.pc4idea.editor.designer.editors.PropertyEditor;
+import org.perfcake.pc4idea.editor.designer.innercomponents.PropertyComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,13 +24,11 @@ import java.util.Collections;
  */
 public class PropertiesPanel extends AbstractPanel {
     private Color propertiesColor = Color.getHSBColor(160/360f,0.75f,0.75f);
+    private PanelProperties panelProperties;
 
     private PropertiesEditor propertiesEditor;
     private Scenario.Properties properties;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
-
-    private JLabel labelProperties;
-    private PanelProperties panelProperties;
 
     private int labelPropertiesWidth;
 
@@ -46,7 +39,7 @@ public class PropertiesPanel extends AbstractPanel {
     }
 
     private void initComponents(){
-        labelProperties = new JLabel("Scenario Properties");
+        JLabel labelProperties = new JLabel("Scenario Properties");
         labelProperties.setFont(new Font(labelProperties.getFont().getName(),0,15));
         labelProperties.setForeground(propertiesColor);
         FontMetrics fontMetrics = labelProperties.getFontMetrics(labelProperties.getFont());
@@ -78,40 +71,57 @@ public class PropertiesPanel extends AbstractPanel {
                 e.getComponent().repaint();
             }
         });
+    }
 
-        this.setTransferHandler(new TransferHandler(){
+    @Override
+    protected List<JMenuItem> getPopupMenuItems(){
+        List<JMenuItem> menuItems = new ArrayList<>();
+
+        JMenuItem popupOpenEditor = new JMenuItem("Open Editor");
+        popupOpenEditor.addActionListener(new ActionListener() {
             @Override
-            public boolean canImport(TransferHandler.TransferSupport support){
-                support.setDropAction(COPY);
-                return support.isDataFlavorSupported(DataFlavor.stringFlavor);
-            }
-            @Override
-            public boolean importData(TransferHandler.TransferSupport support){
-                if (!canImport(support)) {
-                    return false;
+            public void actionPerformed(ActionEvent e) {
+                ScenarioDialogEditor editor = new ScenarioDialogEditor(getEditorPanel());
+                editor.show();
+                if (editor.getExitCode() == 0) {
+                    applyChanges();
                 }
-                Transferable t = support.getTransferable();
-                String transferredData = "";
-                try {
-                    transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
-                } catch (UnsupportedFlavorException e) {
-                    e.printStackTrace();   /*TODO log*/
-                } catch (IOException e) {
-                    e.printStackTrace();   /*TODO log*/
-                }
-                if (transferredData.equals("Property")) {
-                    PropertyEditor propertyEditor = new PropertyEditor();
-                    ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
-                    dialog.show();
-                    if (dialog.getExitCode() == 0) {
-                        properties.getProperty().add(propertyEditor.getProperty());
-                        setComponentModel(properties);
-                        scenarioEvent.saveProperties();
-                    }
-                }
-                return true;
             }
         });
+        menuItems.add(popupOpenEditor);
+
+        JMenuItem itemAddProperty = new JMenuItem("Add Property");
+        itemAddProperty.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PropertyEditor propertyEditor = new PropertyEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Property property = propertyEditor.getProperty();
+                    properties.getProperty().add(property);
+                    PropertiesPanel.this.setComponentModel(properties);
+                    scenarioEvent.saveProperties();
+                }
+            }
+        });
+        menuItems.add(itemAddProperty);
+
+        return menuItems;
+    }
+
+    @Override
+    protected void performImport(String transferredData){
+        if (transferredData.equals("Property")) {
+            PropertyEditor propertyEditor = new PropertyEditor();
+            ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+            dialog.show();
+            if (dialog.getExitCode() == 0) {
+                properties.getProperty().add(propertyEditor.getProperty());
+                setComponentModel(properties);
+                scenarioEvent.saveProperties();
+            }
+        }
     }
 
     @Override
@@ -134,16 +144,19 @@ public class PropertiesPanel extends AbstractPanel {
 
     @Override
     public void setComponentModel(Object componentModel) {
-        properties = (Scenario.Properties) componentModel;
-
-        panelProperties.setProperties(properties.getProperty());
-
+        if (componentModel != null) {
+            properties = (Scenario.Properties) componentModel;
+            panelProperties.setProperties(properties.getProperty());
+        } else {
+            properties = new Scenario.Properties();
+            panelProperties.setProperties(new ArrayList<Property>());
+        }
         this.revalidate();
     }
 
     @Override
     public Object getComponentModel() {
-        return properties;
+        return (properties.getProperty().isEmpty()) ? null : properties;
     }
 
     @Override

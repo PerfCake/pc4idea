@@ -5,20 +5,14 @@ import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.designer.common.ComponentDragListener;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.designer.innercomponents.PropertyComponent;
 import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.editors.PropertyEditor;
 import org.perfcake.pc4idea.editor.designer.editors.SenderEditor;
+import org.perfcake.pc4idea.editor.designer.innercomponents.PropertyComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,13 +24,12 @@ import java.util.List;
  */
 public class SenderPanel extends AbstractPanel {
     private Color senderColor = Color.getHSBColor(220/360f,0.75f,0.75f);
+    private JLabel labelSenderClass;
+    private PanelProperties panelProperties;
 
     private SenderEditor senderEditor;
     private Scenario.Sender sender;
     private PerfCakeEditorGUI.ScenarioEvent scenarioEvent;
-
-    private JLabel labelSenderClass;
-    private PanelProperties panelProperties;
 
     private int labelSenderClassWidth;
 
@@ -78,40 +71,57 @@ public class SenderPanel extends AbstractPanel {
                 e.getComponent().repaint();
             }
         });
+    }
 
-        this.setTransferHandler(new TransferHandler(){
+    @Override
+    protected List<JMenuItem> getPopupMenuItems(){
+        List<JMenuItem> menuItems = new ArrayList<>();
+
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
             @Override
-            public boolean canImport(TransferHandler.TransferSupport support){
-                support.setDropAction(COPY);
-                return support.isDataFlavorSupported(DataFlavor.stringFlavor);
-            }
-            @Override
-            public boolean importData(TransferHandler.TransferSupport support){
-                if (!canImport(support)) {
-                    return false;
+            public void actionPerformed(ActionEvent e) {
+                ScenarioDialogEditor editor = new ScenarioDialogEditor(getEditorPanel());
+                editor.show();
+                if (editor.getExitCode() == 0) {
+                    applyChanges();
                 }
-                Transferable t = support.getTransferable();
-                String transferredData = "";
-                try {
-                    transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
-                } catch (UnsupportedFlavorException e) {
-                    e.printStackTrace();   /*TODO log*/
-                } catch (IOException e) {
-                    e.printStackTrace();   /*TODO log*/
-                }
-                if (transferredData.equals("Property")) {
-                    PropertyEditor propertyEditor = new PropertyEditor();
-                    ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
-                    dialog.show();
-                    if (dialog.getExitCode() == 0) {
-                        sender.getProperty().add(propertyEditor.getProperty());
-                        setComponentModel(sender);
-                        scenarioEvent.saveSender();
-                    }
-                }
-                return true;
             }
         });
+        menuItems.add(itemOpenEditor);
+
+        JMenuItem itemAddProperty = new JMenuItem("Add Property");
+        itemAddProperty.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PropertyEditor propertyEditor = new PropertyEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Property property = propertyEditor.getProperty();
+                    sender.getProperty().add(property);
+                    SenderPanel.this.setComponentModel(sender);
+                    scenarioEvent.saveSender();
+                }
+            }
+        });
+        menuItems.add(itemAddProperty);
+
+        return menuItems;
+    }
+
+    @Override
+    protected void performImport(String transferredData){
+        if (transferredData.equals("Property")) {
+            PropertyEditor propertyEditor = new PropertyEditor();
+            ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+            dialog.show();
+            if (dialog.getExitCode() == 0) {
+                sender.getProperty().add(propertyEditor.getProperty());
+                setComponentModel(sender);
+                scenarioEvent.saveSender();
+            }
+        }
     }
 
     @Override
@@ -297,7 +307,7 @@ public class SenderPanel extends AbstractPanel {
         @Override
         public Dimension getMinimumSize(){
             Dimension dimension = new Dimension();
-            dimension.width = widestPropertyWidth;   /*TODO maybe same as pref,max*/
+            dimension.width = widestPropertyWidth;
             dimension.height = propertiesRowCount*40;
             return dimension;
         }

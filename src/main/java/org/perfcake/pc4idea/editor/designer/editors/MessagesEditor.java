@@ -1,8 +1,10 @@
 package org.perfcake.pc4idea.editor.designer.editors;
 
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.EditorTablePanel;
+import org.perfcake.pc4idea.module.PCModuleUtil;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
 
 import javax.swing.*;
@@ -11,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,7 +24,12 @@ import java.util.List;
 public class MessagesEditor extends AbstractEditor {
     private EditorTablePanel tablePanelMessages;
 
-    public MessagesEditor(){
+    private Set<String> usedValidatorIDSet;
+    private Module module;
+
+    public MessagesEditor(Module module){
+        this.module = module;
+        usedValidatorIDSet = new TreeSet<>();
         initComponents();
     }
 
@@ -32,7 +41,7 @@ public class MessagesEditor extends AbstractEditor {
                     if (e.getClickCount() == 2) {
                         int selectedRow = tablePanelMessages.getTable().getSelectedRow();
                         if (selectedRow >= 0) {
-                            MessageEditor messageEditor = new MessageEditor();
+                            MessageEditor messageEditor = new MessageEditor(usedValidatorIDSet);
                             messageEditor.setMessage(((MessagesTableModel) tablePanelMessages.getTable().getModel()).getMessageList().get(selectedRow));
                             ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
                             dialog.show();
@@ -47,7 +56,7 @@ public class MessagesEditor extends AbstractEditor {
 
             @Override
             public void buttonAddActionPerformed(ActionEvent e) {
-                MessageEditor messageEditor = new MessageEditor();
+                MessageEditor messageEditor = new MessageEditor(usedValidatorIDSet);
                 ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
                 dialog.show();
                 if (dialog.getExitCode() == 0) {
@@ -55,6 +64,8 @@ public class MessagesEditor extends AbstractEditor {
                     ((MessagesTableModel)tablePanelMessages.getTable().getModel()).getMessageList().add(message);
                     tablePanelMessages.getTable().repaint();
                     tablePanelMessages.getTable().revalidate();
+                    PCModuleUtil.createMessageFile(message, module);
+
                 }
             }
 
@@ -62,7 +73,7 @@ public class MessagesEditor extends AbstractEditor {
             public void buttonEditActionPerformed(ActionEvent e) {
                 int selectedRow = tablePanelMessages.getTable().getSelectedRow();
                 if (selectedRow >= 0) {
-                    MessageEditor messageEditor = new MessageEditor();
+                    MessageEditor messageEditor = new MessageEditor(usedValidatorIDSet);
                     messageEditor.setMessage(((MessagesTableModel) tablePanelMessages.getTable().getModel()).getMessageList().get(selectedRow));
                     ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
                     dialog.show();
@@ -91,8 +102,10 @@ public class MessagesEditor extends AbstractEditor {
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addComponent(tablePanelMessages));
     }
-    public void setMessages(Scenario.Messages messages){
+    public void setMessages(Scenario.Messages messages, Set<String> usedValidatorIDSet){
         tablePanelMessages.getTable().setModel(new MessagesTableModel(messages.getMessage()));
+
+        this.usedValidatorIDSet = usedValidatorIDSet;
     }
 
     public Scenario.Messages getMessages(){
@@ -134,10 +147,19 @@ public class MessagesEditor extends AbstractEditor {
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             Scenario.Messages.Message message = messageList.get(rowIndex);
+
+            StringBuilder sb = new StringBuilder();
+            for (Scenario.Messages.Message.ValidatorRef validatorRef : message.getValidatorRef()){
+                if (!sb.toString().equals("")){
+                    sb.append(", ");
+                }
+                sb.append(validatorRef.getId());
+            }
+
             switch (columnIndex){
                 case 0: return message.getUri();
                 case 1: return message.getMultiplicity();
-                case 2: return message.getValidatorRef().toString();  /*TODO nejak pekne upravit*/
+                case 2: return sb.toString();
                 default: return null;
             }
         }

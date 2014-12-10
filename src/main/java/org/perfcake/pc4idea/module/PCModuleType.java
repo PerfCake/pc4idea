@@ -4,6 +4,7 @@ import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.ModuleTypeManager;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.perfcake.pc4idea.editor.designer.common.PerfCakeIconPatcher;
 
 import javax.swing.*;
 
@@ -39,16 +40,16 @@ public class PCModuleType extends ModuleType<PCModuleBuilder> {
     @NotNull
     @Override
     public String getDescription() {
-        return "PerfCake Module Description";  /*TODO change*/
+        return "PerfCake module extends Java module to provide better support for scenarios";
     }
 
     @Override
     public Icon getBigIcon() {
-        return null;              /*TODO icon*/
+        return PerfCakeIconPatcher.loadIcon();
     }
 
     @Override
     public Icon getNodeIcon(@Deprecated boolean b) {
-        return null;             /*TODO icon*/
+        return PerfCakeIconPatcher.loadIcon();
     }
 }

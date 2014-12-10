@@ -2,6 +2,11 @@ package org.perfcake.pc4idea.editor;
 
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.structureView.StructureViewBuilder;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationDisplayType;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorLocation;
 import com.intellij.openapi.fileEditor.FileEditorState;
@@ -24,14 +29,29 @@ import java.beans.PropertyChangeListener;
  * Date: 17.9.2014
  */
 class PerfCakeEditor implements FileEditor {
+    private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.editor.PerfCakeEditor");
+
     private final PerfCakeEditorGUI editorGUI;
 
     PerfCakeEditor(final Project project, final VirtualFile virtualFile){
-        final VirtualFile vf = virtualFile instanceof LightVirtualFile ? ((LightVirtualFile)virtualFile).getOriginalFile() : virtualFile;
+        final VirtualFile vf = virtualFile instanceof LightVirtualFile ? ((LightVirtualFile) virtualFile).getOriginalFile() : virtualFile;
         final Module module = ModuleUtil.findModuleForFile(vf, project);
-        if (module == null) {
+        if (module != null) {
+            Notifications.Bus.register("PerfCake Plugin", NotificationDisplayType.NONE);
+
+            String type = module.getOptionValue("type");
+            if (type == null || !type.equals("PERFCAKE_MODULE")) {
+                LOG.info("Opening PerfCake Scenario in not PerfCake module");
+                Notifications.Bus.notify(new Notification("PerfCake Plugin", "Module type isn't PerfCake",
+                        "For full support of PerfCake Scenario \""
+                                + virtualFile.getName()
+                                + "\", it is recommended to create PerfCake module.",
+                        NotificationType.INFORMATION), project);
+            }
+        } else {
             throw new IllegalArgumentException("No module for file " + virtualFile + " in project " + project);
         }
+
         editorGUI = new PerfCakeEditorGUI(project, module, virtualFile);
     }
 
@@ -55,13 +75,12 @@ class PerfCakeEditor implements FileEditor {
     @NotNull
     @Override
     public String getName() {
-        return "PerfCakeDesigner";
+        return "PerfCakeEditor";
     }
 
     @NotNull
     @Override
     public FileEditorState getState(@NotNull FileEditorStateLevel level) {
-        /*TODO*/
         return new FileEditorState() {
             @Override
             public boolean canBeMergedWith(FileEditorState fileEditorState, FileEditorStateLevel fileEditorStateLevel) {
@@ -72,7 +91,6 @@ class PerfCakeEditor implements FileEditor {
 
     @Override
     public void setState(@NotNull FileEditorState state) {
-        /*TODO*/
     }
 
     @Override
@@ -95,11 +113,9 @@ class PerfCakeEditor implements FileEditor {
 
     @Override
     public void addPropertyChangeListener(@NotNull PropertyChangeListener listener) {
-        /*TODO*/
     }
     @Override
     public void removePropertyChangeListener(@NotNull PropertyChangeListener listener) {
-        /*TODO*/
     }
 
     @Nullable
@@ -120,15 +136,13 @@ class PerfCakeEditor implements FileEditor {
         return null;
     }
 
-
     @Nullable
     @Override
     public <T> T getUserData(@NotNull Key<T> tKey) {
-        return null;          /*TODO zistit*/
+        return null;
     }
 
     @Override
-    public <T> void putUserData(@NotNull Key<T> tKey, @Nullable T t) {  /*TODO zistit*/
-
+    public <T> void putUserData(@NotNull Key<T> tKey, @Nullable T t) {
     }
 }

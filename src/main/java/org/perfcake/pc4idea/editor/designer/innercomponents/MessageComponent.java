@@ -1,9 +1,17 @@
 package org.perfcake.pc4idea.editor.designer.innercomponents;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.ui.Messages;
+import org.perfcake.model.Header;
+import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.designer.common.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.designer.outercomponents.MessagesPanel;
+import org.perfcake.pc4idea.editor.designer.common.ScenarioImportHandler;
+import org.perfcake.pc4idea.editor.designer.editors.AttachValidatorEditor;
+import org.perfcake.pc4idea.editor.designer.editors.HeaderEditor;
 import org.perfcake.pc4idea.editor.designer.editors.MessageEditor;
+import org.perfcake.pc4idea.editor.designer.editors.PropertyEditor;
+import org.perfcake.pc4idea.editor.designer.outercomponents.MessagesPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +19,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,6 +30,7 @@ import java.awt.event.MouseEvent;
 public class MessageComponent extends JPanel{
     private final Color messageColor;
     private final int id;
+    private final Set<String> usedValidatorIDSet;
 
     private MessageEditor messageEditor;
     private Scenario.Messages.Message message;
@@ -27,14 +38,13 @@ public class MessageComponent extends JPanel{
 
     private JLabel messageAttr;
     private JPopupMenu popupMenu;
-    private JMenuItem popupOpenEditor;
-    private JMenuItem popupDelete;
 
     private Dimension messageSize;
 
-    public MessageComponent(Color messagesColor, int id, MessagesPanel.PanelMessages.MessagesEvent messagesEvent){
+    public MessageComponent(Color messagesColor, int id, Set<String> usedValidatorIDSet, MessagesPanel.PanelMessages.MessagesEvent messagesEvent){
         this.messageColor = messagesColor;
         this.id = id;
+        this.usedValidatorIDSet = usedValidatorIDSet;
         this.messagesEvent = messagesEvent;
 
         this.setOpaque(false);
@@ -48,33 +58,85 @@ public class MessageComponent extends JPanel{
         messageAttr.setForeground(messageColor);
         messageSize = new Dimension(40,40);
 
-        popupOpenEditor = new JMenuItem("Open Editor");
-        popupOpenEditor.addActionListener(new ActionListener() {
+        JMenuItem itemOpenEditor = new JMenuItem("Open Editor");
+        itemOpenEditor.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                messageEditor = new MessageEditor();
+                messageEditor = new MessageEditor(usedValidatorIDSet);
                 messageEditor.setMessage(message);
-                ScenarioDialogEditor editor = new ScenarioDialogEditor(messageEditor);
-                editor.show();
-                if (editor.getExitCode() == 0) {
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
                     setMessage(messageEditor.getMessage());
                     messagesEvent.saveMessage(id);
                 }
             }
         });
-        popupDelete = new JMenuItem("Delete");
-        popupDelete.addActionListener(new ActionListener() {
+        JMenuItem itemDelete = new JMenuItem("Delete");
+        itemDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                messagesEvent.deleteMessage(id);
+                int result = Messages.showYesNoDialog("Are you sure you want to delete this Message?", "Delete Message", AllIcons.Actions.Delete);
+                if (result == 0) {
+                    messagesEvent.deleteMessage(id);
+                }
+
+            }
+        });
+        JMenuItem itemAddHeader = new JMenuItem("Add Header");
+        itemAddHeader.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HeaderEditor headerEditor = new HeaderEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(headerEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Header header = headerEditor.getHeader();
+                    message.getHeader().add(header);
+                    MessageComponent.this.setMessage(message);
+                    messagesEvent.saveMessage(id);
+                }
+            }
+        });
+        JMenuItem itemAddProperty = new JMenuItem("Add Property");
+        itemAddProperty.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PropertyEditor propertyEditor = new PropertyEditor();
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(propertyEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Property property = propertyEditor.getProperty();
+                    message.getProperty().add(property);
+                    MessageComponent.this.setMessage(message);
+                    messagesEvent.saveMessage(id);
+                }
+            }
+        });
+        JMenuItem itemAttachValidator = new JMenuItem("Attach Validator");
+        itemAttachValidator.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AttachValidatorEditor attachValidatorEditor = new AttachValidatorEditor(usedValidatorIDSet);
+                ScenarioDialogEditor dialog = new ScenarioDialogEditor(attachValidatorEditor);
+                dialog.show();
+                if (dialog.getExitCode() == 0) {
+                    Scenario.Messages.Message.ValidatorRef ref = attachValidatorEditor.getAttachedValidatorRef();
+                    message.getValidatorRef().add(ref);
+                    MessageComponent.this.setMessage(message);
+                    messagesEvent.saveMessage(id);
+                }
             }
         });
 
         popupMenu = new JPopupMenu();
-        popupMenu.add(popupOpenEditor);
+        popupMenu.add(itemOpenEditor);
         popupMenu.add(new JPopupMenu.Separator());
-        popupMenu.add(popupDelete);
-        /*TODO dalsie?*/
+        popupMenu.add(itemAddHeader);
+        popupMenu.add(itemAddProperty);
+        popupMenu.add(itemAttachValidator);
+        popupMenu.add(new JPopupMenu.Separator());
+        popupMenu.add(itemDelete);
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -93,11 +155,11 @@ public class MessageComponent extends JPanel{
             public void mouseClicked(MouseEvent event) {
                 if (event.getButton() == MouseEvent.BUTTON1) {
                     if (event.getClickCount() == 2) {
-                        messageEditor = new MessageEditor();
+                        messageEditor = new MessageEditor(usedValidatorIDSet);
                         messageEditor.setMessage(message);
-                        ScenarioDialogEditor editor = new ScenarioDialogEditor(messageEditor);
-                        editor.show();
-                        if (editor.getExitCode() == 0) {
+                        ScenarioDialogEditor dialog = new ScenarioDialogEditor(messageEditor);
+                        dialog.show();
+                        if (dialog.getExitCode() == 0) {
                             setMessage(messageEditor.getMessage());
                             messagesEvent.saveMessage(id);
                         }
@@ -120,6 +182,34 @@ public class MessageComponent extends JPanel{
                 ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
             }
         });
+
+        this.setTransferHandler(new ScenarioImportHandler() {
+            @Override
+            public void performImport(String transferredData) {
+                if (transferredData.equals("Attach validator")){
+                    Set<String> notAttachedID = new TreeSet<>();
+                    for (String id : usedValidatorIDSet){
+                        boolean isRef = false;
+                        for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()){
+                            if(id.equals(ref.getId())){
+                                isRef = true;
+                            }
+                        }
+                        if (!isRef){
+                            notAttachedID.add(id);
+                        }
+                    }
+                    AttachValidatorEditor attachValidatorEditor = new AttachValidatorEditor(notAttachedID);
+                    ScenarioDialogEditor dialog = new ScenarioDialogEditor(attachValidatorEditor);
+                    dialog.show();
+                    if (dialog.getExitCode() == 0){
+                        message.getValidatorRef().add(attachValidatorEditor.getAttachedValidatorRef());
+                        setMessage(message);
+                        messagesEvent.saveMessage(id);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -133,9 +223,13 @@ public class MessageComponent extends JPanel{
 
     public void setMessage(Scenario.Messages.Message m) {
         message = m;
-        messageAttr.setText(message.getUri());/*TODO mozny aj druhy typ message!!*/
-        FontMetrics fontMetrics = messageAttr.getFontMetrics(messageAttr.getFont());
-        messageSize.width = fontMetrics.stringWidth(messageAttr.getText()) + 30;
+        messageAttr.setText(message.getUri());
+        if (messageAttr.getText() == null){
+            messageSize.width = 40;
+        } else {
+            FontMetrics fontMetrics = messageAttr.getFontMetrics(messageAttr.getFont());
+            messageSize.width = fontMetrics.stringWidth(messageAttr.getText()) + 30;
+        }
     }
 
     public Scenario.Messages.Message getMessage() {

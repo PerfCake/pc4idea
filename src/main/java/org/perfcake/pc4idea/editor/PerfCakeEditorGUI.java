@@ -44,31 +44,35 @@ import javax.xml.validation.SchemaFactory;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
  * Date: 17.9.2014
  */
-public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, ModuleProvider TODO ??? */{
+public class PerfCakeEditorGUI extends JPanel {
     private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.editor.PerfCakeEditorGUI");
 
     private final Project project;
-    private final Module module;
     @NotNull private final VirtualFile file;
+    @NotNull private final Module module;
     private final ScenarioVirtualFileListener scenarioVirtualFileListener;
     private final Document document;
     private final ScenarioDocumentListener scenarioDocumentListener;
-//    private PsiFile psiFile;
     private final FileEditor xmlEditor;
     private Scenario scenarioModel;
 
     private boolean documentModifiedInSource;
+    private boolean savingScenario;
 
     private JTabbedPane tabbedPane;
     private JComponent tabSource;
@@ -102,29 +106,20 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         scenarioDocumentListener = new ScenarioDocumentListener();
         document.addDocumentListener(scenarioDocumentListener);
         documentModifiedInSource = false;
+        savingScenario = false;
 
-        //psiFile = PsiManager.getInstance(project).findFile(file);
-
-
-        xmlEditor = TextEditorProvider.getInstance().createEditor(project, this.file);  /*TODO first assert accept then create*/
+        xmlEditor = TextEditorProvider.getInstance().createEditor(project, this.file);
 
         initComponents();
 
         loadScenario();
         setDesignerComponents();
 
-
-
-
-
-
-
-
-
         GridLayout layout = new GridLayout(1,1);
         this.setLayout(layout);
         this.add(tabbedPane,new GridLayout(1,1));
 
+        LOG.info("PerfCake Scenario "+this.file.getName()+" successfully loaded");
     }
 
     private void initComponents() {
@@ -141,7 +136,7 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         treeAdditiveCompsForScenario = new Tree(new DefaultTreeModel(new DefaultMutableTreeNode("root")));
         panelGenerator = new GeneratorPanel(new ScenarioEvent());
         panelSender = new SenderPanel(new ScenarioEvent());
-        panelMessages = new MessagesPanel(new ScenarioEvent());
+        panelMessages = new MessagesPanel(new ScenarioEvent(),module);
         panelValidation = new ValidationPanel(new ScenarioEvent());
         panelReporting = new ReportingPanel(new ScenarioEvent());
         panelProperties = new PropertiesPanel(new ScenarioEvent());
@@ -156,6 +151,8 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                         FileDocumentManager.getInstance().saveDocument(document);
                         loadScenario();
                         setDesignerComponents();
+
+                        repaintLayerDependencies();
                     }
                 }
                 if (tabbedPane.getSelectedIndex() == 1) {
@@ -255,31 +252,56 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         });
 
         panelDesignerScenario.setBackground(EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground());
-        GroupLayout panelPCCompsDesignerLayout = new GroupLayout(panelDesignerScenario);
-        panelDesignerScenario.setLayout(panelPCCompsDesignerLayout);
-        panelPCCompsDesignerLayout.setHorizontalGroup(
-                panelPCCompsDesignerLayout.createParallelGroup()
+        GroupLayout panelDesignerScenarioLayout= new GroupLayout(panelDesignerScenario);
+        panelDesignerScenario.setLayout(panelDesignerScenarioLayout);
+        panelDesignerScenarioLayout.setHorizontalGroup(
+                panelDesignerScenarioLayout.createParallelGroup()
                         .addComponent(panelGenerator)
                         .addComponent(panelSender)
-                        .addGroup(panelPCCompsDesignerLayout.createSequentialGroup()
-                                .addGroup(panelPCCompsDesignerLayout.createParallelGroup()
+                        .addGroup(panelDesignerScenarioLayout.createSequentialGroup()
+                                .addGroup(panelDesignerScenarioLayout.createParallelGroup()
                                         .addComponent(panelMessages)
                                         .addComponent(panelValidation))
                                 .addComponent(panelReporting))
                         .addComponent(panelProperties)
         );
-        panelPCCompsDesignerLayout.setVerticalGroup(
-                panelPCCompsDesignerLayout.createSequentialGroup()
+        panelDesignerScenarioLayout.setVerticalGroup(
+                panelDesignerScenarioLayout.createSequentialGroup()
                         .addComponent(panelGenerator)
                         .addComponent(panelSender)
-                        .addGroup(panelPCCompsDesignerLayout.createParallelGroup()
-                                .addGroup(panelPCCompsDesignerLayout.createSequentialGroup()
+                        .addGroup(panelDesignerScenarioLayout.createParallelGroup()
+                                .addGroup(panelDesignerScenarioLayout.createSequentialGroup()
                                         .addComponent(panelMessages)
                                         .addComponent(panelValidation))
                                 .addComponent(panelReporting))
                         .addComponent(panelProperties)
-                        //.addContainerGap(0, Short.MAX_VALUE) /*TODO decide*/
+                        .addContainerGap(0, Short.MAX_VALUE)
         );
+
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                repaintLayerDependencies();
+            }
+        });
+        layerDesigner.getSecondComponent().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                repaintLayerDependencies();
+            }
+        });
+        scrollPaneDesignerScenario.getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+            @Override
+            public void adjustmentValueChanged(AdjustmentEvent e) {
+                repaintLayerDependencies();
+            }
+        });
+        scrollPaneDesignerScenario.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+            @Override
+            public void adjustmentValueChanged(AdjustmentEvent e) {
+                repaintLayerDependencies();
+            }
+        });
     }
 
     private void loadScenario(){
@@ -299,12 +321,33 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
     }
     private void setDesignerComponents(){
         if (scenarioModel != null) {
-            /*TODO null pointer exc. if comp. isnt set in xml -> solve in Comps.*/
             panelGenerator.setComponentModel(scenarioModel.getGenerator());
             panelSender.setComponentModel(scenarioModel.getSender());
             panelReporting.setComponentModel(scenarioModel.getReporting());
-            panelMessages.setComponentModel(scenarioModel.getMessages());      /*TODO validatorsID for attach*/
-            panelValidation.setComponentModel(scenarioModel.getValidation());
+            panelMessages.setComponentModel(scenarioModel.getMessages());
+
+            if (scenarioModel.getValidation() != null) {
+                if (scenarioModel.getMessages() != null) {
+                    Set<String> attachedIDs = new TreeSet<>();
+                    for (Scenario.Messages.Message message : scenarioModel.getMessages().getMessage()) {
+                        for (Scenario.Messages.Message.ValidatorRef validatorRef : message.getValidatorRef()) {
+                            attachedIDs.add(validatorRef.getId());
+                        }
+                    }
+                    ((ValidationPanel) panelValidation).setValidationModel(scenarioModel.getValidation(), attachedIDs);
+                } else {
+                    ((ValidationPanel) panelValidation).setValidationModel(scenarioModel.getValidation(), new TreeSet<String>());
+                }
+            }
+
+            if (scenarioModel.getMessages() != null) {
+                if (scenarioModel.getValidation() != null) {
+                    ((MessagesPanel) panelMessages).setValidatorIDSet(((ValidationPanel) panelValidation).getUsedIDSet());
+                } else {
+                    ((MessagesPanel) panelMessages).setValidatorIDSet(new TreeSet<String>());
+                }
+            }
+
             panelProperties.setComponentModel(scenarioModel.getProperties());
 
             /*TODO for testing purpose*/System.out.println("TEST LOG: designer was set");
@@ -313,14 +356,40 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         }
     }
 
+    private void repaintLayerDependencies(){
+        if (scenarioModel != null) {
+            ApplicationManager.getApplication().invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    layerDependencies.removeAllDependencyLines();
+
+                    int adjustmentX = scrollPaneDesignerScenario.getX() - scrollPaneDesignerScenario.getHorizontalScrollBar().getValue();
+                    int adjustmentY = scrollPaneDesignerScenario.getY() - scrollPaneDesignerScenario.getVerticalScrollBar().getValue();
+
+                    if (scenarioModel.getMessages() != null && scenarioModel.getValidation() != null) {
+                        for (Scenario.Messages.Message message : scenarioModel.getMessages().getMessage()) {
+                            Point messagePoint = ((MessagesPanel) panelMessages).getMessageAnchorPoint(message);
+                            messagePoint.setLocation(messagePoint.getX() + adjustmentX, messagePoint.getY() + adjustmentY);
+
+                            for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()) {
+                                Point validatorPoint = ((ValidationPanel) panelValidation).getValidatorAnchorPoint(ref.getId());
+                                validatorPoint.setLocation(validatorPoint.getX() + adjustmentX, validatorPoint.getY() + adjustmentY);
+
+                                layerDependencies.addDependencyLine(messagePoint, validatorPoint);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
     public JComponent getPreferredFocusedComponent() {
         return tabbedPane;
     }
 
     public void dispose() {
-//
-//        myConnection.disconnect();
-//        editor.removeEditorMouseListener(myEditorMouseListener);
+
 //        System.out.println(Thread.activeCount() + " " +
 //                Thread.currentThread().getName());
         /*TODO threadIntrpted exc.(dispose in porgress?)*/
@@ -332,8 +401,6 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         /*TODO maven cant find method*///EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
 
     }
-
-    private boolean savingScenario = false;
 
     private final class ScenarioDocumentListener extends DocumentAdapter {
         @Override
@@ -353,6 +420,8 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
                     loadScenario();
                     setDesignerComponents();
                 }
+
+                repaintLayerDependencies();
             }
         }
     }
@@ -396,9 +465,6 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
             dialog.show();
             if (dialog.getExitCode() == 0){
                 new ScenarioEvent().saveScenario("reload last configuration");
-//                FileDocumentManager.getInstance().saveDocument(document);
-//                loadScenario();
-//                setDesignerComponents();
             } else {
                 scenarioModel = null;
             }
@@ -406,7 +472,6 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
     }
 
     public final class ScenarioEvent {
-        /*TODO sources*/
         public void saveGenerator(){
             scenarioModel.setGenerator((Scenario.Generator)panelGenerator.getComponentModel());
             saveScenario("Generator modification");
@@ -420,11 +485,37 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
             saveScenario("Properties modification");
         }
         public void saveMessages(){
-            scenarioModel.setMessages((Scenario.Messages) panelMessages.getComponentModel());           /*TODO attached valid. depend.Line*/
+            scenarioModel.setMessages((Scenario.Messages) panelMessages.getComponentModel());
+
+            if (scenarioModel.getValidation() != null) {
+                if (scenarioModel.getMessages() != null) {
+                    Set<String> attachedIDs = new TreeSet<>();
+                    for (Scenario.Messages.Message message : scenarioModel.getMessages().getMessage()) {
+                        for (Scenario.Messages.Message.ValidatorRef validatorRef : message.getValidatorRef()) {
+                            attachedIDs.add(validatorRef.getId());
+                        }
+                    }
+                    ((ValidationPanel) panelValidation).setValidationModel(scenarioModel.getValidation(), attachedIDs);
+                } else {
+                    ((ValidationPanel) panelValidation).setValidationModel(scenarioModel.getValidation(), new TreeSet<String>());
+                }
+            }
+
             saveScenario("Messages modification");
         }
         public void saveValidation(){
-            scenarioModel.setValidation((Scenario.Validation) panelValidation.getComponentModel());        /*TODO attached valid. depend.Line*/
+            scenarioModel.setValidation((Scenario.Validation) panelValidation.getComponentModel());
+
+            if (scenarioModel.getMessages() != null) {
+                if (scenarioModel.getValidation() != null) {
+                    ((MessagesPanel) panelMessages).setValidatorIDSet(((ValidationPanel) panelValidation).getUsedIDSet());
+                    //if attached validator is deleted, validatorRef will be removed, so messages model needs to be updated
+                    scenarioModel.setMessages((Scenario.Messages) panelMessages.getComponentModel());
+                } else {
+                    ((MessagesPanel) panelMessages).setValidatorIDSet(new TreeSet<String>());
+                }
+            }
+
             saveScenario("Validation modification");
         }
         public void saveReporting(){
@@ -433,54 +524,40 @@ public /**/class PerfCakeEditorGUI extends JPanel /*implements DataProvider, Mod
         }
 
         private void saveScenario(final String source) {
-                /*TODO psi rewrte - to doc or doc change*///final Document doc = PsiDocumentManager.getInstance(project).getCachedDocument(psiFile);
+            /*TODO uklada do undo zasobnika ale neaktivuje undo menu, az source to aktivuje...*/
+            /*TODO undo redo problem - backspace/reload config- (undo last config not apply to doc.)*/
+            CommandProcessor.getInstance().executeCommand(project, new Runnable() {
+                @Override
+                public void run() {
+                    ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+                                Schema schema = schemaFactory.newSchema(PerfCakeEditorGUI.this.getClass().getResource(
+                                        "/schemas/" + "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd"));
 
-                CommandProcessor.getInstance().executeCommand(project, new Runnable() {
-                    @Override
-                    public void run() {
-                        ApplicationManager.getApplication().runWriteAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-                                    Schema schema = schemaFactory.newSchema(this.getClass().getResource("/schemas/" + "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd"));
+                                JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
+                                Marshaller marshaller = context.createMarshaller();
+                                marshaller.setSchema(schema);
+                                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-                                    JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
-                                    Marshaller marshaller = context.createMarshaller();
-                                    marshaller.setSchema(schema);
-                                    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                                StringWriter stringWriter = new StringWriter();
 
-                                    StringWriter stringWriter = new StringWriter();
-
-                                    marshaller.marshal(scenarioModel, stringWriter);
-                                    if (!stringWriter.toString().equals("")) {
-                                        savingScenario = true;
-                                        /*TODO log */ System.out.println("SAVE: " + source);
-                                        document.setText(stringWriter.toString());
-
-                                    } else {
-                                        //some error
-                                        System.out.println("wtf");
-                                    }
-                                    stringWriter.close();
-                                    //file.refresh(true, false);
-                                } catch (JAXBException e) {
-                                    System.out.println("ERROR:" + e.getClass().getName()); /*TODO schema*/
-                                    e.printStackTrace();
-                                } catch (SAXException e) {
-                                    System.out.println("ERROR:" + e.getClass().getName()); /*TODO nevalidne xml*/
-                                    e.printStackTrace();
-                                } catch (IOException e) {
-                                    System.out.println("ERROR:" + e.getClass().getName()); /*TODO stringWriter.close */
-                                    e.printStackTrace();
+                                marshaller.marshal(scenarioModel, stringWriter);
+                                if (!stringWriter.toString().trim().isEmpty() && stringWriter.toString() != null) {
+                                    savingScenario = true;
+                                    /*TODO for testing purpose*/System.out.println("SAVE: " + source);
+                                    document.setText(stringWriter.toString());
                                 }
+                                stringWriter.close();
+                            } catch (JAXBException | SAXException | IOException e) {
+                                LOG.error(e.getCause());
                             }
-                        });
-                    }
-                }, source, null, UndoConfirmationPolicy.DEFAULT, document);
+                        }
+                    });
+                }
+            }, source, null, UndoConfirmationPolicy.DEFAULT, document);
         }
     }
-
-
-
 }

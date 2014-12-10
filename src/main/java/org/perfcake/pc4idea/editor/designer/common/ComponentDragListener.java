@@ -27,7 +27,6 @@ public abstract class ComponentDragListener extends MouseInputAdapter {
             expectedReleaseComponent = pressedComponent;
             mousePressed = true;
         }
-
     }
 
     @Override
@@ -54,7 +53,6 @@ public abstract class ComponentDragListener extends MouseInputAdapter {
         MouseEvent wrappedEvent = new MouseEvent((Component)e.getSource(),e.getID(),e.getWhen(),e.getModifiers(),e.getX()+10,e.getY()+40,e.getClickCount(),e.isPopupTrigger(),e.getButton());
         ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(wrappedEvent);
     }
-
 
     public abstract int mousePressedActionPerformed(MouseEvent e);
     public abstract int mouseEnteredActionPerformed(MouseEvent e);
