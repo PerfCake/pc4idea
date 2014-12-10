@@ -8,7 +8,9 @@ import com.intellij.execution.filters.TextConsoleBuilderFactoryImpl;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.execution.ui.ConsoleView;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowId;
@@ -46,7 +48,7 @@ public class PCRunProfileState implements RunProfileState {
          }
         /*TODO for testing purpose*/System.out.println("RUN: " + scenarioFile.getName());
 
-        ConsoleView console = TextConsoleBuilderFactoryImpl.getInstance().createBuilder(executionEnvironment.getProject()).getConsole();//.getInstance().createBuilder(executionEnvironment.getProject()).getConsole();
+        ConsoleView console = TextConsoleBuilderFactoryImpl.getInstance().createBuilder(executionEnvironment.getProject()).getConsole();
         ToolWindow toolWindow = ToolWindowManager.getInstance(executionEnvironment.getProject()).getToolWindow(ToolWindowId.RUN);
 
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
@@ -63,18 +65,28 @@ public class PCRunProfileState implements RunProfileState {
 //        BufferedOutputStream os = new BufferedOutputStream();
 //        PrintStream scenarioOutput = new PrintStream(,true);
 
-        Scenario scenario = null;
-        try {
-            System.out.println("PATH: "+scenarioFile.getPath());
-            scenario = new ScenarioLoader().load(scenarioFile.getPath());
-            scenario.init();
-            scenario.run();
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Scenario scenario = null;
+                try {
+                    System.out.println("PATH: "+scenarioFile.getPath());
+                    scenario = new ScenarioLoader().load(scenarioFile.getPath());
+                    scenario.init();
+                    scenario.run();
 
 
-        } catch (PerfCakeException e) {
-            System.out.println("PCEx.");
-            e.printStackTrace();
-        }
+                } catch (PerfCakeException e) {
+                    Messages.showInfoMessage(e.getMessage()+"\n"+e.getCause().toString(),"PerfCakeException");
+                    System.out.println("PCEx.");
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+
+
 
 
         /*TODO*/

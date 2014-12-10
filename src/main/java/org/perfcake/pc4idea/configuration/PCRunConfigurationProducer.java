@@ -24,6 +24,7 @@ public class PCRunConfigurationProducer extends RunConfigurationProducer<PCRunCo
                 new PerfCakeEditorProvider().accept(configContext.getProject(), configContext.getLocation().getVirtualFile())){
             if (!pcRunConfig.isInitialized()) {
                 VirtualFile file = configContext.getLocation().getVirtualFile();
+                /*TODO set module*/
                 pcRunConfig.setScenarioFile(file);
                 pcRunConfig.setName(file.getName());
             }

@@ -27,8 +27,10 @@ public class PCRunConfiguration extends LocatableConfigurationBase {
     private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.configuration.PCRunConfiguration");
 
     private VirtualFile scenarioFile;
+    /*TODO private Module module*/
     private boolean isInitialized;
     private Project project;
+
 
     public PCRunConfiguration(Project project, ConfigurationFactory factory, String name){
         super(project,factory,name);
@@ -43,8 +45,15 @@ public class PCRunConfiguration extends LocatableConfigurationBase {
     public VirtualFile getScenarioFile(){
         return scenarioFile;
     }
+/*TODO*/
+//    public void setModule(Module module){
+//        this.module = module;
+//    }
+//    public Module getMoudle(){
+//        return module;
+//    }
 
-    public void findScenarioFileByName(String fileName){
+    public void findScenarioFileByName(String fileName/*TODO Module module*/){
         int controlCounter = 0;
         for (Module m : ModuleManager.getInstance(project).getModules()) {
             VirtualFile file = PCModuleUtil.findScenario(fileName, m);
