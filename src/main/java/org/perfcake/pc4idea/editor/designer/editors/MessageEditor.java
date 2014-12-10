@@ -1,7 +1,8 @@
 package org.perfcake.pc4idea.editor.designer.editors;
 
-import com.intellij.icons.AllIcons;
-import com.intellij.openapi.ui.Messages;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.table.JBTable;
@@ -34,12 +35,7 @@ public class MessageEditor extends AbstractEditor {
     private PropertiesEditor panelProperties;
     private AttachedValidatorsEditor panelAttachedValidators;
 
-    private boolean nullTextFieldsWarningShown;
-    private boolean ambiguousWarningShown;
-
     public MessageEditor(Set<String> usedValidatorIDSet){
-        nullTextFieldsWarningShown = false;
-        ambiguousWarningShown = false;
         initComponents();
         panelAttachedValidators.setUsedValidatorIDSet(usedValidatorIDSet);
     }
@@ -164,18 +160,40 @@ public class MessageEditor extends AbstractEditor {
         Scenario.Messages.Message newMessage = new Scenario.Messages.Message();
         boolean uriIsEmpty = (textFieldMessageURI.getText().isEmpty() || textFieldMessageURI.getText().trim().isEmpty());
         newMessage.setUri(uriIsEmpty ? null : textFieldMessageURI.getText());
+
         boolean multiplicityIsEmpty = (textFieldMultiplicity.getText().isEmpty() || textFieldMultiplicity.getText().trim().isEmpty());
-        newMessage.setMultiplicity(multiplicityIsEmpty ? "1" : textFieldMultiplicity.getText());
+        if (multiplicityIsEmpty){
+            newMessage.setMultiplicity("1");
+            Notifications.Bus.notify(new Notification("PerfCake Plugin", "Multiplicity field is empty",
+                    "Multiplicity will be set to default value \"1\".",
+                    NotificationType.INFORMATION), null);
+        } else {
+            newMessage.setMultiplicity(textFieldMultiplicity.getText());
+        }
 
         boolean contentIsEmpty = (textFieldContent.getText().isEmpty() || textFieldContent.getText().trim().isEmpty());
         if (contentIsEmpty){
-            if (uriIsEmpty){
+            if (uriIsEmpty) {
                 newMessage.setContent("");
+                Notifications.Bus.notify(new Notification("PerfCake Plugin", "Both URI and Content fields are empty",
+                        "This will lead to message specified by content with value \"\" (empty string).",
+                        NotificationType.INFORMATION), null);
             } else {
                 newMessage.setContent(null);
+                Notifications.Bus.notify(new Notification("PerfCake Plugin", "Ambiguous Input",
+                        "URI is set and Content is empty. While PerfCake prioritizes Content and " +
+                                "Content with empty string value is valid, this configuration is ambiguous. " +
+                                "For now, Content will be set to null and URI will be used. " +
+                                "If you want to use Content with empty string value, please remove URI value.",
+                        NotificationType.INFORMATION), null);
             }
         } else {
             newMessage.setContent(textFieldContent.getText());
+            if (!uriIsEmpty){
+                Notifications.Bus.notify(new Notification("PerfCake Plugin", "Both URI and Content fields are filled",
+                        "While PerfCake prioritizes Content, this will lead to message specified by content and URI will be ignored.",
+                        NotificationType.INFORMATION), null);
+            }
         }
 
         newMessage.getHeader().addAll(((HeadersTableModel)tablePanelHeaders.getTable().getModel()).getHeaderList());
@@ -191,41 +209,8 @@ public class MessageEditor extends AbstractEditor {
 
     @Override
     public ValidationInfo areInsertedValuesValid() {
-        ValidationInfo info = null;
-        boolean uriIsEmpty = (textFieldMessageURI.getText().isEmpty() || textFieldMessageURI.getText().trim().isEmpty());
-        boolean contentIsEmpty = (textFieldContent.getText().isEmpty() || textFieldContent.getText().trim().isEmpty());
-
-        if (uriIsEmpty && contentIsEmpty){
-            if (!nullTextFieldsWarningShown) {
-                int result = Messages.showYesNoDialog("Both URI and Content are empty!\n" +
-                        "This will lead to message specified\n" +
-                        "by content with value \"\" (empty string).\n\n" +
-                        "Would you like to continue?", "Empty Text Fields!", AllIcons.General.QuestionDialog);
-                nullTextFieldsWarningShown = true;
-                if (result != 0) {
-                    info = new ValidationInfo("OK Interrupted...");
-                }
-            }
-        }
-
-        if (!uriIsEmpty && contentIsEmpty){
-            if (!ambiguousWarningShown){
-                int result = Messages.showYesNoDialog("URI is set and Content is empty.\n" +
-                        "While PerfCake prioritizes Content and\n" +
-                        "Content with empty string value is valid,\n" +
-                        "this configuration is ambiguous.\n" +
-                        "If you continue, Content will be set to null\n " +
-                        "and URI will be used.\n\n" +
-                        "Would you like to continue?\n\n" +
-                        "Hint: If you want to use Content with empty string value,\n" +
-                        "please remove URI value.", "Input Ambiguous", AllIcons.General.QuestionDialog);
-                ambiguousWarningShown = true;
-                if (result != 0) {
-                    info = new ValidationInfo("OK Interrupted...");
-                }
-            }
-        }
-        return info;
+        // always valid
+        return null;
     }
 
     private class HeadersTableModel extends AbstractTableModel {
