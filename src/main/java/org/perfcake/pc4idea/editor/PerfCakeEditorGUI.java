@@ -325,6 +325,7 @@ public class PerfCakeEditorGUI extends JPanel {
             panelSender.setComponentModel(scenarioModel.getSender());
             panelReporting.setComponentModel(scenarioModel.getReporting());
             panelMessages.setComponentModel(scenarioModel.getMessages());
+            panelValidation.setComponentModel(scenarioModel.getValidation());
 
             if (scenarioModel.getValidation() != null) {
                 if (scenarioModel.getMessages() != null) {
