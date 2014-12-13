@@ -11,8 +11,10 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,7 +39,8 @@ public class PerfCakeIconPatcher implements FileIconPatcher {
     public static Icon loadIcon(){
         Icon perfCakeIcon;
         try {
-            final BufferedImage image = ImageIO.read(new File(PerfCakeIconPatcher.class.getResource("/file-logo.png").getPath()));
+            final BufferedImage image = ImageIO.read(PerfCakeIconPatcher.class.getResourceAsStream("/file-logo.png"));
+
             perfCakeIcon = new Icon() {
                 @Override
                 public void paintIcon(Component c, Graphics g, int x, int y) {
