@@ -76,10 +76,9 @@ public class ValidationPanel extends AbstractPanel {
         });
     }
 
-    public void setValidationModel(Scenario.Validation validation, Set<String> attachedIDs){
+    public void setAttachedIDs(Set<String> attachedIDs){
         this.attachedIDs.clear();
         this.attachedIDs.addAll(attachedIDs);
-        setComponentModel(validation);
     }
 
     public Set<String> getUsedIDSet(){

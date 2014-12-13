@@ -335,9 +335,9 @@ public class PerfCakeEditorGUI extends JPanel {
                             attachedIDs.add(validatorRef.getId());
                         }
                     }
-                    ((ValidationPanel) panelValidation).setValidationModel(scenarioModel.getValidation(), attachedIDs);
+                    ((ValidationPanel) panelValidation).setAttachedIDs(attachedIDs);
                 } else {
-                    ((ValidationPanel) panelValidation).setValidationModel(scenarioModel.getValidation(), new TreeSet<String>());
+                    ((ValidationPanel) panelValidation).setAttachedIDs(new TreeSet<String>());
                 }
             }
 
@@ -496,9 +496,9 @@ public class PerfCakeEditorGUI extends JPanel {
                             attachedIDs.add(validatorRef.getId());
                         }
                     }
-                    ((ValidationPanel) panelValidation).setValidationModel(scenarioModel.getValidation(), attachedIDs);
+                    ((ValidationPanel) panelValidation).setAttachedIDs(attachedIDs);
                 } else {
-                    ((ValidationPanel) panelValidation).setValidationModel(scenarioModel.getValidation(), new TreeSet<String>());
+                    ((ValidationPanel) panelValidation).setAttachedIDs(new TreeSet<String>());
                 }
             }
 
