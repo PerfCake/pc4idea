@@ -22,60 +22,56 @@ public class PCModuleUtil {
     private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.module.PCModuleUtil");
 
     public static void createMessageFile(Scenario.Messages.Message message, final Module module) {
+        if (module == null){
+            //disabled in wizard and if null
+            return;
+        }
+
         final String fileName;
         String uri = message.getUri();
         if (uri == null){
-            LOG.info("URI isn't null. Message can't be created.");
+            LOG.info("URI is null. Message can't be created.");
             return;
         }
         if (!uri.contains("/")) {
             fileName = (uri.contains(".")) ? uri : uri + ".txt";
         } else {
-            LOG.info("URI isn't local. Only local messages can be created.");
+            LOG.info("URI isn't local. Only local message can be created.");
             return;
         }
 
         VirtualFile messagesDirectory = null;
         String directoryError = "";
-        if (module != null) {
-            String type = module.getOptionValue("type");
-            if (type != null) {
-                if (type.equals("PERFCAKE_MODULE")) {
-                    VirtualFile moduleFile = module.getModuleFile();
-                    if (moduleFile != null) {
-                        boolean dirExists = false;
-                        for (VirtualFile file : moduleFile.getParent().getChildren()) {
-                            if (file.getName().equals("messages")) {
-                                dirExists = true;
-                                boolean fileExists = false;
-                                for (VirtualFile m : file.getChildren()) {
-                                    if (m.getName().equals(fileName)) {
-                                        fileExists = true;
-                                    }
-                                }
-                                if (!fileExists) {
-                                    messagesDirectory = file;
-                                } else {
-                                    directoryError = "File " + fileName + " already exists in " + file.getName() + " directory.";
-                                }
+        if (isPerfCakeModule(module)){
+            VirtualFile moduleFile = module.getModuleFile();
+            if (moduleFile != null) {
+                boolean dirExists = false;
+                for (VirtualFile file : moduleFile.getParent().getChildren()) {
+                    if (file.getName().equals("messages")) {
+                        dirExists = true;
+                        boolean fileExists = false;
+                        for (VirtualFile m : file.getChildren()) {
+                            if (m.getName().equals(fileName)) {
+                                fileExists = true;
                             }
                         }
-                        if (!dirExists) {
-                            directoryError = "Can't find directory \"messages\".";
+                        if (!fileExists) {
+                            messagesDirectory = file;
+                        } else {
+                            directoryError = "File " + fileName + " already exists in " + file.getName() + " directory.";
                         }
-                    } else {
-                        directoryError = "Module file is null.";
                     }
-                } else {
-                    directoryError = "Module type isn't PerfCake.";
+                }
+                if (!dirExists) {
+                    directoryError = "Can't find directory \"messages\".";
                 }
             } else {
-                directoryError = "Module option type is null.";
+                directoryError = "Module file is null.";
             }
         } else {
-            // disabled in wizard
-            return;
+            directoryError = "Module type isn't PerfCake";
         }
+
         if (messagesDirectory == null) {
             LOG.info("Not possible to create message: " + directoryError);
             return;
@@ -103,17 +99,12 @@ public class PCModuleUtil {
 
     public static VirtualFile findScenario(String fileName, Module module){
         VirtualFile scenariosDir = null;
-        if (module != null) {
-            String type = module.getOptionValue("type");
-            if (type != null) {
-                if (type.equals("PERFCAKE_MODULE")) {
-                    VirtualFile moduleFile = module.getModuleFile();
-                    if (moduleFile != null) {
-                        for (VirtualFile file : moduleFile.getParent().getChildren()) {
-                            if (file.getName().equals("scenarios")) {
-                                scenariosDir = file;
-                            }
-                        }
+        if (isPerfCakeModule(module)){
+            VirtualFile moduleFile = module.getModuleFile();
+            if (moduleFile != null) {
+                for (VirtualFile file : moduleFile.getParent().getChildren()) {
+                    if (file.getName().equals("scenarios")) {
+                        scenariosDir = file;
                     }
                 }
             }
@@ -128,4 +119,18 @@ public class PCModuleUtil {
         }
         return null;
     }
+
+    public static boolean isPerfCakeModule(Module module){
+        boolean isPerfCakeModule = false;
+        if (module != null) {
+            String type = module.getOptionValue("type");
+            if (type != null) {
+                if (type.equals("PERFCAKE_MODULE")) {
+                    isPerfCakeModule = true;
+                }
+            }
+        }
+        return isPerfCakeModule;
+    }
+
 }
