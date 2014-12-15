@@ -13,6 +13,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.editor.designer.common.PerfCakeIconPatcher;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -30,6 +31,12 @@ import java.io.StringWriter;
  * Date: 9.9.2014
  */
 public class NewScenarioAction extends AnAction {
+
+    public NewScenarioAction(){
+        super(PerfCakeIconPatcher.loadIcon());
+    }
+
+    @Override
     public void actionPerformed(AnActionEvent e) {
         VirtualFile file = e.getData(DataKeys.VIRTUAL_FILE);
         String dirURI = (file.isDirectory()) ? file.getUrl() : file.getParent().getUrl();
@@ -39,15 +46,12 @@ public class NewScenarioAction extends AnAction {
         wizardDialog.show();
         wizard.stopCheckingValidity();
         if (wizardDialog.getExitCode() == 0){
-
             VirtualFile scenarioDirectory = wizard.getScenarioDirectory();
             String name = wizard.getScenarioName();
             name = (name.contains(".xml")) ? name : name+".xml";
             Scenario model = wizard.getScenarioModel();
 
             createScenario(scenarioDirectory,name,model,e.getProject());
-
-
         }
     }
 
@@ -70,10 +74,10 @@ public class NewScenarioAction extends AnAction {
                     for(VirtualFile vf : directory.getChildren()){
                         if (vf.getName().equals(name)){
                             int result = Messages.showOkCancelDialog(project,
-                                    "file "+name+" already exists in this directory!\n"+
+                                    "File "+name+" already exists in this directory!\n"+
                                     "Would you like to rewrite it?",
                                     "File Already Exists!",
-                                     AllIcons.General.QuestionDialog);
+                                     AllIcons.General.WarningDialog);
                             if (result != 0) {
                                 return;
                             }
@@ -82,6 +86,10 @@ public class NewScenarioAction extends AnAction {
 
                     VirtualFile scenarioVF = directory.createChildData(NewScenarioAction.this, name);
                     Document scenarioDocument = FileDocumentManager.getInstance().getDocument(scenarioVF);
+                    if (scenarioDocument == null){
+                        /*TODO log and return*/
+                        return;
+                    }
 
                     SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
                     Schema schema = schemaFactory.newSchema(this.getClass().getResource("/schemas/" + "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd"));
