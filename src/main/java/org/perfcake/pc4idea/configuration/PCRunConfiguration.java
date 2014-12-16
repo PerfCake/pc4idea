@@ -12,8 +12,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.perfcake.pc4idea.execution.PCRunProfileState;
-import org.perfcake.pc4idea.execution.PCRunState;
+import org.perfcake.pc4idea.execution.PCProfileState;
 import org.perfcake.pc4idea.module.PCModuleUtil;
 
 /**
@@ -22,8 +21,6 @@ import org.perfcake.pc4idea.module.PCModuleUtil;
  * Date: 5.12.2014
  */
 public class PCRunConfiguration extends LocatableConfigurationBase {
-    private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.configuration.PCRunConfiguration");
-
     private VirtualFile scenarioFile;
     private Module module;
     private boolean isInitialized;
@@ -99,8 +96,7 @@ public class PCRunConfiguration extends LocatableConfigurationBase {
     @Nullable
     @Override
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment executionEnvironment) throws ExecutionException {
-        return new PCRunProfileState(executionEnvironment,scenarioFile);
-        //return new PCRunState(executionEnvironment,scenarioFile);
+        return new PCProfileState(executionEnvironment,scenarioFile);
     }
 
 
