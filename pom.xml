@@ -4,11 +4,13 @@
     <groupId>org.perfcake</groupId>
     <artifactId>pc4idea</artifactId>
     <version>3.3-SNAPSHOT</version>
+
     <properties>
         <perfcake.version>3.3</perfcake.version>
         <intellij.version>13.1.6</intellij.version>
         <intellijHome>{please set intellijHome property}</intellijHome>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>intellijSources</groupId>
@@ -58,13 +60,6 @@
             <version>${perfcake.version}</version>
         </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <id>local</id>
-            <name>Intellij-ce sources</name>
-            <url>file://${intellijHome}</url>
-        </repository>
-    </repositories>
     <build>
         <resources>
             <resource>
@@ -86,21 +81,18 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.3</version>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <descriptor>assemblyDescriptor.xml</descriptor>
+                    <finalName>PerfCakePlugin</finalName>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>unpack-perfcake-sources</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>unpack-dependencies</goal>
+                            <goal>single</goal>
                         </goals>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
-                            <includeGroupIds>${project.groupId}</includeGroupIds>
-                            <includes>schemas/perfcake-scenario-3.0.xsd,org/perfcake/</includes>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
