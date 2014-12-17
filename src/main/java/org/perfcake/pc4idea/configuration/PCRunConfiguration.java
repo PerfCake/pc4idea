@@ -4,9 +4,6 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.*;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -15,7 +12,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.perfcake.pc4idea.execution.PCRunProfileState;
+import org.perfcake.pc4idea.execution.PCProfileState;
 import org.perfcake.pc4idea.module.PCModuleUtil;
 
 /**
@@ -24,19 +21,16 @@ import org.perfcake.pc4idea.module.PCModuleUtil;
  * Date: 5.12.2014
  */
 public class PCRunConfiguration extends LocatableConfigurationBase {
-    private static final Logger LOG = Logger.getInstance("#org.perfcake.pc4idea.configuration.PCRunConfiguration");
-
     private VirtualFile scenarioFile;
-    /*TODO private Module module*/
+    private Module module;
     private boolean isInitialized;
-    private Project project;
 
 
     public PCRunConfiguration(Project project, ConfigurationFactory factory, String name){
         super(project,factory,name);
         isInitialized = false;
         scenarioFile = null;
-        this.project = project;
+        module = null;
     }
 
     public void setScenarioFile(VirtualFile scenarioFile){
@@ -45,29 +39,26 @@ public class PCRunConfiguration extends LocatableConfigurationBase {
     public VirtualFile getScenarioFile(){
         return scenarioFile;
     }
-/*TODO*/
-//    public void setModule(Module module){
-//        this.module = module;
-//    }
-//    public Module getMoudle(){
-//        return module;
-//    }
 
-    public void findScenarioFileByName(String fileName/*TODO Module module*/){
-        int controlCounter = 0;
-        for (Module m : ModuleManager.getInstance(project).getModules()) {
-            VirtualFile file = PCModuleUtil.findScenario(fileName, m);
-            if (file != null) {
-                scenarioFile = file;
-                controlCounter++;
+    public void setModule(Module module){
+        this.module = module;
+    }
+    public Module getMoudle(){
+        return module;
+    }
+
+    public void tryFindScenarioFileByName(String fileName, Module module) {
+        if (module != null) {
+            VirtualFile file = PCModuleUtil.findScenario(fileName, module);
+            scenarioFile = (file != null) ? file : null;
+        } else {
+            for (Module m : ModuleManager.getInstance(this.getProject()).getModules()) {
+                VirtualFile file = PCModuleUtil.findScenario(fileName, m);
+                if (file != null) {
+                    scenarioFile = file;
+                    this.module = m;
+                }
             }
-
-        }
-        if (controlCounter > 1){
-            LOG.warn("Configuration Warning: More scenarios with name "+fileName+" found in this project!");
-            Notifications.Bus.notify(new Notification("PerfCake Plugin", "Configuration Warning",
-                    "More scenarios with name "+fileName+" found in this project!",
-                    NotificationType.WARNING), project);
         }
     }
 
@@ -86,8 +77,8 @@ public class PCRunConfiguration extends LocatableConfigurationBase {
 
     @Override
     public void checkConfiguration() throws RuntimeConfigurationException {
-        if (getName().contains(".xml") && scenarioFile == null){
-            findScenarioFileByName(getName());
+        if (getName().contains(".xml") && scenarioFile == null){   /*TODO if editing and name valid scenrio name and text editor isnt !!!!!*/
+            tryFindScenarioFileByName(getName(),module);
         }
         if (!isInitialized) {
             throw new RuntimeConfigurationException("Run Configuration is not initialized");
@@ -96,12 +87,16 @@ public class PCRunConfiguration extends LocatableConfigurationBase {
             isInitialized = false;
             throw new RuntimeConfigurationException("Can't find scenario file!");
         }
+        if (module == null) {
+            isInitialized = false;
+            throw new RuntimeConfigurationException("Can't find module!");
+        }
     }
 
     @Nullable
     @Override
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment executionEnvironment) throws ExecutionException {
-        return new PCRunProfileState(executionEnvironment,scenarioFile);
+        return new PCProfileState(executionEnvironment,scenarioFile);
     }
 
 
