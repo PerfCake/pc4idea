@@ -1,5 +1,7 @@
 package org.perfcake.pc4idea.editor;
 
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.UndoConfirmationPolicy;
@@ -10,6 +12,7 @@ import com.intellij.openapi.editor.event.DocumentAdapter;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.impl.EditorHistoryManager;
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -29,6 +32,7 @@ import org.perfcake.pc4idea.editor.designer.editors.AbstractEditor;
 import org.perfcake.pc4idea.editor.designer.outercomponents.*;
 import org.xml.sax.SAXException;
 
+import javax.management.Notification;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -399,7 +403,7 @@ public class PerfCakeEditorGUI extends JPanel {
         document.removeDocumentListener(scenarioDocumentListener);
 
         xmlEditor.dispose();
-        /*TODO maven cant find method*///EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
+        EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
 
     }
 
@@ -469,6 +473,9 @@ public class PerfCakeEditorGUI extends JPanel {
             } else {
                 scenarioModel = null;
             }
+        } else {
+            Notifications.Bus.notify(new com.intellij.notification.Notification("PerfCake Plugin", "Scenario Invalid",
+                    message, NotificationType.INFORMATION), project);
         }
     }
 
