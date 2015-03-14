@@ -65,7 +65,7 @@ public class PerfCakeEditorGUI extends JPanel {
 
         panelMenu.setLayout(new GridLayout(1, 1));
         panelMenu.add(additiveComponentsTree);
-        panelMenu.setBackground(EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground());/*TODO maybe coloring is solving that(need to impl interface!!)*/
+        panelMenu.setBackground(EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground());
 
         PerfCakeClassProvider classProvider = new PerfCakeClassProvider();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) additiveComponentsTree.getModel().getRoot();

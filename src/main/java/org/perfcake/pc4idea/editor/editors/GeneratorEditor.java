@@ -21,7 +21,7 @@ public class GeneratorEditor extends AbstractEditor {
     private JComboBox comboBoxRunType;
     private JTextField textFieldRunValue;
     private JTextField textFieldNumOfThreads;
-    //private PropertiesEditor panelProperties;/*TODO*/
+    private PropertiesEditor panelProperties;/*TODO*/
 
     public GeneratorEditor(){
         initComponents();
@@ -43,7 +43,7 @@ public class GeneratorEditor extends AbstractEditor {
         comboBoxRunType.setSelectedIndex(-1);
         textFieldRunValue = new JTextField();
         textFieldNumOfThreads = new JTextField();
-        //panelProperties = new PropertiesEditor();
+        panelProperties = new PropertiesEditor();
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -60,7 +60,7 @@ public class GeneratorEditor extends AbstractEditor {
                 .addGroup(layout.createSequentialGroup()
                         .addComponent(labelNumOfThreads, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
                         .addComponent(textFieldNumOfThreads))
-                /*.addComponent(panelProperties)*/);
+                .addComponent(panelProperties));
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup()
                         .addComponent(labelGeneratorType, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
@@ -78,7 +78,7 @@ public class GeneratorEditor extends AbstractEditor {
                         .addComponent(labelNumOfThreads, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
                         .addComponent(textFieldNumOfThreads, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
                 .addGap(10)
-                /*.addComponent(panelProperties)*/);
+                .addComponent(panelProperties));
     }
 
     public void setGenerator(Scenario.Generator generator){
@@ -86,7 +86,7 @@ public class GeneratorEditor extends AbstractEditor {
         comboBoxRunType.setSelectedItem(generator.getRun().getType());
         textFieldRunValue.setText(generator.getRun().getValue());
         textFieldNumOfThreads.setText(generator.getThreads());
-        //panelProperties.setListProperties(generator.getProperty());
+        panelProperties.setListProperties(generator.getProperty());
     }
 
     public Scenario.Generator getGenerator(){
@@ -97,7 +97,7 @@ public class GeneratorEditor extends AbstractEditor {
         newRun.setType((String)comboBoxRunType.getSelectedItem());
         newRun.setValue(textFieldRunValue.getText());
         newGenerator.setRun(newRun);
-        //newGenerator.getProperty().addAll(panelProperties.getListProperties());
+        newGenerator.getProperty().addAll(panelProperties.getListProperties());
         return newGenerator;
     }
 

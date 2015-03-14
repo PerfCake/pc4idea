@@ -7,6 +7,7 @@ import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.colors.ColorComponents;
 import org.perfcake.pc4idea.editor.colors.ColorType;
+import org.perfcake.pc4idea.editor.editor.PerfCakeEditor;
 import org.perfcake.pc4idea.editor.editors.GeneratorEditor;
 import org.perfcake.pc4idea.editor.editors.PropertyEditor;
 

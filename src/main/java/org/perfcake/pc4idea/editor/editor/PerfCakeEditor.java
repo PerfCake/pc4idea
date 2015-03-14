@@ -17,6 +17,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.LightVirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.actions.CommitAction;
 import org.perfcake.pc4idea.editor.actions.RedoAction;
 import org.perfcake.pc4idea.editor.actions.UndoAction;
@@ -36,7 +37,6 @@ import java.util.ResourceBundle;
 public class PerfCakeEditor implements FileEditor { /*TODO focused/notfucused - to save*/
     private static final Logger LOG = Logger.getInstance("#...editor.PerfCakeEditor");
     public static final String PERFCAKE_NOTIFICATION_ID = "PerfCake Plugin";
-    public static final java.util.ResourceBundle MESSAGES_BUNDLE = ResourceBundle.getBundle("messages/pc4ideaStrings");
 
     private Project project;
     private VirtualFile file;
@@ -58,8 +58,8 @@ public class PerfCakeEditor implements FileEditor { /*TODO focused/notfucused - 
             if (type == null || !type.equals("PERFCAKE_MODULE")) {
                 LOG.info("Opening PerfCake Scenario \""+file.getName()+"\" in not PerfCake module");
                 Notifications.Bus.notify(new Notification(PERFCAKE_NOTIFICATION_ID,
-                        MESSAGES_BUNDLE.getString("NOT_PC_MODULE_T"),
-                        MESSAGES_BUNDLE.getString("NOT_PC_MODULE_B"),
+                        Messages.BUNDLE.getString("NOT_PC_MODULE_T"),
+                        Messages.BUNDLE.getString("NOT_PC_MODULE_B"),
                         NotificationType.INFORMATION), project);
             }
         } else {
@@ -75,7 +75,7 @@ public class PerfCakeEditor implements FileEditor { /*TODO focused/notfucused - 
             editorGUI.getScenarioGUI().setScenarioModel(manager.loadScenario());
         } catch (ScenarioManagerException e) {
             editorGUI.getScenarioGUI().setScenarioModel(null);
-            Notifications.Bus.notify(new Notification(PERFCAKE_NOTIFICATION_ID, MESSAGES_BUNDLE.getString("SCENARIO_INVALID"),
+            Notifications.Bus.notify(new Notification(PERFCAKE_NOTIFICATION_ID, Messages.BUNDLE.getString("SCENARIO_INVALID"),
                     e.getCause().toString(), NotificationType.WARNING), project);
         }
     }
@@ -106,7 +106,7 @@ public class PerfCakeEditor implements FileEditor { /*TODO focused/notfucused - 
     @Override
     public boolean isModified() {
         return false;
-    } /*TODO po prvej zmene - hviezdicka*/
+    } /*TODO po prvej zmene - hviezdicka + vfilelistener*/
 
     @Override
     public boolean isValid() {
