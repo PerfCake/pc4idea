@@ -41,7 +41,7 @@ public class DestinationEditor extends AbstractEditor {
         checkBoxEnabled = new JCheckBox();
         checkBoxEnabled.setSelected(true);
 
-        tablePanelPeriods = new EditorTablePanel(new PeriodsTableModel(new ArrayList<Scenario.Reporting.Reporter.Destination.Period>())) {
+        tablePanelPeriods = new EditorTablePanel(new PeriodsTableModel(new ArrayList<>())) {
             @Override
             public void tableClickedActionPerformed(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3) {

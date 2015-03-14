@@ -26,7 +26,7 @@ public class PropertiesEditor extends AbstractEditor {
     }
 
     private void initComponents(){
-        tablePanelProperties = new EditorTablePanel(new PropertiesTableModel(new ArrayList<Property>())) {
+        tablePanelProperties = new EditorTablePanel(new PropertiesTableModel(new ArrayList<>())) {
             @Override
             public void tableClickedActionPerformed(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3) {

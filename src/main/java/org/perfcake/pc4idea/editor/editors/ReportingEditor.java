@@ -30,7 +30,7 @@ public class ReportingEditor extends AbstractEditor {
     }
 
     private void initComponents(){
-        tablePanelReporters = new EditorTablePanel(new ReportersTableModel(new ArrayList<Scenario.Reporting.Reporter>())) {
+        tablePanelReporters = new EditorTablePanel(new ReportersTableModel(new ArrayList<>())) {
             @Override
             public void tableClickedActionPerformed(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3) {
