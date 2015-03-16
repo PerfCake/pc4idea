@@ -5,11 +5,14 @@ import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.ScenarioDialogEditor;
+import org.perfcake.pc4idea.editor.actions.ActionType;
+import org.perfcake.pc4idea.editor.actions.AddPropertyAction;
+import org.perfcake.pc4idea.editor.actions.EditAction;
 import org.perfcake.pc4idea.editor.colors.ColorComponents;
 import org.perfcake.pc4idea.editor.colors.ColorType;
-import org.perfcake.pc4idea.editor.editor.PerfCakeEditor;
 import org.perfcake.pc4idea.editor.editors.GeneratorEditor;
 import org.perfcake.pc4idea.editor.editors.PropertyEditor;
+import org.perfcake.pc4idea.editor.interfaces.PropertyAddible;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +25,7 @@ import java.util.List;
 /**
  * Created by Stanislav Kaleta on 3/7/15.
  */
-public class GeneratorGUI extends AbstractComponentGUI {
+public class GeneratorGUI extends AbstractComponentGUI implements PropertyAddible {
     private Scenario.Generator generator;
 
     private JLabel generatorAttr;
@@ -59,47 +62,11 @@ public class GeneratorGUI extends AbstractComponentGUI {
                 SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, generatorRunAttr,8,SpringLayout.SOUTH, generatorAttr);
 
-        this.getActionMap().put("ADDP", new AbstractAction(Messages.BUNDLE.getString("ADD")+" Property", AllIcons.General.Add) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PropertyEditor editor = new PropertyEditor();
-                ScenarioDialogEditor dialog = new ScenarioDialogEditor(editor);
-                dialog.show();
-                if (dialog.getExitCode() == 0) {
-                    Property property = editor.getProperty();
-                    Scenario.Generator generator = (Scenario.Generator) GeneratorGUI.this.getComponentModel();
-                    generator.getProperty().add(property);
-                    GeneratorGUI.this.setComponentModel(generator);
-                    GeneratorGUI.this.commitChanges(Messages.BUNDLE.getString("ADD")+" Property");
-                }
-            }
-        });
+        getActionMap().put(ActionType.ADDP, new AddPropertyAction(this, Messages.BUNDLE.getString("ADD")+" Property"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK), "ADDP");
 
-        this.getActionMap().put("EDIT", new AbstractAction(Messages.BUNDLE.getString("EDIT")+" Generator", AllIcons.Actions.Edit) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                GeneratorGUI.this.openEditor();
-            }
-        });
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), "EDIT");
-    }
-
-    @Override
-    protected List<JMenuItem> getMenuItems() {
-        List<JMenuItem> menuItems = new ArrayList<>();
-
-        JMenuItem addPropertyItem = new JMenuItem();
-        addPropertyItem.setAction(this.getActionMap().get("ADDP"));
-        addPropertyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK));
-        menuItems.add(addPropertyItem);
-
-        JMenuItem editItem = new JMenuItem();
-        editItem.setAction(this.getActionMap().get("EDIT"));
-        editItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK));
-        menuItems.add(editItem);
-
-        return menuItems;
+        getActionMap().put(ActionType.EDIT,new EditAction(this,Messages.BUNDLE.getString("EDIT")+" Generator"));
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
     }
 
     @Override
@@ -108,15 +75,21 @@ public class GeneratorGUI extends AbstractComponentGUI {
     }
 
     @Override
-    protected void openEditor() {
+    public Object openEditorDialog() {
         GeneratorEditor editor = new GeneratorEditor();
         editor.setGenerator(generator);
         ScenarioDialogEditor dialog = new ScenarioDialogEditor(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {
-            this.setComponentModel(editor.getGenerator());
-            this.commitChanges(Messages.BUNDLE.getString("EDIT") + " Generator");
+            return editor.getGenerator();
         }
+        return null;
+    }
+
+    @Override
+    public void addProperty(Property property) {
+        generator.getProperty().add(property);
+        commitChanges(Messages.BUNDLE.getString("ADD")+" Property");
     }
 
     @Override
