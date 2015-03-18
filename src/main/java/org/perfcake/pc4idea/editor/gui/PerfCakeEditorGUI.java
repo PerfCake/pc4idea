@@ -8,6 +8,7 @@ import com.intellij.ui.treeStructure.Tree;
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.pc4idea.editor.PerfCakeClassProvider;
 import org.perfcake.pc4idea.editor.PerfCakeClassProviderException;
+import org.perfcake.pc4idea.editor.actions.ActionType;
 import org.perfcake.pc4idea.editor.actions.CommitAction;
 import org.perfcake.pc4idea.editor.actions.RedoAction;
 import org.perfcake.pc4idea.editor.actions.UndoAction;
@@ -42,9 +43,9 @@ public class PerfCakeEditorGUI extends JPanel {
 
 
     public PerfCakeEditorGUI(@NotNull CommitAction commitAction,@NotNull UndoAction undoAction, @NotNull RedoAction redoAction){
-        this.getActionMap().put("COMMIT",commitAction);
-        this.getActionMap().put("UNDO",undoAction);
-        this.getActionMap().put("REDO",redoAction);
+        this.getActionMap().put(ActionType.COMMIT, commitAction);
+        this.getActionMap().put(ActionType.UNDO, undoAction);
+        this.getActionMap().put(ActionType.REDO, redoAction);
         initComponents();
 
         this.setLayout(new GridLayout(1,1));

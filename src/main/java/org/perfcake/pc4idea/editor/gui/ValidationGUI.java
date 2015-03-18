@@ -1,20 +1,18 @@
 package org.perfcake.pc4idea.editor.gui;
 
+import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
+
 import javax.swing.*;
-import java.util.List;
 
 /**
  * Created by Stanislav Kaleta on 3/7/15.
  */
 public class ValidationGUI extends AbstractComponentGUI  {
 
-    public ValidationGUI(ActionMap actionMap){
-        super(actionMap);;
+    public ValidationGUI(ModelWrapper validationModelWrapper, ActionMap baseActionMap){
+        super(baseActionMap);
     }
-    @Override
-    List<JMenuItem> getMenuItems() {
-        return null;
-    }
+
 
     @Override
     void performImport(String transferredData) {
@@ -22,18 +20,13 @@ public class ValidationGUI extends AbstractComponentGUI  {
     }
 
     @Override
-    void openEditor() {
-        /*TODO*/
-    }
-
-    @Override
-    public void setComponentModel(Object componentModel) {
-
-    }
-
-    @Override
-    public Object getComponentModel() {
+    public Object openEditorDialogAndGetResult() {
         return null;
+    }
+
+    @Override
+    public void updateGUI() {
+
     }
 
     @Override

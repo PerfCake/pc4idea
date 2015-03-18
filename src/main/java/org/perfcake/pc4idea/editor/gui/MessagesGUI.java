@@ -1,24 +1,20 @@
 package org.perfcake.pc4idea.editor.gui;
 
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
 
 import javax.swing.*;
-import java.util.List;
 
 /**
  * Created by Stanislav Kaleta on 3/7/15.
  */
 public class MessagesGUI extends AbstractComponentGUI  {
-    private Scenario.Messages messages;
 
 
-    public MessagesGUI(ActionMap actionMap){
-        super(actionMap);
 
-    }
-    @Override
-    List<JMenuItem> getMenuItems() {
-        return null;
+    public MessagesGUI(ModelWrapper messagesModelWrapper, ActionMap baseActionMap){
+        super(baseActionMap);
+
     }
 
     @Override
@@ -27,19 +23,15 @@ public class MessagesGUI extends AbstractComponentGUI  {
     }
 
     @Override
-    void openEditor() {
-        /*TODO*/
-    }
-
-    @Override
-    public void setComponentModel(Object componentModel) {
-
-    }
-
-    @Override
-    public Object getComponentModel() {
+    public Object openEditorDialogAndGetResult() {
         return null;
     }
+
+    @Override
+    public void updateGUI() {
+
+    }
+
 
     @Override
     public void updateColors() {

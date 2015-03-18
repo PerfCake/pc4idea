@@ -27,15 +27,14 @@ import org.perfcake.pc4idea.editor.manager.ScenarioManagerException;
 
 import javax.swing.*;
 import java.beans.PropertyChangeListener;
-import java.util.ResourceBundle;
 
 /**
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
  * Date: 17.9.2014
  */
-public class PerfCakeEditor implements FileEditor { /*TODO focused/notfucused - to save*/
-    private static final Logger LOG = Logger.getInstance("#...editor.PerfCakeEditor");
+public class PerfCakeEditor implements FileEditor { /*TODO UNDO/REDO/externa zmena > upadte gui*/
+    private static final Logger LOG = Logger.getInstance(".editor.editor.PerfCakeEditor");
     public static final String PERFCAKE_NOTIFICATION_ID = "PerfCake Plugin";
 
     private Project project;
@@ -45,7 +44,7 @@ public class PerfCakeEditor implements FileEditor { /*TODO focused/notfucused - 
 
     private final PerfCakeEditorGUI editorGUI;
 
-    PerfCakeEditor(final Project project, final VirtualFile file, @NotNull final ScenarioManager manager){
+    public PerfCakeEditor(final Project project, final VirtualFile file, @NotNull final ScenarioManager manager){
         this.project = project;
         this.file = file;
         this.manager = manager;
@@ -74,6 +73,7 @@ public class PerfCakeEditor implements FileEditor { /*TODO focused/notfucused - 
         try {
             editorGUI.getScenarioGUI().setScenarioModel(manager.loadScenario());
         } catch (ScenarioManagerException e) {
+            /*TODO for testing purpose*/System.out.println(e.getCause());
             editorGUI.getScenarioGUI().setScenarioModel(null);
             Notifications.Bus.notify(new Notification(PERFCAKE_NOTIFICATION_ID, Messages.BUNDLE.getString("SCENARIO_INVALID"),
                     e.getCause().toString(), NotificationType.WARNING), project);

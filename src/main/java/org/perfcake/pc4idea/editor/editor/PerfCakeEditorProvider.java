@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.perfcake.pc4idea.editor.manager.DSLScenarioManager;
 import org.perfcake.pc4idea.editor.manager.ScenarioManager;
 import org.perfcake.pc4idea.editor.manager.XMLScenarioManager;
-import org.perfcake.scenario.Scenario;
 
 
 /**
@@ -64,7 +63,7 @@ public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
         ScenarioManager manager;
         switch (scenarioType){
             case XML:
-                manager = new XMLScenarioManager(virtualFile);
+                manager = new XMLScenarioManager(virtualFile, project);
                 break;
             case DSL:
                 manager = new DSLScenarioManager(virtualFile);

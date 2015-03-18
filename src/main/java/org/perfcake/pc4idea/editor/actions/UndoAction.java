@@ -8,9 +8,6 @@ import java.awt.event.ActionEvent;
  */
 public class UndoAction extends AbstractAction {
 
-    public void updateState(){
-
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {

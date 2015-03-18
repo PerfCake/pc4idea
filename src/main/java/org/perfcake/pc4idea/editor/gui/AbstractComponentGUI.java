@@ -1,8 +1,8 @@
 package org.perfcake.pc4idea.editor.gui;
 
-import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.ScenarioImportHandler;
-import org.perfcake.pc4idea.editor.ScenarioPopupMenu;
+import org.perfcake.pc4idea.editor.swing.ScenarioPopupMenu;
+import org.perfcake.pc4idea.editor.actions.ActionType;
 import org.perfcake.pc4idea.editor.colors.ColorAdjustable;
 import org.perfcake.pc4idea.editor.swing.JRoundedRectangle;
 
@@ -10,7 +10,6 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,9 +17,9 @@ import java.util.List;
  * Date: 3.3.2015
  */
 public abstract class AbstractComponentGUI extends JRoundedRectangle implements ColorAdjustable {
-    private ActionMap defaultActionMap;
+    private ActionMap baseActionMap;
     public AbstractComponentGUI(ActionMap actionMap) {
-        this.defaultActionMap = actionMap;
+        this.baseActionMap = actionMap;
         for (Object o : actionMap.allKeys()){
             this.getActionMap().put(o,actionMap.get(o));
         }
@@ -29,11 +28,11 @@ public abstract class AbstractComponentGUI extends JRoundedRectangle implements 
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getButton() == MouseEvent.BUTTON1) {
                     if (evt.getClickCount() == 2) {
-                        openEditor();
+                        getActionMap().get(ActionType.EDIT).actionPerformed(null);
                     }
                 }
                 if (evt.getButton() == MouseEvent.BUTTON3) {
-                    ScenarioPopupMenu popupMenu = new ScenarioPopupMenu(getActionMap(),getMenuItems());
+                    ScenarioPopupMenu popupMenu = new ScenarioPopupMenu(getActionMap());
                     popupMenu.show(AbstractComponentGUI.this, evt.getX(), evt.getY());
                     System.out.print(AbstractComponentGUI.this.getClass() + " = ");
                     for (Object s : AbstractComponentGUI.this.getActionMap().allKeys()) {
@@ -53,20 +52,20 @@ public abstract class AbstractComponentGUI extends JRoundedRectangle implements 
         });
     }
 
-    public ActionMap getDefaultActionMap(){
-        return defaultActionMap;
+    public ActionMap getBaseActionMap(){
+        return baseActionMap;
     }
     public void commitChanges(String message){
-        this.getActionMap().get("COMMIT").actionPerformed(new ActionEvent(this,1, message));
+        getActionMap().get(ActionType.COMMIT).actionPerformed(new ActionEvent(this,1, message));
     }
 
-    protected abstract List<JMenuItem> getMenuItems();
-    protected abstract void performImport(String transferredData);
-    protected abstract void openEditor();
+    abstract void performImport(String transferredData);
 
-    public abstract void setComponentModel(Object componentModel);
-    public abstract Object getComponentModel();
+    // returns model if dialog closed with OK, null otherwise
+    public abstract Object openEditorDialogAndGetResult();
 
+    //update
+    public abstract void updateGUI();
 
 
 }
