@@ -1,7 +1,5 @@
 package org.perfcake.pc4idea.editor.gui;
 
-import com.intellij.icons.AllIcons;
-import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.ScenarioDialogEditor;
@@ -11,30 +9,29 @@ import org.perfcake.pc4idea.editor.actions.EditAction;
 import org.perfcake.pc4idea.editor.colors.ColorComponents;
 import org.perfcake.pc4idea.editor.colors.ColorType;
 import org.perfcake.pc4idea.editor.editors.GeneratorEditor;
-import org.perfcake.pc4idea.editor.editors.PropertyEditor;
-import org.perfcake.pc4idea.editor.interfaces.PropertyAddible;
+import org.perfcake.pc4idea.editor.interfaces.CanAddProperty;
+import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
+import org.perfcake.pc4idea.editor.modelwrapper.GeneratorModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Stanislav Kaleta on 3/7/15.
  */
-public class GeneratorGUI extends AbstractComponentGUI implements PropertyAddible {
-    private Scenario.Generator generator;
+public class GeneratorGUI extends AbstractComponentGUI {
+    private ModelWrapper generatorModelWrapper;
 
     private JLabel generatorAttr;
     private JLabel generatorRunAttr;
 
     private int minimumWidth = 0;
 
-    public GeneratorGUI(ActionMap actionMap){
-        super(actionMap);
+    public GeneratorGUI(ModelWrapper generatorModelWrapper, ActionMap baseActionMap){
+        super(baseActionMap);
+        this.generatorModelWrapper = generatorModelWrapper;
         initComponents();
         updateColors();
     }
@@ -62,22 +59,22 @@ public class GeneratorGUI extends AbstractComponentGUI implements PropertyAddibl
                 SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, generatorRunAttr,8,SpringLayout.SOUTH, generatorAttr);
 
-        getActionMap().put(ActionType.ADDP, new AddPropertyAction(this, Messages.BUNDLE.getString("ADD")+" Property"));
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK), "ADDP");
+        getActionMap().put(ActionType.ADDP, new AddPropertyAction((CanAddProperty) generatorModelWrapper, Messages.BUNDLE.getString("ADD")+" Property"));
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK), ActionType.ADDP);
 
-        getActionMap().put(ActionType.EDIT,new EditAction(this,Messages.BUNDLE.getString("EDIT")+" Generator"));
+        getActionMap().put(ActionType.EDIT,new EditAction(generatorModelWrapper,Messages.BUNDLE.getString("EDIT")+" Generator"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
     }
 
     @Override
-    protected void performImport(String transferredData) {
+    void performImport(String transferredData) {
         // not supported
     }
 
     @Override
-    public Object openEditorDialog() {
+    public Object openEditorDialogAndGetResult() {
         GeneratorEditor editor = new GeneratorEditor();
-        editor.setGenerator(generator);
+        editor.setGenerator((Scenario.Generator) generatorModelWrapper.retrieveModel());
         ScenarioDialogEditor dialog = new ScenarioDialogEditor(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {
@@ -87,14 +84,8 @@ public class GeneratorGUI extends AbstractComponentGUI implements PropertyAddibl
     }
 
     @Override
-    public void addProperty(Property property) {
-        generator.getProperty().add(property);
-        commitChanges(Messages.BUNDLE.getString("ADD")+" Property");
-    }
-
-    @Override
-    public void setComponentModel(Object componentModel) {
-        generator = (Scenario.Generator) componentModel;
+    public void updateGUI() {
+        Scenario.Generator generator = (Scenario.Generator) generatorModelWrapper.retrieveModel();
         generatorAttr.setText(generator.getClazz()+" ("+generator.getThreads()+")");
         generatorRunAttr.setText(generator.getRun().getType()+" : "+generator.getRun().getValue());
 
@@ -102,11 +93,6 @@ public class GeneratorGUI extends AbstractComponentGUI implements PropertyAddibl
         int gAttrWidth = fontMetrics.stringWidth(generatorAttr.getText()) + 30;
         int gRunAttrWidth = fontMetrics.stringWidth(generatorRunAttr.getText()) + 30;
         minimumWidth = (gAttrWidth > gRunAttrWidth) ? gAttrWidth : gRunAttrWidth;
-    }
-
-    @Override
-    public Object getComponentModel() {
-        return generator;
     }
 
     @Override

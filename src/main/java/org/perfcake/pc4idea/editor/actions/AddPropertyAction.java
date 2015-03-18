@@ -4,7 +4,8 @@ import com.intellij.icons.AllIcons;
 import org.perfcake.model.Property;
 import org.perfcake.pc4idea.editor.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.editors.PropertyEditor;
-import org.perfcake.pc4idea.editor.interfaces.PropertyAddible;
+import org.perfcake.pc4idea.editor.interfaces.CanAddProperty;
+import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -13,9 +14,9 @@ import java.awt.event.ActionEvent;
  * Created by Stanislav Kaleta on 3/16/15.
  */
 public class AddPropertyAction extends AbstractAction {
-    private PropertyAddible target;
+    private CanAddProperty target;
 
-    public AddPropertyAction(PropertyAddible target, String actionName) {
+    public AddPropertyAction(CanAddProperty target, String actionName) {
         super(actionName, AllIcons.General.Add);
         this.target = target;
     }

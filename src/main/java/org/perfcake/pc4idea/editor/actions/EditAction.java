@@ -1,7 +1,7 @@
 package org.perfcake.pc4idea.editor.actions;
 
 import com.intellij.icons.AllIcons;
-import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
+import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -10,22 +10,18 @@ import java.awt.event.ActionEvent;
  * Created by Stanislav Kaleta on 3/16/15.
  */
 public class EditAction extends AbstractAction{
-    private AbstractComponentGUI target;
-    private String actionName;
+    private ModelWrapper target;
 
-    public EditAction(AbstractComponentGUI target, String actionName){
+    public EditAction(ModelWrapper target, String actionName){
         super(actionName, AllIcons.Actions.Edit);
         this.target = target;
-        this.actionName = actionName;
-
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Object model = target.openEditorDialog();
+        Object model = target.getGUI().openEditorDialogAndGetResult();
         if (model != null){
-            target.setComponentModel(model);
+            target.updateModel(model, true);
         }
-        target.commitChanges(actionName);
     }
 }
