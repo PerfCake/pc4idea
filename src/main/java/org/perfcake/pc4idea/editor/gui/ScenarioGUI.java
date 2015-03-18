@@ -30,12 +30,12 @@ public class ScenarioGUI extends JPanel implements ColorAdjustable {
     }
 
     private void initComponents(){
-        generatorModel = new GeneratorModel(this.getActionMap());
-        senderModel = new SenderModel(this.getActionMap());
-        messagesModel = new MessagesModel(this.getActionMap());
-        validationModel = new ValidationModel(this.getActionMap());
-        reportingModel = new ReportingModel(this.getActionMap());
-        propertiesModel = new PropertiesModel(this.getActionMap());
+        generatorModel = new GeneratorModelWrapper(this.getActionMap());
+        senderModel = new SenderModelWrapper(this.getActionMap());
+        messagesModel = new MessagesModelWrapper(this.getActionMap());
+        validationModel = new ValidationModelWrapper(this.getActionMap());
+        reportingModel = new ReportingModelWrapper(this.getActionMap());
+        propertiesModel = new PropertiesModelWrapper(this.getActionMap());
 
 
         GroupLayout scenarioLayout = new GroupLayout(this);
@@ -79,16 +79,37 @@ public class ScenarioGUI extends JPanel implements ColorAdjustable {
 
     public void setScenarioModel(Scenario scenarioModel) {
         if (scenarioModel != null) {
-            generatorModel.updateModel(scenarioModel.getGenerator(), false);
-            senderModel.updateModel(scenarioModel.getSender(), false);
-            messagesModel.updateModel(scenarioModel.getMessages(), false);
-            validationModel.updateModel(scenarioModel.getValidation(), false);
-            reportingModel.updateModel(scenarioModel.getReporting(), false);
-            propertiesModel.updateModel(scenarioModel.getProperties(), false);
+            generatorModel.updateModel(scenarioModel.getGenerator());
+            generatorModel.getGUI().updateGUI();
+            senderModel.updateModel(scenarioModel.getSender());
+            senderModel.getGUI().updateGUI();
+            messagesModel.updateModel(scenarioModel.getMessages());
+            messagesModel.getGUI().updateGUI();
+            validationModel.updateModel(scenarioModel.getValidation());
+            validationModel.getGUI().updateGUI();
+            reportingModel.updateModel(scenarioModel.getReporting());
+            reportingModel.getGUI().updateGUI();
+            propertiesModel.updateModel(scenarioModel.getProperties());
+            propertiesModel.getGUI().updateGUI();
         } else {
             if (getScenarioModel() != null){
              /*TODO reload if possible = fireSC.INv.*/
             }
+        }
+    }
+
+    public ModelWrapper getComponentModel(int modelNumber){
+        switch (modelNumber){
+            case 0:
+                return generatorModel;
+            case 1:
+                return senderModel;
+            case 2:
+                return messagesModel;
+
+
+            default:
+                return null;
         }
     }
 

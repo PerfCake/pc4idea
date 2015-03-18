@@ -9,6 +9,6 @@ import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
 public interface ModelWrapper {
 
     public AbstractComponentGUI getGUI();
-    public void updateModel(Object componentModel, boolean doCommit);
+    public void updateModel(Object componentModel);
     public Object retrieveModel();
 }

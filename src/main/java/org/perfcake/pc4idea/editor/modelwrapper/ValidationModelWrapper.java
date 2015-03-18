@@ -2,32 +2,30 @@ package org.perfcake.pc4idea.editor.modelwrapper;
 
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
-import org.perfcake.pc4idea.editor.gui.PropertiesGUI;
+import org.perfcake.pc4idea.editor.gui.ValidationGUI;
 import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
 
-import javax.security.sasl.SaslClient;
 import javax.swing.*;
 
 /**
  * Created by Stanislav Kaleta on 3/18/15.
  */
-public class PropertiesModel implements ModelWrapper {
-    private Scenario.Properties propertiesModel;
+public class ValidationModelWrapper implements ModelWrapper {
+    private Scenario.Validation validationModel;
 
-    private PropertiesGUI propertiesGUI;
+    private ValidationGUI validationGUI;
 
-    public PropertiesModel(ActionMap baseActionMap){
-        propertiesGUI = new PropertiesGUI(this, baseActionMap);
+    public ValidationModelWrapper(ActionMap baseActionMap){
+        validationGUI = new ValidationGUI(this, baseActionMap);
     }
-
 
     @Override
     public AbstractComponentGUI getGUI() {
-        return propertiesGUI;
+        return validationGUI;
     }
 
     @Override
-    public void updateModel(Object componentModel, boolean doCommit) {
+    public void updateModel(Object componentModel) {
 
     }
 

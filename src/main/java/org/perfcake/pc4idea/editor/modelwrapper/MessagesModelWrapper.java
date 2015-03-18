@@ -10,12 +10,12 @@ import javax.swing.*;
 /**
  * Created by Stanislav Kaleta on 3/18/15.
  */
-public class MessagesModel implements ModelWrapper {
+public class MessagesModelWrapper implements ModelWrapper {
     private Scenario.Messages messagesModel;
 
     private MessagesGUI messagesGUI;
 
-    public MessagesModel(ActionMap baseActionMap) {
+    public MessagesModelWrapper(ActionMap baseActionMap) {
         messagesGUI = new MessagesGUI(this, baseActionMap);
     }
 
@@ -25,7 +25,7 @@ public class MessagesModel implements ModelWrapper {
     }
 
     @Override
-    public void updateModel(Object componentModel, boolean doCommit) {
+    public void updateModel(Object componentModel) {
 
     }
 

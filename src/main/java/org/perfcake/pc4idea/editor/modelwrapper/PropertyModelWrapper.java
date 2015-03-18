@@ -11,12 +11,12 @@ import javax.swing.*;
 /**
  * Created by Stanislav Kaleta on 3/17/15.
  */
-public class PropertyModel implements ModelWrapper {
+public class PropertyModelWrapper implements ModelWrapper {
     private Property propertyModel;
 
     private PropertyGUI propertyGUI;
 
-    public PropertyModel(ModelWrapper parent, ActionMap baseActionMap){
+    public PropertyModelWrapper(ModelWrapper parent, ActionMap baseActionMap){
         propertyGUI = new PropertyGUI(this, parent, baseActionMap);
     }
 
@@ -26,18 +26,12 @@ public class PropertyModel implements ModelWrapper {
     }
 
     @Override
-    public void updateModel(Object componentModel, boolean doCommit) {
+    public void updateModel(Object componentModel) {
         if (propertyModel == null){
             propertyModel = (Property) componentModel;
         } else {
             propertyModel.setName(((Property) componentModel).getName());
             propertyModel.setValue(((Property) componentModel).getValue());
-        }
-
-        propertyGUI.updateGUI();
-
-        if (doCommit){
-            propertyGUI.commitChanges(Messages.BUNDLE.getString("EDIT")+" Property");
         }
     }
 

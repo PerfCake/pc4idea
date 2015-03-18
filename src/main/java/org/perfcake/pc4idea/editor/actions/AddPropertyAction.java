@@ -5,7 +5,6 @@ import org.perfcake.model.Property;
 import org.perfcake.pc4idea.editor.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.editors.PropertyEditor;
 import org.perfcake.pc4idea.editor.interfaces.CanAddProperty;
-import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -15,10 +14,12 @@ import java.awt.event.ActionEvent;
  */
 public class AddPropertyAction extends AbstractAction {
     private CanAddProperty target;
+    private String actionName;
 
     public AddPropertyAction(CanAddProperty target, String actionName) {
         super(actionName, AllIcons.General.Add);
         this.target = target;
+        this.actionName = actionName;
     }
 
     @Override
@@ -29,6 +30,8 @@ public class AddPropertyAction extends AbstractAction {
         if (dialog.getExitCode() == 0) {
             Property property = editor.getProperty();
             target.addProperty(property);
+            target.getGUI().commitChanges(actionName);
+            target.getGUI().updateGUI();
         }
     }
 }

@@ -2,31 +2,32 @@ package org.perfcake.pc4idea.editor.modelwrapper;
 
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
-import org.perfcake.pc4idea.editor.gui.ReportingGUI;
+import org.perfcake.pc4idea.editor.gui.PropertiesGUI;
 import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
 
+import javax.security.sasl.SaslClient;
 import javax.swing.*;
 
 /**
  * Created by Stanislav Kaleta on 3/18/15.
  */
-public class ReportingModel implements ModelWrapper {
-    private Scenario.Reporting reportingModel;
+public class PropertiesModelWrapper implements ModelWrapper {
+    private Scenario.Properties propertiesModel;
 
-    private ReportingGUI reportingGUI;
+    private PropertiesGUI propertiesGUI;
 
-    public ReportingModel(ActionMap baseActionMap){
-        reportingGUI = new ReportingGUI(this, baseActionMap);
-
+    public PropertiesModelWrapper(ActionMap baseActionMap){
+        propertiesGUI = new PropertiesGUI(this, baseActionMap);
     }
+
 
     @Override
     public AbstractComponentGUI getGUI() {
-        return reportingGUI;
+        return propertiesGUI;
     }
 
     @Override
-    public void updateModel(Object componentModel, boolean doCommit) {
+    public void updateModel(Object componentModel) {
 
     }
 

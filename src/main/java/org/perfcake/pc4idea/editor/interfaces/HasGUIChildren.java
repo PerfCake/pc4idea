@@ -9,6 +9,7 @@ import java.util.List;
  */
 public interface HasGUIChildren {
 
+    public AbstractComponentGUI getGUI();
     public List<ModelWrapper> getChildrenModels();
     public void setChildrenFromModels(List<ModelWrapper> childrenModels);
     public void deleteChild(ModelWrapper childModelWrapper);

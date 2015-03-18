@@ -17,14 +17,12 @@ import java.util.List;
  */
 public class ComponentsPanel extends JPanel {
     private HasGUIChildren parent;
-    private AbstractComponentGUI parentGUI;
     private List<ModelWrapper> componentList;
 
     private int widestComponentWidth = 0;
 
-    public ComponentsPanel(HasGUIChildren parent, AbstractComponentGUI parentGUI){
+    public ComponentsPanel(HasGUIChildren parent){
         this.parent = parent;
-        this.parentGUI = parentGUI;
         componentList = new ArrayList<>();
         this.setLayout(new WrapLayout(FlowLayout.LEADING,0,0));
 
@@ -112,11 +110,11 @@ public class ComponentsPanel extends JPanel {
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(parentGUI.getWidth() - 20, super.getPreferredSize().height);
+        return new Dimension(parent.getGUI().getWidth() - 20, super.getPreferredSize().height);
     }
 
     @Override
     public Dimension getMaximumSize() {
-        return new Dimension(parentGUI.getWidth() - 20, super.getPreferredSize().height);
+        return new Dimension(parent.getGUI().getWidth() - 20, super.getPreferredSize().height);
     }
 }

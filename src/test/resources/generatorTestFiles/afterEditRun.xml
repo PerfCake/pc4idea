@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenario xmlns="urn:perfcake:scenario:3.0">
+    <generator class="DefaultMessageGenerator" threads="10">
+        <run type="percentage" value="90"/>
+        <property name="first_property" value="first_value"/>
+        <property name="second_property" value="second_value"/>
+        <property name="third_property" value="third_value"/>
+    </generator>
+    <sender class="PlainSockerSender">
+        <property name="target" value="value"/>
+    </sender>
+</scenario>

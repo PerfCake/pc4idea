@@ -11,7 +11,6 @@ import org.perfcake.pc4idea.editor.colors.ColorType;
 import org.perfcake.pc4idea.editor.editors.GeneratorEditor;
 import org.perfcake.pc4idea.editor.interfaces.CanAddProperty;
 import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
-import org.perfcake.pc4idea.editor.modelwrapper.GeneratorModel;
 
 import javax.swing.*;
 import java.awt.*;

@@ -26,6 +26,5 @@ public class CommitAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         Scenario scenarioModel = editor.getComponent().getScenarioGUI().getScenarioModel();
         manager.saveScenario(scenarioModel,e.getActionCommand());
-        /*TODO TOTO TU NECHCEME*///editor.getComponent().getScenarioGUI().setScenarioModel(scenarioModel);
     }
 }

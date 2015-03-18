@@ -13,16 +13,15 @@ import javax.swing.*;
 /**
  * Created by Stanislav Kaleta on 3/16/15.
  */
-public class GeneratorModel implements ModelWrapper, CanAddProperty {
+public class GeneratorModelWrapper implements ModelWrapper, CanAddProperty {
     private Scenario.Generator generatorModel;
 
     private GeneratorGUI generatorGUI;
 
-    public GeneratorModel(ActionMap baseActionMap){
+    public GeneratorModelWrapper(ActionMap baseActionMap){
         generatorGUI = new GeneratorGUI(this, baseActionMap);
 
     }
-
 
     @Override
     public AbstractComponentGUI getGUI() {
@@ -30,12 +29,8 @@ public class GeneratorModel implements ModelWrapper, CanAddProperty {
     }
 
     @Override
-    public void updateModel(Object componentModel, boolean doCommit) {
+    public void updateModel(Object componentModel) {
         generatorModel = (Scenario.Generator) componentModel;
-        generatorGUI.updateGUI();
-        if (doCommit) {
-            generatorGUI.commitChanges(Messages.BUNDLE.getString("EDIT") + " Generator");
-        }
     }
 
     @Override
@@ -46,7 +41,5 @@ public class GeneratorModel implements ModelWrapper, CanAddProperty {
     @Override
     public void addProperty(Property property) {
         generatorModel.getProperty().add(property);
-        generatorGUI.updateGUI();
-        generatorGUI.commitChanges(Messages.BUNDLE.getString("ADD")+" Property");
     }
 }

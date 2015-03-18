@@ -16,12 +16,12 @@ import java.util.List;
 /**
  * Created by Stanislav Kaleta on 3/17/15.
  */
-public class SenderModel implements ModelWrapper, HasGUIChildren, CanAddProperty {
+public class SenderModelWrapper implements ModelWrapper, HasGUIChildren, CanAddProperty {
     private Scenario.Sender senderModel;
 
     private SenderGUI senderGUI;
 
-    public SenderModel(ActionMap baseActionMap){
+    public SenderModelWrapper(ActionMap baseActionMap){
         senderGUI = new SenderGUI(this, baseActionMap);
     }
 
@@ -31,12 +31,8 @@ public class SenderModel implements ModelWrapper, HasGUIChildren, CanAddProperty
     }
 
     @Override
-    public void updateModel(Object componentModel, boolean doCommit) {
+    public void updateModel(Object componentModel) {
         senderModel = (Scenario.Sender) componentModel;
-        senderGUI.updateGUI();
-        if (doCommit){
-            senderGUI.commitChanges(Messages.BUNDLE.getString("EDIT")+" Sender");
-        }
     }
 
     @Override
@@ -47,16 +43,15 @@ public class SenderModel implements ModelWrapper, HasGUIChildren, CanAddProperty
     @Override
     public void addProperty(Property property) {
         senderModel.getProperty().add(property);
-        senderGUI.updateGUI();
-        senderGUI.commitChanges(Messages.BUNDLE.getString("ADD") + " Property");
     }
 
     @Override
     public List<ModelWrapper> getChildrenModels() {
         List<ModelWrapper> childrenModelList = new ArrayList<>();
         for (Property property : senderModel.getProperty()){
-            ModelWrapper propertyModelWrapper = new PropertyModel(this, senderGUI.getBaseActionMap());
-            propertyModelWrapper.updateModel(property, false);
+            ModelWrapper propertyModelWrapper = new PropertyModelWrapper(this, senderGUI.getBaseActionMap());
+            propertyModelWrapper.updateModel(property);
+            propertyModelWrapper.getGUI().updateGUI();
             childrenModelList.add(propertyModelWrapper);
         }
         return childrenModelList;
@@ -72,16 +67,9 @@ public class SenderModel implements ModelWrapper, HasGUIChildren, CanAddProperty
         senderGUI.commitChanges("Sender: Properties "+Messages.BUNDLE.getString("REORDER"));
     }
 
-//    @Override
-//    public void editChild(ModelWrapper childModelWrapper) {
-//
-//    }
-
     @Override
     public void deleteChild(ModelWrapper childModelWrapper) {
         Property propertyToDel = (Property) childModelWrapper.retrieveModel();
         senderModel.getProperty().remove(propertyToDel);
-        senderGUI.updateGUI();
-        senderGUI.commitChanges("Sender: "+Messages.BUNDLE.getString("DEL")+" Property");
     }
 }

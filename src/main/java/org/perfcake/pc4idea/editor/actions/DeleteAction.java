@@ -13,16 +13,20 @@ import java.awt.event.ActionEvent;
 public class DeleteAction extends AbstractAction {
     private HasGUIChildren target;
     private ModelWrapper childToDel;
+    private String actionName;
 
     public DeleteAction(HasGUIChildren target, ModelWrapper childToDel, String actionName){
         super(actionName, AllIcons.Actions.Delete);
         this.target = target;
         this.childToDel = childToDel;
+        this.actionName = actionName;
     }
 
 
     @Override
     public void actionPerformed(ActionEvent e) {
         target.deleteChild(childToDel);
+        target.getGUI().commitChanges(actionName);
+        target.getGUI().updateGUI();
     }
 }
