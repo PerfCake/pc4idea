@@ -6,8 +6,7 @@ import com.intellij.ui.JBSplitter;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.treeStructure.Tree;
 import org.jetbrains.annotations.NotNull;
-import org.perfcake.pc4idea.editor.PerfCakeClassProvider;
-import org.perfcake.pc4idea.editor.PerfCakeClassProviderException;
+import org.perfcake.pc4idea.editor.PerfCakeReflectUtil;
 import org.perfcake.pc4idea.editor.actions.ActionType;
 import org.perfcake.pc4idea.editor.actions.CommitAction;
 import org.perfcake.pc4idea.editor.actions.RedoAction;
@@ -68,44 +67,39 @@ public class PerfCakeEditorGUI extends JPanel {
         panelMenu.add(additiveComponentsTree);
         panelMenu.setBackground(EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground());
 
-        PerfCakeClassProvider classProvider = new PerfCakeClassProvider();
+        PerfCakeReflectUtil classProvider = new PerfCakeReflectUtil();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) additiveComponentsTree.getModel().getRoot();
+
         DefaultMutableTreeNode messages = new DefaultMutableTreeNode("Messages");
         messages.add(new DefaultMutableTreeNode("Message"));
         root.add(messages);
+
         DefaultMutableTreeNode validators = new DefaultMutableTreeNode("Validators");
-        try {
-            for (String clazz : classProvider.findValidators()){
-                validators.add(new DefaultMutableTreeNode(clazz));
-            }
-        } catch (PerfCakeClassProviderException e) {
-            LOG.error(e.getMessage());
+        for (String clazz : classProvider.findValidatorClassNames()){
+            validators.add(new DefaultMutableTreeNode(clazz));
         }
         root.add(validators);
+
         DefaultMutableTreeNode reporters = new DefaultMutableTreeNode("Reporters");
-        try {
-            for (String clazz : classProvider.findReporters()){
-                reporters.add(new DefaultMutableTreeNode(clazz));
-            }
-        } catch (PerfCakeClassProviderException e) {
-            LOG.error(e.getMessage());
+        for (String clazz : classProvider.findReporterClassNames()){
+            reporters.add(new DefaultMutableTreeNode(clazz));
         }
         root.add(reporters);
+
         DefaultMutableTreeNode destinations = new DefaultMutableTreeNode("Destinations");
-        try {
-            for (String clazz : classProvider.findDestinations()){
-                destinations.add(new DefaultMutableTreeNode(clazz));
-            }
-        } catch (PerfCakeClassProviderException e) {
-            LOG.error(e.getMessage());
+        for (String clazz : classProvider.findDestinationClassNames()){
+            destinations.add(new DefaultMutableTreeNode(clazz));
         }
         root.add(destinations);
+
         DefaultMutableTreeNode properties = new DefaultMutableTreeNode("Properties");
         properties.add(new DefaultMutableTreeNode("Property"));
         root.add(properties);
+
         DefaultMutableTreeNode connections = new DefaultMutableTreeNode("Connections");
         connections.add(new DefaultMutableTreeNode("Attach validator"));
         root.add(connections);
+
         additiveComponentsTree.expandRow(0);
         additiveComponentsTree.setRootVisible(false);
         additiveComponentsTree.setOpaque(false);
