@@ -3,7 +3,6 @@ package org.perfcake.pc4idea.editor.editors;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.PerfCakeClassProvider;
 
 import javax.swing.*;
 

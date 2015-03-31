@@ -1,6 +1,5 @@
 package org.perfcake.pc4idea.editor.interfaces;
 
-import org.perfcake.model.Property;
 import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
 
 /**

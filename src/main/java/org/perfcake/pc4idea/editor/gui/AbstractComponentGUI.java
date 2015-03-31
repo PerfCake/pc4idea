@@ -1,10 +1,10 @@
 package org.perfcake.pc4idea.editor.gui;
 
 import org.perfcake.pc4idea.editor.ScenarioImportHandler;
-import org.perfcake.pc4idea.editor.swing.ScenarioPopupMenu;
 import org.perfcake.pc4idea.editor.actions.ActionType;
 import org.perfcake.pc4idea.editor.colors.ColorAdjustable;
 import org.perfcake.pc4idea.editor.swing.JRoundedRectangle;
+import org.perfcake.pc4idea.editor.swing.ScenarioPopupMenu;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

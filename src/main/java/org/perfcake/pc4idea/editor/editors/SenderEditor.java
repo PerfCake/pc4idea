@@ -2,7 +2,6 @@ package org.perfcake.pc4idea.editor.editors;
 
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ValidationInfo;
-import org.jdesktop.swingx.autocomplete.ComboBoxAdaptor;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.PerfCakeReflectUtil;
 

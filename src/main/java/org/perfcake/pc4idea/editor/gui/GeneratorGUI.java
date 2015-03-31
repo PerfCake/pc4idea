@@ -9,8 +9,7 @@ import org.perfcake.pc4idea.editor.actions.EditAction;
 import org.perfcake.pc4idea.editor.colors.ColorComponents;
 import org.perfcake.pc4idea.editor.colors.ColorType;
 import org.perfcake.pc4idea.editor.editors.GeneratorEditor;
-import org.perfcake.pc4idea.editor.interfaces.CanAddProperty;
-import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
+import org.perfcake.pc4idea.editor.modelwrapper.GeneratorModelWrapper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,16 +20,16 @@ import java.awt.event.KeyEvent;
  * Created by Stanislav Kaleta on 3/7/15.
  */
 public class GeneratorGUI extends AbstractComponentGUI {
-    private ModelWrapper generatorModelWrapper;
+    private GeneratorModelWrapper modelWrapper;
 
     private JLabel generatorAttr;
     private JLabel generatorRunAttr;
 
     private int minimumWidth = 0;
 
-    public GeneratorGUI(ModelWrapper generatorModelWrapper, ActionMap baseActionMap){
+    public GeneratorGUI(GeneratorModelWrapper modelWrapper, ActionMap baseActionMap){
         super(baseActionMap);
-        this.generatorModelWrapper = generatorModelWrapper;
+        this.modelWrapper = modelWrapper;
         initComponents();
         updateColors();
     }
@@ -58,10 +57,10 @@ public class GeneratorGUI extends AbstractComponentGUI {
                 SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, generatorRunAttr,8,SpringLayout.SOUTH, generatorAttr);
 
-        getActionMap().put(ActionType.ADDP, new AddPropertyAction((CanAddProperty) generatorModelWrapper, Messages.BUNDLE.getString("ADD")+" Property"));
+        getActionMap().put(ActionType.ADDP, new AddPropertyAction(modelWrapper, Messages.BUNDLE.getString("ADD")+" Property"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK), ActionType.ADDP);
 
-        getActionMap().put(ActionType.EDIT,new EditAction(generatorModelWrapper,Messages.BUNDLE.getString("EDIT")+" Generator"));
+        getActionMap().put(ActionType.EDIT,new EditAction(modelWrapper,Messages.BUNDLE.getString("EDIT")+" Generator"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
     }
 
@@ -73,7 +72,7 @@ public class GeneratorGUI extends AbstractComponentGUI {
     @Override
     public Object openEditorDialogAndGetResult() {
         GeneratorEditor editor = new GeneratorEditor();
-        editor.setGenerator((Scenario.Generator) generatorModelWrapper.retrieveModel());
+        editor.setGenerator((Scenario.Generator) modelWrapper.retrieveModel());
         ScenarioDialogEditor dialog = new ScenarioDialogEditor(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {
@@ -84,7 +83,7 @@ public class GeneratorGUI extends AbstractComponentGUI {
 
     @Override
     public void updateGUI() {
-        Scenario.Generator generator = (Scenario.Generator) generatorModelWrapper.retrieveModel();
+        Scenario.Generator generator = (Scenario.Generator) modelWrapper.retrieveModel();
         generatorAttr.setText(generator.getClazz()+" ("+generator.getThreads()+")");
         generatorRunAttr.setText(generator.getRun().getType()+" : "+generator.getRun().getValue());
 

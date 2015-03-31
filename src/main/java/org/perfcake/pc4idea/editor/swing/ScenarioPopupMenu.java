@@ -1,13 +1,10 @@
 package org.perfcake.pc4idea.editor.swing;
 
 import org.perfcake.pc4idea.editor.actions.ActionType;
-import org.perfcake.pc4idea.editor.actions.RedoAction;
-import org.perfcake.pc4idea.editor.actions.UndoAction;
 
 import javax.swing.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,6 +40,38 @@ public class ScenarioPopupMenu extends JPopupMenu {
             addPropertyItem.setAction(addPropertyAction);
             addPropertyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK));
             add(addPropertyItem);
+        }
+
+        Action addMessageAction = actionMap.get(ActionType.ADDM);
+        if (addMessageAction != null) {
+            JMenuItem addMessageItem = new JMenuItem();
+            addMessageItem.setAction(addMessageAction);
+            addMessageItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.SHIFT_MASK));
+            add(addMessageItem);
+        }
+
+        Action addHeaderAction = actionMap.get(ActionType.ADDH);
+        if (addHeaderAction != null) {
+            JMenuItem addHeaderItem = new JMenuItem();
+            addHeaderItem.setAction(addHeaderAction);
+            addHeaderItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.SHIFT_MASK));
+            add(addHeaderItem);
+        }
+
+        Action attachValidatorAction = actionMap.get(ActionType.ATTV);
+        if (attachValidatorAction != null) {
+            JMenuItem attachValItem = new JMenuItem();
+            attachValItem.setAction(attachValidatorAction);
+            attachValItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.SHIFT_MASK));
+            add(attachValItem);
+        }
+
+        Action addValidatorAction = actionMap.get(ActionType.ADDV);
+        if (addValidatorAction != null) {
+            JMenuItem addValItem = new JMenuItem();
+            addValItem.setAction(addValidatorAction);
+            addValItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.SHIFT_MASK));
+            add(addValItem);
         }
 
 

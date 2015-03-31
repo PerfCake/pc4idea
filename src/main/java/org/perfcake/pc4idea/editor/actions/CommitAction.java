@@ -3,7 +3,6 @@ package org.perfcake.pc4idea.editor.actions;
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.editor.PerfCakeEditor;
-import org.perfcake.pc4idea.editor.gui.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.manager.ScenarioManager;
 
 import javax.swing.*;

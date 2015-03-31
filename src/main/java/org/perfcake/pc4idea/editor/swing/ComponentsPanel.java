@@ -1,6 +1,7 @@
-package org.perfcake.pc4idea.editor;
+package org.perfcake.pc4idea.editor.swing;
 
-import org.perfcake.pc4idea.editor.gui.*;
+import org.perfcake.pc4idea.editor.ComponentDragListener;
+import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
 import org.perfcake.pc4idea.editor.interfaces.HasGUIChildren;
 import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
 import org.perfcake.pc4idea.editor.swing.WrapLayout;
@@ -100,6 +101,17 @@ public class ComponentsPanel extends JPanel {
         revalidate();
     }
 
+    public Point getComponentAnchorPoint(Object object, boolean bottomEdge){
+        Point anchorPoint = new Point(0,0);
+        for (ModelWrapper component : componentList){
+            if (component.retrieveModel().equals(object)){
+                anchorPoint = component.getGUI().getLocation();
+                int heightOffset = (bottomEdge) ? 37 : 4;
+                anchorPoint.setLocation(anchorPoint.getX()+this.getX()+4+component.getGUI().getWidth()/2,anchorPoint.getY()+this.getY()+heightOffset);
+            }
+        }
+        return anchorPoint;
+    }
 
 
 

@@ -1,7 +1,6 @@
 package org.perfcake.pc4idea.editor.modelwrapper;
 
 import org.perfcake.model.Property;
-import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
 import org.perfcake.pc4idea.editor.gui.PropertyGUI;
 import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;

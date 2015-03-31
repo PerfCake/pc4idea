@@ -1,7 +1,7 @@
 package org.perfcake.pc4idea.editor.gui;
 
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.ComponentsPanel;
+import org.perfcake.pc4idea.editor.swing.ComponentsPanel;
 import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.actions.ActionType;
@@ -10,9 +10,7 @@ import org.perfcake.pc4idea.editor.actions.EditAction;
 import org.perfcake.pc4idea.editor.colors.ColorComponents;
 import org.perfcake.pc4idea.editor.colors.ColorType;
 import org.perfcake.pc4idea.editor.editors.SenderEditor;
-import org.perfcake.pc4idea.editor.interfaces.CanAddProperty;
-import org.perfcake.pc4idea.editor.interfaces.HasGUIChildren;
-import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
+import org.perfcake.pc4idea.editor.modelwrapper.SenderModelWrapper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,16 +24,16 @@ import java.awt.event.KeyEvent;
  * Date: 3.3.2015
  */
 public class SenderGUI extends AbstractComponentGUI {
-    private ModelWrapper senderModelWrapper;
+    private SenderModelWrapper modelWrapper;
 
     private JLabel labelSenderClass;
     private ComponentsPanel panelProperties;
 
     private int labelSenderClassWidth = 0;
 
-    public SenderGUI(ModelWrapper senderModelWrapper, ActionMap baseActionMap){
+    public SenderGUI(SenderModelWrapper modelWrapper, ActionMap baseActionMap){
         super(baseActionMap);
-        this.senderModelWrapper = senderModelWrapper;
+        this.modelWrapper = modelWrapper;
         initComponents();
         updateColors();
     }
@@ -44,7 +42,7 @@ public class SenderGUI extends AbstractComponentGUI {
         labelSenderClass = new JLabel("---");
         labelSenderClass.setFont(new Font(labelSenderClass.getFont().getName(), 0, 15));
 
-        panelProperties = new ComponentsPanel((HasGUIChildren) senderModelWrapper);
+        panelProperties = new ComponentsPanel(modelWrapper);
 
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
@@ -63,10 +61,10 @@ public class SenderGUI extends AbstractComponentGUI {
                 SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, panelProperties,8,SpringLayout.SOUTH, labelSenderClass);
 
-        this.getActionMap().put(ActionType.ADDP, new AddPropertyAction((CanAddProperty)senderModelWrapper, Messages.BUNDLE.getString("ADD")+" Property"));
+        this.getActionMap().put(ActionType.ADDP, new AddPropertyAction(modelWrapper, Messages.BUNDLE.getString("ADD")+" Property"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK), ActionType.ADDP);
 
-        this.getActionMap().put(ActionType.EDIT, new EditAction(senderModelWrapper, Messages.BUNDLE.getString("EDIT")+" Sender"));
+        this.getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT")+" Sender"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
     }
 
@@ -80,7 +78,7 @@ public class SenderGUI extends AbstractComponentGUI {
     @Override
     public Object openEditorDialogAndGetResult() {
         SenderEditor editor = new SenderEditor();
-        editor.setSender((Scenario.Sender) senderModelWrapper.retrieveModel());
+        editor.setSender((Scenario.Sender) modelWrapper.retrieveModel());
         ScenarioDialogEditor dialog = new ScenarioDialogEditor(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {
@@ -91,7 +89,7 @@ public class SenderGUI extends AbstractComponentGUI {
 
     @Override
     public void updateGUI() {
-        Scenario.Sender sender = (Scenario.Sender) senderModelWrapper.retrieveModel();
+        Scenario.Sender sender = (Scenario.Sender) modelWrapper.retrieveModel();
         labelSenderClass.setText(sender.getClazz());
         FontMetrics fontMetrics = labelSenderClass.getFontMetrics(labelSenderClass.getFont());
         labelSenderClassWidth = fontMetrics.stringWidth(labelSenderClass.getText());

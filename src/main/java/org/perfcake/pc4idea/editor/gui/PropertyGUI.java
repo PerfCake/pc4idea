@@ -14,22 +14,25 @@ import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Created by Stanislav Kaleta on 3/7/15.
  */
 public class PropertyGUI extends AbstractComponentGUI {
-    private ModelWrapper propertyModelWrapper;
+    private ModelWrapper modelWrapper;
     private ModelWrapper parentModelWrapper;
 
     private JLabel propertyAttr;
 
     private Dimension propertySize = new Dimension(40, 40);
 
-    public PropertyGUI(ModelWrapper propertyModelWrapper, ModelWrapper parentModelWrapper, ActionMap baseActionMap) {
+    public PropertyGUI(ModelWrapper modelWrapper, ModelWrapper parentModelWrapper, ActionMap baseActionMap) {
         super(baseActionMap);
-        this.propertyModelWrapper = propertyModelWrapper;
+        this.modelWrapper = modelWrapper;
         this.parentModelWrapper = parentModelWrapper;
         initComponents();
         updateColors();
@@ -68,11 +71,11 @@ public class PropertyGUI extends AbstractComponentGUI {
 
 
 
-        getActionMap().put(ActionType.EDIT, new EditAction(propertyModelWrapper,Messages.BUNDLE.getString("EDIT")+" Property"));
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
+        this.getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper,Messages.BUNDLE.getString("EDIT")+" Property"));
+        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
 
-        this.getActionMap().put(ActionType.DEL, new DeleteAction((HasGUIChildren) parentModelWrapper,propertyModelWrapper,Messages.BUNDLE.getString("DEL")+" Property"));
-        getInputMap().put(KeyStroke.getKeyStroke("DELETE"), ActionType.DEL);
+        this.getActionMap().put(ActionType.DEL, new DeleteAction((HasGUIChildren) parentModelWrapper, modelWrapper,Messages.BUNDLE.getString("DEL")+" Property"));
+        this.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), ActionType.DEL);
     }
 
     @Override
@@ -83,7 +86,7 @@ public class PropertyGUI extends AbstractComponentGUI {
     @Override
     public Object openEditorDialogAndGetResult() {
         PropertyEditor editor = new PropertyEditor();
-        editor.setProperty((Property) propertyModelWrapper.retrieveModel());
+        editor.setProperty((Property) modelWrapper.retrieveModel());
         ScenarioDialogEditor dialog = new ScenarioDialogEditor(editor);
         dialog.show();
         if (dialog.getExitCode() == 0){
@@ -94,7 +97,7 @@ public class PropertyGUI extends AbstractComponentGUI {
 
     @Override
     public void updateGUI() {
-        Property property = (Property) propertyModelWrapper.retrieveModel();
+        Property property = (Property) modelWrapper.retrieveModel();
         propertyAttr.setText(property.getName()+" : "+property.getValue());
         FontMetrics fontMetrics = propertyAttr.getFontMetrics(propertyAttr.getFont());
         propertySize.width = fontMetrics.stringWidth(propertyAttr.getText()) + 30;
