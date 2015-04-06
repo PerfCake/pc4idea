@@ -1,7 +1,7 @@
 package org.perfcake.pc4idea.editor.gui;
 
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.*;
+import org.perfcake.pc4idea.editor.swing.ComponentsPanel;
 import org.perfcake.pc4idea.editor.swing.JEnabledCircle;
 
 import javax.swing.*;
@@ -227,7 +227,7 @@ public class ReporterGUI /*extends AbstractComponentGUI implements Activatable, 
 //        FontMetrics fontMetrics = labelReporterClass.getFontMetrics(labelReporterClass.getFont());
 //        labelReporterClassWidth = fontMetrics.stringWidth(labelReporterClass.getText());
 //
-//        enabledCircle.setState(reporter.isEnabled());
+//        enabledCircle.setToggle(reporter.isEnabled());
 //
 //        requiredWidth = Short.MAX_VALUE;
 //        panelDestinations.updateComponents();
@@ -249,7 +249,7 @@ public class ReporterGUI /*extends AbstractComponentGUI implements Activatable, 
 //    }
 //
 //    @Override
-//    public void setState(boolean state) {
+//    public void setToggle(boolean state) {
 //        reporter.setEnabled(state);
 //        this.setComponentModel(reporter);
 //        this.commitChanges((state) ? Messages.BUNDLE.getString("ENABLE") + " Reporter" :

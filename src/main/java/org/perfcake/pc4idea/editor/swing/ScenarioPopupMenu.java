@@ -84,6 +84,15 @@ public class ScenarioPopupMenu extends JPopupMenu {
             add(editItem);
         }
 
+        //toggle
+        Action toggleAction = actionMap.get(ActionType.TOGGLE);
+        if (toggleAction != null){
+            JMenuItem toggleItem = new JMenuItem();
+            toggleItem.setAction(toggleAction);
+            toggleItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.SHIFT_MASK));
+            add(toggleItem);
+        }
+
         //del
         Action delAction = actionMap.get(ActionType.DEL);
         if (delAction != null){

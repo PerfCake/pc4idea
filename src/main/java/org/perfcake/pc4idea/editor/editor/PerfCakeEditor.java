@@ -67,6 +67,16 @@ public class PerfCakeEditor implements FileEditor { /*TODO UNDO/REDO/externa zme
 
         editorGUI = new PerfCakeEditorGUI(new CommitAction(manager,this),new UndoAction(), new RedoAction());
         setUpEditor();
+
+//        System.out.println("#######################");
+//        System.out.println();
+//
+//        System.out.println(new PerfCakeReflectUtil().findSenderProperties("JmsSender"));
+//
+//
+//        System.out.println();
+//        System.out.println("#######################");
+
     }
 
     private void setUpEditor(){
@@ -114,7 +124,7 @@ public class PerfCakeEditor implements FileEditor { /*TODO UNDO/REDO/externa zme
     }
 
     @Override
-    public void selectNotify() {
+    public void selectNotify() { /*TODO load len ked nastala zmena*/
         Document document = FileDocumentManager.getInstance().getDocument(file);
         FileDocumentManager.getInstance().saveDocument(document);
         setUpEditor();

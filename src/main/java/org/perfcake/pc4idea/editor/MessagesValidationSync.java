@@ -9,6 +9,7 @@ import org.perfcake.pc4idea.editor.modelwrapper.ValidationModelWrapper;
 import org.perfcake.pc4idea.editor.swing.DependenciesPanel;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -43,6 +44,23 @@ public class MessagesValidationSync {
         return iDSet;
     }
 
+    public Set<String> getUnattachedValidatorIDs(Scenario.Messages.Message message){
+        Set<String> allIDs = this.getValidatorIDs();
+        Set<String> notAttachedIDs = new TreeSet<>();
+        for (String id : allIDs){
+            boolean isRef = false;
+            for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()){
+                if(id.equals(ref.getId())){
+                    isRef = true;
+                }
+            }
+            if (!isRef){
+                notAttachedIDs.add(id);
+            }
+        }
+        return notAttachedIDs;
+    }
+
     public Set<String> getAttachedValidatorIDs(){
         Set<String> attachedIDs = new TreeSet<>();
         Scenario.Messages messages = (Scenario.Messages) messagesModelWrapper.retrieveModel();
@@ -55,6 +73,31 @@ public class MessagesValidationSync {
         }
         return attachedIDs;
     }
+
+    public void syncValidatorRef() {
+       Scenario.Messages messages = (Scenario.Messages) messagesModelWrapper.retrieveModel();
+        if (messages != null){
+            for (Scenario.Messages.Message message : messages.getMessage()){
+                java.util.List<Scenario.Messages.Message.ValidatorRef> tempList = new ArrayList<>();
+                tempList.addAll(message.getValidatorRef());
+
+                for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()){
+                    boolean refIsValid = false;
+                    for (String id : this.getValidatorIDs()){
+                        if (id.equals(ref.getId())){
+                            refIsValid = true;
+                        }
+                    }
+                    if (!refIsValid){
+                        tempList.remove(ref);
+                    }
+                }
+                message.getValidatorRef().clear();
+                message.getValidatorRef().addAll(tempList);
+            }
+        }
+    }
+
 
     public void repaintDependencies(){
         ApplicationManager.getApplication().invokeLater(new Runnable() {

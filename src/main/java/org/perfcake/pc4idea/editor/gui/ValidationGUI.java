@@ -1,23 +1,21 @@
 package org.perfcake.pc4idea.editor.gui;
 
+import com.intellij.icons.AllIcons;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.swing.ComponentsPanel;
 import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.actions.ActionType;
-import org.perfcake.pc4idea.editor.actions.AddValidatorAction;
-import org.perfcake.pc4idea.editor.actions.EditAction;
+import org.perfcake.pc4idea.editor.actions.*;
 import org.perfcake.pc4idea.editor.colors.ColorComponents;
 import org.perfcake.pc4idea.editor.colors.ColorType;
 import org.perfcake.pc4idea.editor.editors.ValidationEditor;
 import org.perfcake.pc4idea.editor.modelwrapper.ValidationModelWrapper;
+import org.perfcake.pc4idea.editor.swing.ComponentsPanel;
 import org.perfcake.pc4idea.editor.swing.JEnabledCircle;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.Set;
 
 /**
  * Created by Stanislav Kaleta on 3/7/15.
@@ -44,7 +42,7 @@ public class ValidationGUI extends AbstractComponentGUI  {
         FontMetrics fontMetrics = labelValidation.getFontMetrics(labelValidation.getFont());
         labelValidationWidth = fontMetrics.stringWidth(labelValidation.getText());
 
-        enabledCircle = new JEnabledCircle(modelWrapper);
+        enabledCircle = new JEnabledCircle(new ToggleAction(modelWrapper, "Validation"));
 
         panelValidators = new ComponentsPanel(modelWrapper);
 
@@ -80,6 +78,11 @@ public class ValidationGUI extends AbstractComponentGUI  {
 
         this.getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT")+" Validator"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
+
+        this.getActionMap().put(ActionType.TOGGLE, new ToggleAction(modelWrapper, "Validation"));
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.SHIFT_MASK), ActionType.TOGGLE);
+
+        this.getActionMap().put(ActionType.REORDER, new ReorderAction(modelWrapper, "Validation: " + Messages.BUNDLE.getString("REORDER") + " Validator"));
     }
 
     public Point getValidatorAnchorPoint(Scenario.Validation.Validator validator){
@@ -98,10 +101,9 @@ public class ValidationGUI extends AbstractComponentGUI  {
 
     @Override
     public Object openEditorDialogAndGetResult() {
-        ValidationEditor editor = new ValidationEditor(modelWrapper.getSync().getValidatorIDs());
+        ValidationEditor editor = new ValidationEditor(modelWrapper.getSync());
         Scenario.Validation model = (Scenario.Validation) modelWrapper.retrieveModel();
-        Set<String> attachedIDs = modelWrapper.getSync().getAttachedValidatorIDs();
-        editor.setValidation((model == null) ? new Scenario.Validation() : model, attachedIDs);
+        editor.setValidation((model == null) ? new Scenario.Validation() : model);
         ScenarioDialogEditor dialog = new ScenarioDialogEditor(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {
@@ -118,8 +120,20 @@ public class ValidationGUI extends AbstractComponentGUI  {
         } else {
             enabledCircle.setVisible(true);
             enabledCircle.setState(validation.isEnabled());
+            boolean isEnabled = validation.isEnabled();
+            if (isEnabled) {
+                String actionName = Messages.BUNDLE.getString("DISABLE") + " Validation";
+                Icon icon = AllIcons.Debugger.MuteBreakpoints;
+                this.getActionMap().put(ActionType.TOGGLE, new ToggleAction(modelWrapper, actionName, icon, isEnabled));
+            } else {
+                String actionName = Messages.BUNDLE.getString("ENABLE") + " Validation";
+                Icon icon = AllIcons.Debugger.Db_muted_verified_breakpoint;
+                this.getActionMap().put(ActionType.TOGGLE, new ToggleAction(modelWrapper, actionName, icon, isEnabled));
+            }
         }
         panelValidators.updateComponents();
+        modelWrapper.getSync().syncValidatorRef();
+        modelWrapper.getSync().repaintDependencies();
     }
 
     @Override

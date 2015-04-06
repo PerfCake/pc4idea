@@ -1,16 +1,17 @@
 package org.perfcake.pc4idea.editor.gui;
 
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.swing.ComponentsPanel;
 import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.actions.ActionType;
 import org.perfcake.pc4idea.editor.actions.AddMessageAction;
 import org.perfcake.pc4idea.editor.actions.EditAction;
+import org.perfcake.pc4idea.editor.actions.ReorderAction;
 import org.perfcake.pc4idea.editor.colors.ColorComponents;
 import org.perfcake.pc4idea.editor.colors.ColorType;
 import org.perfcake.pc4idea.editor.editors.MessagesEditor;
 import org.perfcake.pc4idea.editor.modelwrapper.MessagesModelWrapper;
+import org.perfcake.pc4idea.editor.swing.ComponentsPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,6 +66,8 @@ public class MessagesGUI extends AbstractComponentGUI  {/*TODO attach validator*
 
         this.getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT")+" Message"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
+
+        this.getActionMap().put(ActionType.REORDER, new ReorderAction(modelWrapper, "Messages: " + Messages.BUNDLE.getString("REORDER") + " Message"));
     }
 
     public Point getMessageAnchorPoint(Scenario.Messages.Message message){
@@ -96,6 +99,8 @@ public class MessagesGUI extends AbstractComponentGUI  {/*TODO attach validator*
     @Override
     public void updateGUI() {
         panelMessages.updateComponents();
+        modelWrapper.getSync().syncValidatorRef();
+        modelWrapper.getSync().repaintDependencies();
     }
 
     @Override

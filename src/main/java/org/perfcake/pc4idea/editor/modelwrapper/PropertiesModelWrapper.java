@@ -2,7 +2,6 @@ package org.perfcake.pc4idea.editor.modelwrapper;
 
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
 import org.perfcake.pc4idea.editor.gui.PropertiesGUI;
 import org.perfcake.pc4idea.editor.interfaces.CanAddProperty;
@@ -65,8 +64,6 @@ public class PropertiesModelWrapper implements ModelWrapper, HasGUIChildren, Can
         for (ModelWrapper childModel : childrenModels){
             propertiesModel.getProperty().add((Property) childModel.retrieveModel());
         }
-        propertiesGUI.updateGUI();
-        propertiesGUI.commitChanges("Properties: Properties " + Messages.BUNDLE.getString("REORDER"));
     }
 
     @Override

@@ -1,6 +1,6 @@
 package org.perfcake.pc4idea.editor.swing;
 
-import org.perfcake.pc4idea.editor.interfaces.Togglable;
+import org.perfcake.pc4idea.editor.actions.ToggleAction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,23 +13,19 @@ import java.awt.event.MouseEvent;
 public class JEnabledCircle extends JPanel {
     private static final String uiClassID = "EnabledCircleUI";
     private boolean state = false;
-    private Togglable parent;
 
     private Color enabledColor = Color.getHSBColor(120/360f,0.75f,0.75f);
     private Color disabledColor = Color.getHSBColor(0/360f,0.75f,0.75f);
 
     private Dimension enabledSize = new Dimension(15,20);
 
-    public JEnabledCircle(Togglable parent) {
-        this.parent = parent;
+    public JEnabledCircle(ToggleAction action) {
         setOpaque(Boolean.FALSE);
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    setState(!state);
-                    parent.setToggle(state);
-
+                    action.preActionPerformed(state);
                 }
             }
         });

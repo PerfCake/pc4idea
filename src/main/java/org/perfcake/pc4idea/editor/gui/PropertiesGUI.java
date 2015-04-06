@@ -1,16 +1,17 @@
 package org.perfcake.pc4idea.editor.gui;
 
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.swing.ComponentsPanel;
 import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.actions.ActionType;
 import org.perfcake.pc4idea.editor.actions.AddPropertyAction;
 import org.perfcake.pc4idea.editor.actions.EditAction;
+import org.perfcake.pc4idea.editor.actions.ReorderAction;
 import org.perfcake.pc4idea.editor.colors.ColorComponents;
 import org.perfcake.pc4idea.editor.colors.ColorType;
 import org.perfcake.pc4idea.editor.editors.PropertiesEditor;
 import org.perfcake.pc4idea.editor.modelwrapper.PropertiesModelWrapper;
+import org.perfcake.pc4idea.editor.swing.ComponentsPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,6 +67,8 @@ public class PropertiesGUI extends AbstractComponentGUI {
 
         this.getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT")+" Properties"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
+
+        this.getActionMap().put(ActionType.REORDER, new ReorderAction(modelWrapper, "Properties: " + Messages.BUNDLE.getString("REORDER") + " Property"));
     }
 
     @Override

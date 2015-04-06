@@ -28,7 +28,8 @@ public class AttachValidatorAction extends AbstractAction {
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        AttachValidatorEditor editor = new AttachValidatorEditor(computeUnattachedIDs());
+        Set<String> unattachedIDs = sync.getUnattachedValidatorIDs((Scenario.Messages.Message) target.retrieveModel());
+        AttachValidatorEditor editor = new AttachValidatorEditor(unattachedIDs);
         ScenarioDialogEditor dialog = new ScenarioDialogEditor(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {
@@ -37,23 +38,5 @@ public class AttachValidatorAction extends AbstractAction {
             target.getGUI().commitChanges(actionName);
             target.getGUI().updateGUI();
         }
-    }
-
-    private Set<String> computeUnattachedIDs(){
-        Set<String> allIDs = sync.getValidatorIDs();
-        Set<String> notAttachedIDs = new TreeSet<>();
-        for (String id : allIDs){
-            boolean isRef = false;
-            Scenario.Messages.Message message = (Scenario.Messages.Message) target.retrieveModel();
-            for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()){
-                if(id.equals(ref.getId())){
-                    isRef = true;
-                }
-            }
-            if (!isRef){
-                notAttachedIDs.add(id);
-            }
-        }
-        return notAttachedIDs;
     }
 }

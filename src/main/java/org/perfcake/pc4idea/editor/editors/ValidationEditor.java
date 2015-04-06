@@ -5,6 +5,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.EditorTablePanel;
+import org.perfcake.pc4idea.editor.MessagesValidationSync;
 import org.perfcake.pc4idea.editor.ScenarioDialogEditor;
 
 import javax.swing.*;
@@ -29,9 +30,14 @@ public class ValidationEditor extends AbstractEditor {
     private Set<String> attachedIDs;
     private Set<String> usedIDSet;
 
-    public ValidationEditor(Set<String> attachedIDs){
-        this.attachedIDs = attachedIDs;
-        usedIDSet = new TreeSet<>();
+    public ValidationEditor(MessagesValidationSync sync){
+        if (sync != null){
+            attachedIDs = sync.getAttachedValidatorIDs();
+            usedIDSet = sync.getValidatorIDs();
+        } else {
+            attachedIDs = new TreeSet<>();
+            usedIDSet = new TreeSet<>();
+        }
         initComponents();
     }
 
@@ -40,7 +46,7 @@ public class ValidationEditor extends AbstractEditor {
         JLabel labelFastForward = new JLabel("Fast Forward:");
         checkBoxEnabled = new JCheckBox();
         checkBoxFastForward = new JCheckBox();
-        tablePanelValidators = new EditorTablePanel(new ValidatorsTableModel(new ArrayList<Scenario.Validation.Validator>())) {
+        tablePanelValidators = new EditorTablePanel(new ValidatorsTableModel(new ArrayList<>())) {
             @Override
             public void tableClickedActionPerformed(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3) {
@@ -150,12 +156,10 @@ public class ValidationEditor extends AbstractEditor {
                 .addComponent(tablePanelValidators));
     }
 
-    public void setValidation(Scenario.Validation validation, Set<String> usedIDSet){
+    public void setValidation(Scenario.Validation validation){
         checkBoxEnabled.setSelected(validation.isEnabled());
         checkBoxFastForward.setSelected(validation.isFastForward());
         tablePanelValidators.getTable().setModel(new ValidatorsTableModel(validation.getValidator()));
-
-        this.usedIDSet = usedIDSet;
     }
 
     public Scenario.Validation getValidation(){

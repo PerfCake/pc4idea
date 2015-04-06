@@ -21,6 +21,7 @@ public class MessageModelWrapper implements ModelWrapper, CanAddProperty {
     public MessageModelWrapper(MessagesModelWrapper parent, ActionMap baseActionMap){
         messageGUI = new MessageGUI(this, parent, baseActionMap);
     }
+
     @Override
     public AbstractComponentGUI getGUI() {
         return messageGUI;

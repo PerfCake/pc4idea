@@ -120,6 +120,8 @@ public class MessageGUI extends AbstractComponentGUI{
                 messageSize.width = uriLength;
             }
         }
+        parentModelWrapper.getSync().syncValidatorRef();
+        parentModelWrapper.getSync().repaintDependencies();
     }
 
     @Override

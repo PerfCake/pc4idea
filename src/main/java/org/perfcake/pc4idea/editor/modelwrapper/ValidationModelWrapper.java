@@ -1,7 +1,6 @@
 package org.perfcake.pc4idea.editor.modelwrapper;
 
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.MessagesValidationSync;
 import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
 import org.perfcake.pc4idea.editor.gui.ValidationGUI;
@@ -36,7 +35,6 @@ public class ValidationModelWrapper implements ModelWrapper, HasGUIChildren, Tog
     @Override
     public void updateModel(Object componentModel) {
         validationModel = (componentModel != null) ? (Scenario.Validation) componentModel : new Scenario.Validation();
-        /*TODO sync.sync() maybe here*/
     }
 
     @Override
@@ -66,9 +64,6 @@ public class ValidationModelWrapper implements ModelWrapper, HasGUIChildren, Tog
         for (ModelWrapper childModel : childrenModels){
             validationModel.getValidator().add((Scenario.Validation.Validator) childModel.retrieveModel());
         }
-        validationGUI.updateGUI();
-        sync.repaintDependencies();
-        validationGUI.commitChanges("Validation: Validator "+ Messages.BUNDLE.getString("REORDER"));
     }
 
     @Override

@@ -1,8 +1,8 @@
 package org.perfcake.pc4idea.editor.gui;
 
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.ComponentsPanel;
 import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
+import org.perfcake.pc4idea.editor.swing.ComponentsPanel;
 
 import javax.swing.*;
 

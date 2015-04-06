@@ -1,7 +1,6 @@
 package org.perfcake.pc4idea.editor.modelwrapper;
 
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.Messages;
 import org.perfcake.pc4idea.editor.MessagesValidationSync;
 import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
 import org.perfcake.pc4idea.editor.gui.MessagesGUI;
@@ -9,7 +8,6 @@ import org.perfcake.pc4idea.editor.interfaces.HasGUIChildren;
 import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +34,6 @@ public class MessagesModelWrapper implements ModelWrapper, HasGUIChildren {
     @Override
     public void updateModel(Object componentModel) {
         messagesModel = (componentModel != null) ? (Scenario.Messages) componentModel : new Scenario.Messages();
-        /*TODO sync.sync() maybe here*/
     }
 
     @Override
@@ -66,9 +63,6 @@ public class MessagesModelWrapper implements ModelWrapper, HasGUIChildren {
         for (ModelWrapper childModel : childrenModels){
             messagesModel.getMessage().add((Scenario.Messages.Message) childModel.retrieveModel());
         }
-        messagesGUI.updateGUI();
-        sync.repaintDependencies();
-        messagesGUI.commitChanges("Messages: Messages "+ Messages.BUNDLE.getString("REORDER"));
     }
 
     @Override

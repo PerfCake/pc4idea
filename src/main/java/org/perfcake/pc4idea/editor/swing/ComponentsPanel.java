@@ -1,10 +1,11 @@
 package org.perfcake.pc4idea.editor.swing;
 
 import org.perfcake.pc4idea.editor.ComponentDragListener;
+import org.perfcake.pc4idea.editor.actions.ActionType;
+import org.perfcake.pc4idea.editor.actions.ReorderAction;
 import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
 import org.perfcake.pc4idea.editor.interfaces.HasGUIChildren;
 import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
-import org.perfcake.pc4idea.editor.swing.WrapLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,7 +28,7 @@ public class ComponentsPanel extends JPanel {
         componentList = new ArrayList<>();
         this.setLayout(new WrapLayout(FlowLayout.LEADING,0,0));
 
-        //this.setOpaque(false);
+        //this.setOpaque(false);/*TODO*/
         setUpReordering();
     }
 
@@ -79,7 +80,8 @@ public class ComponentsPanel extends JPanel {
                         }
                     }
                 }
-                parent.setChildrenFromModels(componentList);
+                ReorderAction action = (ReorderAction) parent.getGUI().getActionMap().get(ActionType.REORDER);
+                action.preActionPerformed(componentList);
             }
         });
     }

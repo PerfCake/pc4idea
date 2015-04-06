@@ -115,6 +115,8 @@ public class ValidatorGUI extends AbstractComponentGUI {
         }
         validatorAttr.setText("("+id+") "+validator.getClazz());
         validatorSize.width = fontMetrics.stringWidth(validatorAttr.getText()) + 30;
+        parentModelWrapper.getSync().syncValidatorRef();
+        parentModelWrapper.getSync().repaintDependencies();
     }
 
     @Override

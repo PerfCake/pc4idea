@@ -139,10 +139,12 @@ public class ScenarioGUI extends JLayeredPane implements ColorAdjustable {
             generatorModel.getGUI().updateGUI();
             senderModel.updateModel(scenarioModel.getSender());
             senderModel.getGUI().updateGUI();
+
             messagesModel.updateModel(scenarioModel.getMessages());
-            messagesModel.getGUI().updateGUI();
             validationModel.updateModel(scenarioModel.getValidation());
+            messagesModel.getGUI().updateGUI();
             validationModel.getGUI().updateGUI();
+
             reportingModel.updateModel(scenarioModel.getReporting());
             reportingModel.getGUI().updateGUI();
             propertiesModel.updateModel(scenarioModel.getProperties());

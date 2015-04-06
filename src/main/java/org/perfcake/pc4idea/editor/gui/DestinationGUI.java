@@ -1,23 +1,10 @@
 package org.perfcake.pc4idea.editor.gui;
 
-import com.intellij.icons.AllIcons;
-import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.editor.Activatable;
-import org.perfcake.pc4idea.editor.Messages;
-import org.perfcake.pc4idea.editor.ScenarioDialogEditor;
-import org.perfcake.pc4idea.editor.colors.ColorComponents;
-import org.perfcake.pc4idea.editor.colors.ColorType;
-import org.perfcake.pc4idea.editor.editors.DestinationEditor;
-import org.perfcake.pc4idea.editor.editors.PeriodEditor;
-import org.perfcake.pc4idea.editor.editors.PropertyEditor;
 import org.perfcake.pc4idea.editor.swing.JEnabledCircle;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Stanislav Kaleta on 3/11/15.
@@ -218,7 +205,7 @@ public class DestinationGUI /*extends AbstractComponentGUI implements Activatabl
 //        FontMetrics fontMetrics = destinationAttr.getFontMetrics(destinationAttr.getFont());
 //        destinationSize.width = fontMetrics.stringWidth(destinationAttr.getText()) + 25 + 20;
 //
-//        enabledCircle.setState(destination.isEnabled());
+//        enabledCircle.setToggle(destination.isEnabled());
 //    }
 //
 //    @Override
@@ -236,7 +223,7 @@ public class DestinationGUI /*extends AbstractComponentGUI implements Activatabl
 //    }
 //
 //    @Override
-//    public void setState(boolean state) {
+//    public void setToggle(boolean state) {
 //        destination.setEnabled(state);
 //        this.setComponentModel(destination);
 //        this.commitChanges((state) ? Messages.BUNDLE.getString("ENABLE") + " Destination" :
