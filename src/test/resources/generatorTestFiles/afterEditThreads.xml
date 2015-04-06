@@ -6,7 +6,7 @@
         <property name="second_property" value="second_value"/>
         <property name="third_property" value="third_value"/>
     </generator>
-    <sender class="PlainSockerSender">
+    <sender class="PlainSocketSender">
         <property name="target" value="value"/>
     </sender>
 </scenario>

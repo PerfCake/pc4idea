@@ -21,13 +21,12 @@ import java.util.List;
  */
 public class GeneratorTest extends LightCodeInsightFixtureTestCase {
 
-
     @Override
     protected String getTestDataPath() {
         return new File(PathManager.getJarPathForClass(GeneratorTest.class)+"/generatorTestFiles").getPath();
     }
 
-    private GeneratorModelWrapper setUpEditorAndGetModel(){/*TODO mozno iba set up generator*/
+    private GeneratorModelWrapper setUpEditorAndGetModel() {
         VirtualFile file = myFixture.getFile().getVirtualFile();
         FileEditorProvider[] possibleProviders = FileEditorProviderManager.getInstance().getProviders(getProject(),file);
         PerfCakeEditorProvider pcProvider = null;
@@ -46,7 +45,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testEditClass(){
-        myFixture.configureByFile("beforeGeneratorTest.xml");
+        myFixture.configureByFile("beforeSenderTest.xml");
         GeneratorModelWrapper generatorModelWrapper = setUpEditorAndGetModel();
         Scenario.Generator beforeModel = (Scenario.Generator) generatorModelWrapper.retrieveModel();
 
@@ -63,7 +62,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testEditThreads(){
-        myFixture.configureByFile("beforeGeneratorTest.xml");
+        myFixture.configureByFile("beforeSenderTest.xml");
         GeneratorModelWrapper generatorModelWrapper = setUpEditorAndGetModel();
         Scenario.Generator beforeModel = (Scenario.Generator) generatorModelWrapper.retrieveModel();
 
@@ -80,7 +79,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testEditRun(){
-        myFixture.configureByFile("beforeGeneratorTest.xml");
+        myFixture.configureByFile("beforeSenderTest.xml");
         GeneratorModelWrapper generatorModelWrapper = setUpEditorAndGetModel();
         Scenario.Generator beforeModel = (Scenario.Generator) generatorModelWrapper.retrieveModel();
 
@@ -100,7 +99,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testEditRunType(){
-        myFixture.configureByFile("beforeGeneratorTest.xml");
+        myFixture.configureByFile("beforeSenderTest.xml");
         GeneratorModelWrapper generatorModelWrapper = setUpEditorAndGetModel();
         Scenario.Generator beforeModel = (Scenario.Generator) generatorModelWrapper.retrieveModel();
 
@@ -119,7 +118,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testEditRunValue(){
-        myFixture.configureByFile("beforeGeneratorTest.xml");
+        myFixture.configureByFile("beforeSenderTest.xml");
         GeneratorModelWrapper generatorModelWrapper = setUpEditorAndGetModel();
         Scenario.Generator beforeModel = (Scenario.Generator) generatorModelWrapper.retrieveModel();
 
@@ -138,7 +137,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testEditProperties(){
-        myFixture.configureByFile("beforeGeneratorTest.xml");
+        myFixture.configureByFile("beforeSenderTest.xml");
         GeneratorModelWrapper generatorModelWrapper = setUpEditorAndGetModel();
         Scenario.Generator beforeModel = (Scenario.Generator) generatorModelWrapper.retrieveModel();
 
@@ -168,7 +167,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testAddProperty(){
-        myFixture.configureByFile("beforeGeneratorTest.xml");
+        myFixture.configureByFile("beforeSenderTest.xml");
         GeneratorModelWrapper generatorModelWrapper = setUpEditorAndGetModel();
 
         Property property = new Property();
@@ -181,7 +180,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testGeneratorWithWrongAttributes(){
-        myFixture.configureByFile("beforeGeneratorTest.xml");
+        myFixture.configureByFile("beforeSenderTest.xml");
         //null Generator
         GeneratorModelWrapper generatorModelWrapper = setUpEditorAndGetModel();
         try {
@@ -190,7 +189,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         } catch(AssertionError e){
             // OK
         }
-        myFixture.checkResultByFile("beforeGeneratorTest.xml");
+        myFixture.checkResultByFile("beforeSenderTest.xml");
         // null Run
         GeneratorModelWrapper generatorModelWrapper2 = setUpEditorAndGetModel();
         Scenario.Generator beforeModel = (Scenario.Generator) generatorModelWrapper2.retrieveModel();
@@ -208,7 +207,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         } catch(AssertionError e){
             // OK
         }
-        myFixture.checkResultByFile("beforeGeneratorTest.xml");
+        myFixture.checkResultByFile("beforeSenderTest.xml");
         //add null Property
         GeneratorModelWrapper generatorModelWrapper3 = setUpEditorAndGetModel();
 
@@ -218,6 +217,6 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         } catch(AssertionError e){
             // OK
         }
-        myFixture.checkResultByFile("beforeGeneratorTest.xml");
+        myFixture.checkResultByFile("beforeSenderTest.xml");
     }
 }
