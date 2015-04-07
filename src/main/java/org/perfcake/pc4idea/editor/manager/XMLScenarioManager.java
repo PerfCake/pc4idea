@@ -60,7 +60,7 @@ public class XMLScenarioManager implements ScenarioManager{
     }
 
     @Override
-    public void saveScenario(Scenario scenarioModel, String actionCommand) { /*TODO OPT!*/
+    public void saveScenario(Scenario scenarioModel, String actionCommand) throws ScenarioManagerException { /*TODO OPT!*/
         Document document = FileDocumentManager.getInstance().getDocument(file);
 
         CommandProcessor.getInstance().executeCommand(project, new Runnable() {
@@ -89,7 +89,7 @@ public class XMLScenarioManager implements ScenarioManager{
                             }
                             stringWriter.close();
                         } catch (JAXBException | SAXException | IOException e) {
-                            LOG.error(e.getCause());
+                            throw new ScenarioManagerException(e);
                         }
                     }
                 });

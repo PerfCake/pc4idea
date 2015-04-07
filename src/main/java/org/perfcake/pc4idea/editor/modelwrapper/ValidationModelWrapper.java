@@ -35,6 +35,7 @@ public class ValidationModelWrapper implements ModelWrapper, HasGUIChildren, Tog
     @Override
     public void updateModel(Object componentModel) {
         validationModel = (componentModel != null) ? (Scenario.Validation) componentModel : new Scenario.Validation();
+        sync.syncValidatorRef();
     }
 
     @Override
@@ -70,6 +71,7 @@ public class ValidationModelWrapper implements ModelWrapper, HasGUIChildren, Tog
     public void deleteChild(ModelWrapper childModelWrapper) {
         Scenario.Validation.Validator validatorToDel = (Scenario.Validation.Validator) childModelWrapper.retrieveModel();
         validationModel.getValidator().remove(validatorToDel);
+        sync.syncValidatorRef();
     }
 
     @Override

@@ -10,5 +10,6 @@ import org.perfcake.model.Scenario;
 public interface ScenarioManager {
 
     public Scenario loadScenario() throws ScenarioManagerException;
-    public void saveScenario(Scenario scenarioModel, String actionCommand);
+
+    public void saveScenario(Scenario scenarioModel, String actionCommand) throws ScenarioManagerException;
 }

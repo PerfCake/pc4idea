@@ -2,6 +2,7 @@ package org.perfcake.pc4idea.editor.modelwrapper;
 
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.editor.MessagesValidationSync;
 import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
 import org.perfcake.pc4idea.editor.gui.ValidatorGUI;
 import org.perfcake.pc4idea.editor.interfaces.CanAddProperty;
@@ -16,9 +17,11 @@ public class ValidatorModelWrapper implements ModelWrapper, CanAddProperty {
     private Scenario.Validation.Validator validatorModel;
 
     private ValidatorGUI validatorGUI;
+    private MessagesValidationSync sync;
 
     public ValidatorModelWrapper(ValidationModelWrapper parent, ActionMap baseActionMap) {
         validatorGUI = new ValidatorGUI(this, parent, baseActionMap);
+        sync = parent.getSync();
     }
 
     @Override
@@ -37,7 +40,7 @@ public class ValidatorModelWrapper implements ModelWrapper, CanAddProperty {
             validatorModel.getProperty().clear();
             validatorModel.getProperty().addAll(tempModel.getProperty());
         }
-
+        sync.syncValidatorRef();
     }
 
     @Override

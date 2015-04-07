@@ -132,7 +132,6 @@ public class ValidationGUI extends AbstractComponentGUI  {
             }
         }
         panelValidators.updateComponents();
-        modelWrapper.getSync().syncValidatorRef();
         modelWrapper.getSync().repaintDependencies();
     }
 
