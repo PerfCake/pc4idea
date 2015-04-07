@@ -151,7 +151,7 @@ public class ScenarioGUI extends JLayeredPane implements ColorAdjustable {
             propertiesModel.getGUI().updateGUI();
         } else {
             if (getScenarioModel() != null){
-             /*TODO reload if possible = fireSC.INv.*/ /*TODO dont forget to hide layer dep.*/
+             /*TODO reload if possible = fireSC.INv. ?no?*/ /*TODO dont forget to hide layer dep.*/
             }
         }
     }
@@ -163,9 +163,13 @@ public class ScenarioGUI extends JLayeredPane implements ColorAdjustable {
             case 1:
                 return senderModel;
             case 2:
+                return propertiesModel;
+            case 3:
                 return messagesModel;
-
-
+            case 4:
+                return validationModel;
+            case 5:
+                return reportingModel;
             default:
                 return null;
         }
