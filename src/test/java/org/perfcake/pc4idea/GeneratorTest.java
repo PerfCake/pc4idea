@@ -10,6 +10,7 @@ import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.editor.PerfCakeEditor;
 import org.perfcake.pc4idea.editor.editor.PerfCakeEditorProvider;
+import org.perfcake.pc4idea.editor.manager.ScenarioManagerException;
 import org.perfcake.pc4idea.editor.modelwrapper.GeneratorModelWrapper;
 
 import java.io.File;
@@ -186,7 +187,8 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         try {
             generatorModelWrapper.updateModel(null);
             generatorModelWrapper.getGUI().commitChanges("test");
-        } catch(AssertionError e){
+            Assert.fail();
+        } catch (ScenarioManagerException e) {
             // OK
         }
         myFixture.checkResultByFile("beforeGeneratorTest.xml");
@@ -198,23 +200,22 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         afterModel.getProperty().addAll(beforeModel.getProperty());
         afterModel.setClazz(beforeModel.getClazz());
         afterModel.setThreads(beforeModel.getThreads());
-
         afterModel.setRun(null);
-
         try {
             generatorModelWrapper2.updateModel(afterModel);
             generatorModelWrapper2.getGUI().commitChanges("test");
-        } catch(AssertionError e){
+            Assert.fail();
+        } catch (ScenarioManagerException e) {
             // OK
         }
         myFixture.checkResultByFile("beforeGeneratorTest.xml");
         //add null Property
         GeneratorModelWrapper generatorModelWrapper3 = setUpEditorAndGetModel();
-
         try {
             generatorModelWrapper3.addProperty(null);
             generatorModelWrapper3.getGUI().commitChanges("test");
-        } catch(AssertionError e){
+            Assert.fail();
+        } catch (ScenarioManagerException e) {
             // OK
         }
         myFixture.checkResultByFile("beforeGeneratorTest.xml");

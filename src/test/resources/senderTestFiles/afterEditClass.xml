@@ -8,5 +8,6 @@
         <property name="target" value="value"/>
         <property name="p2" value="v2"/>
         <property name="p3" value="v3"/>
+        <property name="px" value="vx"/>
     </sender>
 </scenario>

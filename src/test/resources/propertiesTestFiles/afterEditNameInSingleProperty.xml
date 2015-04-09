@@ -2,7 +2,7 @@
 <scenario xmlns="urn:perfcake:scenario:3.0">
     <properties>
         <property name="p1" value="v1"/>
-        <property name="p2" value="v2"/>
+        <property name="newName" value="v2"/>
         <property name="p3" value="v3"/>
         <property name="px" value="vx"/>
     </properties>
