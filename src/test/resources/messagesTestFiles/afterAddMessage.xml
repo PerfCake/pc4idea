@@ -28,6 +28,10 @@
             <header name="c" value="c"/>
             <header name="x" value="x"/>
         </message>
+        <message uri="added" multiplicity="5">
+            <header name="h" value="h"/>
+            <property name="p" value="p"/>
+        </message>
     </messages>
     <validation>
         <validator id="1" class="DictionaryValidator"/>

@@ -42,6 +42,9 @@ public class MessagesModelWrapper implements ModelWrapper, HasGUIChildren {
     }
 
     public void addMessage(Scenario.Messages.Message message){
+        if (message == null) {
+            throw new NullPointerException("message to add is null");
+        }
         messagesModel.getMessage().add(message);
     }
 

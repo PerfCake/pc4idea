@@ -12,7 +12,7 @@
     </sender>
     <messages>
         <message uri="uri.txt" multiplicity="1"/>
-        <message content="content" multiplicity="2"/>
+        <message content="edited" multiplicity="2"/>
         <message uri="vAttached">
             <validatorRef id="1"/>
         </message>

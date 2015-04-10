@@ -12,10 +12,10 @@
     </sender>
     <messages>
         <message uri="uri.txt" multiplicity="1"/>
-        <message content="content" multiplicity="2"/>
         <message uri="vAttached">
             <validatorRef id="1"/>
         </message>
+        <message content="content" multiplicity="2"/>
         <message uri="properties">
             <property name="a" value="a"/>
             <property name="b" value="b"/>

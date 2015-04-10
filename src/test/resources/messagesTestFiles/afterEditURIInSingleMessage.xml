@@ -11,7 +11,7 @@
         <property name="target" value="value"/>
     </sender>
     <messages>
-        <message uri="uri.txt" multiplicity="1"/>
+        <message uri="edited" multiplicity="1"/>
         <message content="content" multiplicity="2"/>
         <message uri="vAttached">
             <validatorRef id="1"/>

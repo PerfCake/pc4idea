@@ -106,19 +106,26 @@ public class MessageGUI extends AbstractComponentGUI{
     public void updateGUI() {
         Scenario.Messages.Message message = (Scenario.Messages.Message) modelWrapper.retrieveModel();
         String uri = message.getUri();
+        String content = message.getContent();
         if (uri == null){
             messageAttr.setText("*");
             messageSize.width = 40;
         } else {
-            FontMetrics fontMetrics = messageAttr.getFontMetrics(messageAttr.getFont());
-            int uriLength = fontMetrics.stringWidth(uri) + 30;
-            if (uriLength > 200) {
-                messageAttr.setText("...");
-                messageSize.width = 40;
+            if (content == null) {
+                FontMetrics fontMetrics = messageAttr.getFontMetrics(messageAttr.getFont());
+                int uriLength = fontMetrics.stringWidth(uri) + 30;
+                if (uriLength > 200) {
+                    messageAttr.setText("...");
+                    messageSize.width = 40;
+                } else {
+                    messageAttr.setText(uri);
+                    messageSize.width = uriLength;
+                }
             } else {
-                messageAttr.setText(uri);
-                messageSize.width = uriLength;
+                messageAttr.setText("*");
+                messageSize.width = 40;
             }
+
         }
         parentModelWrapper.getSync().syncValidatorRef();
         parentModelWrapper.getSync().repaintDependencies();

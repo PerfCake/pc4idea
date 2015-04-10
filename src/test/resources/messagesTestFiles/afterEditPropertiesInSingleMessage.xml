@@ -17,9 +17,9 @@
             <validatorRef id="1"/>
         </message>
         <message uri="properties">
-            <property name="a" value="a"/>
-            <property name="b" value="b"/>
-            <property name="c" value="c"/>
+            <property name="a" value="newValue"/>
+            <property name="newName" value="b"/>
+            <property name="newName" value="newValue"/>
             <property name="x" value="x"/>
         </message>
         <message uri="header">

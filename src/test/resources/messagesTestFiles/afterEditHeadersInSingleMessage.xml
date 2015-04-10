@@ -23,9 +23,9 @@
             <property name="x" value="x"/>
         </message>
         <message uri="header">
-            <header name="a" value="a"/>
-            <header name="b" value="b"/>
-            <header name="c" value="c"/>
+            <header name="a" value="newValue"/>
+            <header name="newName" value="b"/>
+            <header name="newName" value="newValue"/>
             <header name="x" value="x"/>
         </message>
     </messages>

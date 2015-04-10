@@ -10,6 +10,19 @@
     <sender class="PlainSocketSender">
         <property name="target" value="value"/>
     </sender>
+    <messages>
+        <message uri="uri.txt" multiplicity="1"/>
+        <message content="content" multiplicity="2"/>
+        <message uri="vAttached">
+            <validatorRef id="1"/>
+        </message>
+        <message uri="header">
+            <header name="a" value="a"/>
+            <header name="b" value="b"/>
+            <header name="c" value="c"/>
+            <header name="x" value="x"/>
+        </message>
+    </messages>
     <validation>
         <validator id="1" class="DictionaryValidator"/>
     </validation>
