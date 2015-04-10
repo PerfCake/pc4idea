@@ -187,8 +187,8 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         try {
             generatorModelWrapper.updateModel(null);
             generatorModelWrapper.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (ScenarioManagerException e) {
+            fail();
+        } catch (ScenarioManagerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeGeneratorTest.xml");
@@ -204,8 +204,8 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         try {
             generatorModelWrapper2.updateModel(afterModel);
             generatorModelWrapper2.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (ScenarioManagerException e) {
+            fail();
+        } catch (ScenarioManagerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeGeneratorTest.xml");
@@ -214,8 +214,8 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         try {
             generatorModelWrapper3.addProperty(null);
             generatorModelWrapper3.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (ScenarioManagerException e) {
+            fail();
+        } catch (ScenarioManagerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeGeneratorTest.xml");

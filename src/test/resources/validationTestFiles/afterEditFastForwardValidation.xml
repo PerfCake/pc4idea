@@ -15,7 +15,7 @@
             <validatorRef id="attached"/>
         </message>
     </messages>
-    <validation enabled="false" fastForward="false">
+    <validation enabled="false" fastForward="true">
         <validator id="1" class="DictionaryValidator"/>
         <validator id="prop" class="ScriptValidator">
             <property name="a" value="a"/>

@@ -11,6 +11,6 @@
         <property name="target" value="value"/>
     </sender>
     <messages>
-        <message uri="a" multiplicity="1"/>
+        <message uri="1" multiplicity="1"/>
     </messages>
 </scenario>

@@ -44,6 +44,9 @@ public class ValidationModelWrapper implements ModelWrapper, HasGUIChildren, Tog
     }
 
     public void addValidator(Scenario.Validation.Validator validator){
+        if (validator == null) {
+            throw new NullPointerException("validator to add is null");
+        }
         validationModel.getValidator().add(validator);
     }
 

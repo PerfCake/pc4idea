@@ -319,8 +319,8 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         try {
             messagesModelWrapper.addMessage(null);
             messagesModelWrapper.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (NullPointerException e) {
+            fail();
+        } catch (NullPointerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeMessagesTest.xml");
@@ -329,8 +329,8 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         try {
             messagesModelWrapper2.deleteChild(null);
             messagesModelWrapper2.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (NullPointerException e) {
+            fail();
+        } catch (NullPointerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeMessagesTest.xml");
@@ -339,8 +339,8 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         try {
             messagesModelWrapper3.setChildrenFromModels(null);
             messagesModelWrapper3.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (NullPointerException e) {
+            fail();
+        } catch (NullPointerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeMessagesTest.xml");
@@ -350,8 +350,8 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         try {
             messageModelWrapper4.addHeader(null);
             messagesModelWrapper4.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (ScenarioManagerException e) {
+            fail();
+        } catch (ScenarioManagerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeMessagesTest.xml");
@@ -361,8 +361,8 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         try {
             messageModelWrapper5.addProperty(null);
             messagesModelWrapper5.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (ScenarioManagerException e) {
+            fail();
+        } catch (ScenarioManagerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeMessagesTest.xml");
@@ -372,21 +372,21 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         try {
             messageModelWrapper6.attachValidator(null);
             messagesModelWrapper6.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (NullPointerException e) {
+            fail();
+        } catch (NullPointerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeMessagesTest.xml");
         // attach not existing validator to single message
         MessagesModelWrapper messagesModelWrapper7 = setUpEditorAndGetModel();
         MessageModelWrapper messageModelWrapper7 = (MessageModelWrapper) messagesModelWrapper7.getChildrenModels().get(1);
+        Scenario.Messages.Message.ValidatorRef ref = new Scenario.Messages.Message.ValidatorRef();
+        ref.setId("7");
         try {
-            Scenario.Messages.Message.ValidatorRef ref = new Scenario.Messages.Message.ValidatorRef();
-            ref.setId("7");
             messageModelWrapper7.attachValidator(ref);
             messagesModelWrapper7.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (IllegalArgumentException e) {
+            fail();
+        } catch (IllegalArgumentException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeMessagesTest.xml");

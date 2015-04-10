@@ -24,5 +24,6 @@
             <property name="x" value="x"/>
         </validator>
         <validator id="attached" class="DictionaryValidator"/>
+        <validator id="added" class="RulesValidator"/>
     </validation>
 </scenario>

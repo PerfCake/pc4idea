@@ -13,4 +13,7 @@
     <messages>
         <message uri="a" multiplicity="1"/>
     </messages>
+    <validation>
+        <validator id="added" class="RulesValidator"/>
+    </validation>
 </scenario>

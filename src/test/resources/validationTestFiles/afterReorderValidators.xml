@@ -17,12 +17,12 @@
     </messages>
     <validation enabled="false" fastForward="false">
         <validator id="1" class="DictionaryValidator"/>
+        <validator id="attached" class="DictionaryValidator"/>
         <validator id="prop" class="ScriptValidator">
             <property name="a" value="a"/>
             <property name="b" value="b"/>
             <property name="c" value="c"/>
             <property name="x" value="x"/>
         </validator>
-        <validator id="attached" class="DictionaryValidator"/>
     </validation>
 </scenario>

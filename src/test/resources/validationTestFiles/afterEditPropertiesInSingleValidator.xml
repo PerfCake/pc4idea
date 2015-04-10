@@ -18,9 +18,9 @@
     <validation enabled="false" fastForward="false">
         <validator id="1" class="DictionaryValidator"/>
         <validator id="prop" class="ScriptValidator">
-            <property name="a" value="a"/>
-            <property name="b" value="b"/>
-            <property name="c" value="c"/>
+            <property name="a" value="newValue"/>
+            <property name="newName" value="b"/>
+            <property name="newName" value="newValue"/>
             <property name="x" value="x"/>
         </validator>
         <validator id="attached" class="DictionaryValidator"/>

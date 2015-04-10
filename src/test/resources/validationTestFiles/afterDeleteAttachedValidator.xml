@@ -11,9 +11,7 @@
         <property name="target" value="value"/>
     </sender>
     <messages>
-        <message uri="1" multiplicity="1">
-            <validatorRef id="attached"/>
-        </message>
+        <message uri="1" multiplicity="1"/>
     </messages>
     <validation enabled="false" fastForward="false">
         <validator id="1" class="DictionaryValidator"/>
@@ -23,6 +21,5 @@
             <property name="c" value="c"/>
             <property name="x" value="x"/>
         </validator>
-        <validator id="attached" class="DictionaryValidator"/>
     </validation>
 </scenario>

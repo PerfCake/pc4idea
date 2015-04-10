@@ -16,7 +16,9 @@
         </message>
     </messages>
     <validation enabled="false" fastForward="false">
-        <validator id="1" class="DictionaryValidator"/>
+        <validator id="1" class="DictionaryValidator">
+            <property name="addedName" value="addedValue"/>
+        </validator>
         <validator id="prop" class="ScriptValidator">
             <property name="a" value="a"/>
             <property name="b" value="b"/>

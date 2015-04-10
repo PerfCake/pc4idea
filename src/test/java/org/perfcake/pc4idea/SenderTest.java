@@ -150,8 +150,8 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         try {
             senderModelWrapper.updateModel(null);
             senderModelWrapper.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (ScenarioManagerException e) {
+            fail();
+        } catch (ScenarioManagerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeSenderTest.xml");
@@ -160,8 +160,8 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         try {
             senderModelWrapper2.addProperty(null);
             senderModelWrapper2.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (ScenarioManagerException e) {
+            fail();
+        } catch (ScenarioManagerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeSenderTest.xml");
@@ -170,8 +170,8 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         try {
             senderModelWrapper3.deleteChild(null);
             senderModelWrapper3.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (NullPointerException e) {
+            fail();
+        } catch (NullPointerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeSenderTest.xml");
@@ -180,8 +180,8 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         try {
             senderModelWrapper4.setChildrenFromModels(null);
             senderModelWrapper4.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (NullPointerException e) {
+            fail();
+        } catch (NullPointerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeSenderTest.xml");

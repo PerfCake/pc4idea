@@ -160,8 +160,8 @@ public class PropertiesTest extends LightCodeInsightFixtureTestCase {
         try {
             propertiesModelWrapper.addProperty(null);
             propertiesModelWrapper.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (ScenarioManagerException e) {
+            fail();
+        } catch (ScenarioManagerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforePropertiesTest.xml");
@@ -170,8 +170,8 @@ public class PropertiesTest extends LightCodeInsightFixtureTestCase {
         try {
             propertiesModelWrapper2.deleteChild(null);
             propertiesModelWrapper2.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (NullPointerException e) {
+            fail();
+        } catch (NullPointerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforePropertiesTest.xml");
@@ -180,8 +180,8 @@ public class PropertiesTest extends LightCodeInsightFixtureTestCase {
         try {
             propertiesModelWrapper3.setChildrenFromModels(null);
             propertiesModelWrapper3.getGUI().commitChanges("test");
-            Assert.fail();
-        } catch (NullPointerException e) {
+            fail();
+        } catch (NullPointerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforePropertiesTest.xml");
