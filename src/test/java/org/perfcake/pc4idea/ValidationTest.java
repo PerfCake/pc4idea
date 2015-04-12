@@ -12,7 +12,6 @@ import org.perfcake.pc4idea.editor.editor.PerfCakeEditor;
 import org.perfcake.pc4idea.editor.editor.PerfCakeEditorProvider;
 import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
 import org.perfcake.pc4idea.editor.manager.ScenarioManagerException;
-import org.perfcake.pc4idea.editor.modelwrapper.SenderModelWrapper;
 import org.perfcake.pc4idea.editor.modelwrapper.ValidationModelWrapper;
 import org.perfcake.pc4idea.editor.modelwrapper.ValidatorModelWrapper;
 

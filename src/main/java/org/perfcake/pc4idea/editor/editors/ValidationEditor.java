@@ -41,6 +41,12 @@ public class ValidationEditor extends AbstractEditor {
         initComponents();
     }
 
+    public ValidationEditor(Set<String> attachedIDs, Set<String> usedIDSet) {
+        this.attachedIDs = attachedIDs;
+        this.usedIDSet = usedIDSet;
+        initComponents();
+    }
+
     private void initComponents(){
         JLabel labelEnabled = new JLabel("Enabled:");
         JLabel labelFastForward = new JLabel("Fast Forward:");
@@ -104,6 +110,7 @@ public class ValidationEditor extends AbstractEditor {
                     if (dialog.getExitCode() == 0) {
                         ((ValidatorsTableModel) tablePanelValidators.getTable().getModel()).getValidatorList().set(selectedRow, validatorEditor.getValidator());
                         tablePanelValidators.getTable().repaint();
+                        /*TODO update usedIDsSet*/
                     }
                 }
             }

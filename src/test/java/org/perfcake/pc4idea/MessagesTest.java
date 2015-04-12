@@ -6,7 +6,6 @@ import com.intellij.openapi.fileEditor.ex.FileEditorProviderManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import org.junit.Assert;
-import org.perfcake.message.Message;
 import org.perfcake.model.Header;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
@@ -16,8 +15,6 @@ import org.perfcake.pc4idea.editor.interfaces.ModelWrapper;
 import org.perfcake.pc4idea.editor.manager.ScenarioManagerException;
 import org.perfcake.pc4idea.editor.modelwrapper.MessageModelWrapper;
 import org.perfcake.pc4idea.editor.modelwrapper.MessagesModelWrapper;
-import org.perfcake.pc4idea.editor.modelwrapper.PropertiesModelWrapper;
-import org.perfcake.pc4idea.editor.modelwrapper.SenderModelWrapper;
 
 import java.io.File;
 import java.util.Collections;

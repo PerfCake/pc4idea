@@ -1,12 +1,15 @@
 package org.perfcake.pc4idea.editor.manager;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.UndoConfirmationPolicy;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.PerfCakeConst;
@@ -29,7 +32,7 @@ import java.io.StringWriter;
  * Date: 27.2.2015
  */
 public class XMLScenarioManager implements ScenarioManager{
-    private static final Logger LOG = Logger.getInstance("#.editor.manager.XMLScenarioManager");
+    private static final Logger LOG = Logger.getInstance(XMLScenarioManager.class);
     private VirtualFile file;
     private Project project;
 
@@ -38,8 +41,44 @@ public class XMLScenarioManager implements ScenarioManager{
         this.project = project;
     }
 
+
     @Override
-    public Scenario loadScenario() throws ScenarioManagerException { /*TODO WRAP IN READ ACTION*/
+    public void createScenario(String name, Scenario model) throws ScenarioManagerException {
+        for (VirtualFile vf : file.getChildren()) {
+            if (vf.getName().equals(name)) {
+                int result = Messages.showOkCancelDialog(project,
+                        "File " + name + " already exists in this directory!\n" +
+                                "Would you like to rewrite it?",
+                        "File Already Exists!",
+                        AllIcons.General.WarningDialog);
+                if (result != 0) {
+                    return;
+                }
+            }
+        }
+
+        ApplicationManager.getApplication().runWriteAction(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    XMLScenarioManager.this.file = file.createChildData(XMLScenarioManager.this, name);
+                    XMLScenarioManager.this.updateScenario(model, "created scenario");
+                    Document document = FileDocumentManager.getInstance().getDocument(file);
+                    if (document != null) {
+                        FileDocumentManager.getInstance().saveDocument(document);
+                    }
+                    FileEditorManager.getInstance(project).openFile(file, true);
+                } catch (IOException e) {
+                    /*TODO log*/
+                    throw new ScenarioManagerException("unable to create scenario file: " + name);
+                }
+            }
+        });
+
+    }
+
+    @Override
+    public Scenario retrieveScenario() throws ScenarioManagerException { /*TODO WRAP IN READ ACTION*/
         Scenario scenarioModel = null;
         try {
             String schemaURI = "/schemas/" + "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd";
@@ -54,13 +93,14 @@ public class XMLScenarioManager implements ScenarioManager{
 
             /*TODO for testing purpose*/System.out.println("TEST LOG: scenario successfully loadedd");
         } catch (JAXBException | SAXException | IOException e) {
+            /*TODO log*/
             throw new ScenarioManagerException(e);
         }
         return scenarioModel;
     }
 
     @Override
-    public void saveScenario(Scenario scenarioModel, String actionCommand) throws ScenarioManagerException { /*TODO OPT!*/
+    public void updateScenario(Scenario scenarioModel, String actionCommand) throws ScenarioManagerException { /*TODO OPT!*/
         Document document = FileDocumentManager.getInstance().getDocument(file);
 
         CommandProcessor.getInstance().executeCommand(project, new Runnable() {
@@ -89,12 +129,12 @@ public class XMLScenarioManager implements ScenarioManager{
                             }
                             stringWriter.close();
                         } catch (JAXBException | SAXException | IOException e) {
+                            /*TODO log*/
                             throw new ScenarioManagerException(e);
                         }
                     }
                 });
             }
         }, actionCommand, null, UndoConfirmationPolicy.DEFAULT, document);
-
     }
 }

@@ -39,8 +39,11 @@
         </component>
     </module-components>
 
-  <actions>
-    <!-- Add your actions here -->
-  </actions>
+    <actions>
+        <action id="NewPCScenario" class="org.perfcake.pc4idea.wizard.NewScenarioAction" text="PerfCake Scenario"
+                description="Create new PerfCake Scenario">
+            <add-to-group group-id="NewGroup" anchor="last"/>
+        </action>
+    </actions>
 
 </idea-plugin>

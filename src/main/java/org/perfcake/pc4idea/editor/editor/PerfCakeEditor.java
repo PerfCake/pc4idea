@@ -81,7 +81,7 @@ public class PerfCakeEditor implements FileEditor { /*TODO UNDO/REDO/externa zme
 
     private void setUpEditor(){
         try {
-            editorGUI.getScenarioGUI().setScenarioModel(manager.loadScenario());
+            editorGUI.getScenarioGUI().setScenarioModel(manager.retrieveScenario());
         } catch (ScenarioManagerException e) {
             /*TODO for testing purpose*/System.out.println(e.getCause());
             editorGUI.getScenarioGUI().setScenarioModel(null);

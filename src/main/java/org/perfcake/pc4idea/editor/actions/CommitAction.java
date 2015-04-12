@@ -24,6 +24,6 @@ public class CommitAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         Scenario scenarioModel = editor.getComponent().getScenarioGUI().getScenarioModel();
-        manager.saveScenario(scenarioModel,e.getActionCommand());
+        manager.updateScenario(scenarioModel, e.getActionCommand());
     }
 }

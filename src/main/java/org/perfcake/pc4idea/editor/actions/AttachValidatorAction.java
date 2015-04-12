@@ -10,7 +10,6 @@ import org.perfcake.pc4idea.editor.modelwrapper.MessageModelWrapper;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Created by Stanislav Kaleta on 3/27/15.
