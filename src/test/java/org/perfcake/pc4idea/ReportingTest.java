@@ -5,7 +5,6 @@ import com.intellij.openapi.fileEditor.FileEditorProvider;
 import com.intellij.openapi.fileEditor.ex.FileEditorProviderManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import org.junit.Assert;
 import org.perfcake.pc4idea.editor.editor.PerfCakeEditor;
 import org.perfcake.pc4idea.editor.editor.PerfCakeEditorProvider;
 import org.perfcake.pc4idea.editor.modelwrapper.SenderModelWrapper;
@@ -34,116 +33,116 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         if (pcProvider == null) {
             throw new AssertionError("Error setting up editor - cant find PerfCakeEditorProvider instance");
         }
-        Assert.assertTrue(pcProvider.accept(getProject(), file));
+        assertTrue(pcProvider.accept(getProject(), file));
         PerfCakeEditor editor = (PerfCakeEditor) pcProvider.createEditor(getProject(), file);
 
         return (SenderModelWrapper) editor.getComponent().getScenarioGUI().getComponentModel(5);
     }
 
     //reporting
-    public void testEditReporters() {
-        Assert.fail();
+    public void testEditReporters() {/*com.intellij.testFramework.fixtures.JavaCodeInsightTestFixture*/
+        fail();
     }
 
     public void testEditProperties() {
-        Assert.fail();
+        fail();
     }
 
     public void testAddProperty() {
-        Assert.fail();
+        fail();
     }
 
     public void testAddReporter() {
-        Assert.fail();
+        fail();
     }
 
     public void testAddFirstReporter() {
-        Assert.fail();
+        fail();
     }
 
     public void testReorderReporters() {
-        Assert.fail();
+        fail();
     }
 
     public void testDeleteReporter() {
-        Assert.fail();
+        fail();
     }
 
     public void testDeleteAllReporters() {
-        Assert.fail();
+        fail();
     }
 
     //single reporter
     public void testEditClassInSingleReporter() {
-        Assert.fail();
+        fail();
     }
 
     public void testEditEnabledInSingleReporter() {
-        Assert.fail();
+        fail();
     }
 
     public void testEditDestinationsInSingleReporter() {
-        Assert.fail();
+        fail();
     }
 
     public void testEditPropertiesInSingleReporter() {
-        Assert.fail();
+        fail();
     }
 
     public void testAddDestinationToSingleReporter() {
-        Assert.fail();
+        fail();
     }
 
     public void testAddPropertyToSingleReporter() {
-        Assert.fail();
+        fail();
     }
 
     public void testDeleteDestinationInSingleReporter() {
-        Assert.fail();
+        fail();
     }
 
     public void testReorderDestinationsInSingleReporter() {
-        Assert.fail();
+        fail();
     }
 
     public void testEnableSingleReporter() {
-        Assert.fail();
+        fail();
     }
 
     public void testDisableSingleReporter() {
-        Assert.fail();
+        fail();
     }
 
     //single destination
     public void testEditClassInSingleDestination() {
-        Assert.fail();
+        fail();
     }
 
     public void testEditEnabledInSingleDestination() {
-        Assert.fail();
+        fail();
     }
 
     public void testEditPeriodsInSingleDestination() {
-        Assert.fail();
+        fail();
     }
 
     public void testEditPropertiesInSingleDestination() {
-        Assert.fail();
+        fail();
     }
 
     public void testAddPeriodToSingleDestination() {
-        Assert.fail();
+        fail();
     }
 
     public void testAddPropertyToSingleDestination() {
-        Assert.fail();
+        fail();
     }
 
     public void testEnableSingleDestination() {
-        Assert.fail();
+        fail();
     }
 
     public void testDisableSingleDestination() {
-        Assert.fail();
+        fail();
     }
 }

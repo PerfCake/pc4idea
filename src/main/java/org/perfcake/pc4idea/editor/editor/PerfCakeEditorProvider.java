@@ -41,7 +41,7 @@ public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
             Document document = FileDocumentManager.getInstance().getDocument(virtualFile);
             if (document != null){
                 String text = document.getText();
-                if (text.contains("<scenario xmlns=\"urn:perfcake:scenario:3.0\">")){
+                if (text.contains("<scenario xmlns=\"urn:perfcake:scenario:4.0\">")) {
                     scenarioType = ScenarioType.XML;
                     return true;
                 }

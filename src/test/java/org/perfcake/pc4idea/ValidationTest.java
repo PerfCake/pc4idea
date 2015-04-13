@@ -5,7 +5,6 @@ import com.intellij.openapi.fileEditor.FileEditorProvider;
 import com.intellij.openapi.fileEditor.ex.FileEditorProviderManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import org.junit.Assert;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.editor.PerfCakeEditor;
@@ -41,7 +40,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         if (pcProvider == null) {
             throw new AssertionError("Error setting up editor - cant find PerfCakeEditorProvider instance");
         }
-        Assert.assertTrue(pcProvider.accept(getProject(), file));
+        assertTrue(pcProvider.accept(getProject(), file));
         PerfCakeEditor editor = (PerfCakeEditor) pcProvider.createEditor(getProject(), file);
 
         return (ValidationModelWrapper) editor.getComponent().getScenarioGUI().getComponentModel(4);
