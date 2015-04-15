@@ -42,7 +42,7 @@ class WizardPanel extends JPanel {
         editors = new HashMap<>();
         editors.put(0, new URIEditor(defaultURI));
         editors.put(1, new GeneratorEditor());
-        editors.put(2, new SenderEditor());
+        editors.put(2, new SenderEditor(null));
         editors.put(3, new MessagesEditor());
         editors.put(4, new ReportingEditor());
         editors.put(5, new ValidationEditor(null));

@@ -8,6 +8,7 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
@@ -18,15 +19,16 @@ import com.intellij.testFramework.LightVirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.perfcake.pc4idea.editor.Messages;
-import org.perfcake.pc4idea.editor.actions.CommitAction;
-import org.perfcake.pc4idea.editor.actions.RedoAction;
-import org.perfcake.pc4idea.editor.actions.UndoAction;
+import org.perfcake.pc4idea.editor.PerfCakeEditorUtil;
+import org.perfcake.pc4idea.editor.actions.*;
 import org.perfcake.pc4idea.editor.gui.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.editor.manager.ScenarioManager;
 import org.perfcake.pc4idea.editor.manager.ScenarioManagerException;
 
 import javax.swing.*;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,18 +67,14 @@ public class PerfCakeEditor implements FileEditor { /*TODO UNDO/REDO/externa zme
             throw new IllegalArgumentException("No module for file " + file + " in project " + project);
         }
 
-        editorGUI = new PerfCakeEditorGUI(new CommitAction(manager,this),new UndoAction(), new RedoAction());
+        ActionMap baseActionMap = new ActionMap();
+        PerfCakeEditorUtil editorUtil = new PerfCakeEditorUtil(project, file, module, this, manager);
+        baseActionMap.put(ActionType.COMMIT, new CommitAction(editorUtil));
+        baseActionMap.put(ActionType.UNDO, new UndoAction());
+        baseActionMap.put(ActionType.REDO, new RedoAction());
+
+        editorGUI = new PerfCakeEditorGUI(baseActionMap, editorUtil);
         setUpEditor();
-
-//        System.out.println("#######################");
-//        System.out.println();
-//
-//        System.out.println(new PerfCakeReflectUtil().findSenderProperties("JmsSender"));
-//
-//
-//        System.out.println();
-//        System.out.println("#######################");
-
     }
 
     private void setUpEditor(){

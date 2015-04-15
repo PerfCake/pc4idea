@@ -2,20 +2,25 @@ package org.perfcake.pc4idea.editor;
 
 import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.AbstractSender;
+import org.perfcake.model.Property;
+import org.perfcake.pc4idea.module.PerfCakeModuleUtil;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.AbstractReporter;
 import org.perfcake.validation.MessageValidator;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 
@@ -23,22 +28,42 @@ import java.util.zip.ZipEntry;
  * Created by miron on 18.3.2014. + changes
  */
 public class PerfCakeReflectUtil {
-    private static final Logger LOG = Logger.getInstance(PerfCakeReflectUtil.class);    /*TODO este z lib priecinka plugin sendre by to chcelo*/
+    private static final Logger LOG = Logger.getInstance(PerfCakeReflectUtil.class);
+
+    private PerfCakeEditorUtil util;
+
+    public PerfCakeReflectUtil(PerfCakeEditorUtil util) {
+        this.util = util;
+    }
+
+    public PerfCakeReflectUtil() {
+        this.util = null;
+    }/*TODO do wizard - module par.*/
+
 
     /**
-     * Finds all subclasses names in a jar file of the superclass + changes
+     * Finds all subclasses names in a jar file of the superclass + changes - if uri null - classpath
      * @param superclass for which to find subclasses
      * @param pckage package in superclass's jar to search
      * @return list of sorted subclass names, which are not abstract
      */
     @NotNull
-    private List<Class> getSubclasses(@NotNull Class<?> superclass, @NotNull String pckage) {
+    private List<Class> getSubclasses(@NotNull Class<?> superclass, @NotNull String pckage, @Nullable String dir) {
+        URL url = null;
         String pckgPath = pckage.replace('.', '/');
-        //get URL of the superclass
-        URL url = superclass.getResource("/" + pckgPath);
-        if(url == null){
-            throw new NullPointerException("Could not find superclass resource: " + superclass.getName());
+        if (dir == null) {
+            url = superclass.getResource("/" + pckgPath);
+            if (url == null) {
+                throw new NullPointerException("Could not find superclass resource: " + superclass.getName());
+            }
+        } else {
+            try {
+                url = new URL("file://" + dir);
+            } catch (MalformedURLException e) {
+                throw new IllegalArgumentException(e.getMessage());
+            }
         }
+
 
         //we dont support superclass that is not in jar file
         if(!url.toString().startsWith("jar:")){
@@ -101,10 +126,10 @@ public class PerfCakeReflectUtil {
         return namesArray;
     }
 
-
-    @NotNull
-    public String findSenderProperties(String sender) {
-        List<Class> classes = getSubclasses(AbstractSender.class, "org.perfcake.message.sender");
+    public List<Property> findSenderProperties(String sender) {
+        List<Class> classes = getSubclasses(AbstractSender.class, "org.perfcake.message.sender", null);
+        //String libDir = PerfCakeModuleUtil.getPerfCakeModuleDirsUri(util.getModule())[2];
+        //classes.addAll(getSubclasses(AbstractSender.class, "org.perfcake.message.sender", libDir));
         Class clazz = null;
         for (Class c : classes){
             if (c.getSimpleName().equals(sender)){
@@ -112,69 +137,57 @@ public class PerfCakeReflectUtil {
             }
         }
         if (clazz == null){
-            LOG.error("Sender " + sender + " not found!");
-            return "";
+            LOG.warn(sender + " " + "class not found!");
+            return null;
         }
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("SENDER: "+clazz.getSimpleName()+"\n-----------------\n");
-
-        sb.append("get/setMethods:\n-----------------\n");
-
-        Set<Method> getMethods = new HashSet<>();
 
         Method[] allMethods = null;
         try {
             allMethods = clazz.getMethods();
         } catch (NoClassDefFoundError e){
-            LOG.warn(e.getMessage());
-            sb.append(e.getCause());
-            return sb.toString();
+            LOG.warn("NoClassDefFoundError " + e.getMessage());
+            return null;
+        }
+        if (allMethods == null) {
+            LOG.warn(clazz + " " + "methods array is null");
+            return null;
         }
 
-        for (Method m : allMethods) {
-            if (m.getName().substring(0,3).contains("get")) {
-                String name = m.getName().substring(3, m.getName().length());
-                for (Method m2: allMethods) {
-                    if (m2.getName().substring(0,3).contains("set") && m2.getName().contains(name)){
-                        getMethods.add(m);
-                        sb.append(name+"\n");
+        List<Property> properties = new ArrayList<>();
+        for (Method mSet : allMethods) {
+            String modifiersSet = Modifier.toString(mSet.getModifiers());
+            String nameSet = mSet.getName();
+            if (modifiersSet.equals("public") && nameSet.substring(0, 3).equals("set")) {
+                String possiblePropertySet = nameSet.substring(3).toLowerCase();
+                for (Method mGet : allMethods) {
+                    String modifiersGet = Modifier.toString(mGet.getModifiers());
+                    String nameGet = mGet.getName();
+                    String possiblePropertyGet = "";
+                    if (modifiersGet.equals("public")) {
+                        if (nameGet.substring(0, 3).equals("get")) {
+                            possiblePropertyGet = nameGet.substring(3).toLowerCase();
+                        }
+                        if (nameGet.substring(0, 2).equals("is")) {
+                            possiblePropertyGet = nameGet.substring(2).toLowerCase();
+                        }
+                    }
+                    if (possiblePropertySet.equals(possiblePropertyGet)) {
+                        Property property = new Property();
+                        property.setName(possiblePropertySet);
+                        try {
+                            mGet.setAccessible(true);
+                            Object t = clazz.newInstance();
+                            Object o = mGet.invoke(t);
+                            property.setValue(o.toString());
+                        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NullPointerException | NoClassDefFoundError e) {
+                            property.setValue("");
+                        }
+                        properties.add(property);
                     }
                 }
             }
         }
-        sb.append("\n\n");
-
-        Set<Field> allFields = new HashSet<>();
-        Class c = clazz;
-        while(c != null){
-            Collections.addAll(allFields, c.getDeclaredFields());
-            c = c.getSuperclass();
-        }
-
-        sb.append("matched fields & getMethod returns:\n-----------------\n");
-        for (Field f : allFields){
-            for (Method m : getMethods){
-                if (m.getName().toLowerCase().contains(f.getName().toLowerCase())){
-                    sb.append(f.getName() + " = ");
-
-                    try {
-                        m.setAccessible(true);
-                        Object t = clazz.newInstance();
-                        Object o = m.invoke(t);
-                        sb.append(o.toString());
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NullPointerException e) {
-                        sb.append(e.getClass().getSimpleName());
-                    }
-
-                    sb.append("\n");
-                }
-            }
-        }
-
-
-        return sb.toString();
+        return properties;
     }
 
 
@@ -186,7 +199,12 @@ public class PerfCakeReflectUtil {
      * */
     @NotNull
     public String[] findSenderClassNames() {
-        return getNamesFromClasses(getSubclasses(AbstractSender.class, "org.perfcake.message.sender"));
+        List<Class> classes = getSubclasses(AbstractSender.class, "org.perfcake.message.sender", null);
+        if (util != null) { /*TODO do wizard - module*/
+            //String libDir = PerfCakeModuleUtil.getPerfCakeModuleDirsUri(util.getModule())[2];
+            //classes.addAll(getSubclasses(AbstractSender.class, "org.perfcake.message.sender", libDir));
+        }
+        return getNamesFromClasses(classes);
     }
 
     /**
@@ -195,7 +213,7 @@ public class PerfCakeReflectUtil {
      */
     @NotNull
     public String[] findGeneratorClassNames() {
-        return getNamesFromClasses(getSubclasses(AbstractMessageGenerator.class, "org.perfcake.message.generator"));
+        return getNamesFromClasses(getSubclasses(AbstractMessageGenerator.class, "org.perfcake.message.generator", null));
     }
 
     /**
@@ -205,7 +223,7 @@ public class PerfCakeReflectUtil {
      */
     @NotNull
     public String[] findValidatorClassNames() {
-        return getNamesFromClasses(getSubclasses(MessageValidator.class, "org.perfcake.validation"));
+        return getNamesFromClasses(getSubclasses(MessageValidator.class, "org.perfcake.validation", null));
     }
 
     /**
@@ -215,12 +233,12 @@ public class PerfCakeReflectUtil {
      */
     @NotNull
     public String[] findDestinationClassNames() {
-        return getNamesFromClasses(getSubclasses(Destination.class, "org.perfcake.reporting.destinations"));
+        return getNamesFromClasses(getSubclasses(Destination.class, "org.perfcake.reporting.destinations", null));
     }
 
     @NotNull
     public String[] findReporterClassNames() {
-        return getNamesFromClasses(getSubclasses(AbstractReporter.class, "org.perfcake.reporting.reporters"));
+        return getNamesFromClasses(getSubclasses(AbstractReporter.class, "org.perfcake.reporting.reporters", null));
     }
 
 

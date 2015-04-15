@@ -6,6 +6,7 @@ import com.intellij.ui.JBSplitter;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.treeStructure.Tree;
 import org.jetbrains.annotations.NotNull;
+import org.perfcake.pc4idea.editor.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.editor.PerfCakeReflectUtil;
 import org.perfcake.pc4idea.editor.actions.ActionType;
 import org.perfcake.pc4idea.editor.actions.CommitAction;
@@ -27,8 +28,6 @@ import java.awt.datatransfer.Transferable;
 public class PerfCakeEditorGUI extends JPanel {
     private static final Logger LOG = Logger.getInstance("#...editor.PerfCakeEditorGUI");
 
-
-
     private JBSplitter jbSplitter;
     private JScrollPane scrollPaneMenu;
     private JPanel panelMenu;
@@ -38,13 +37,11 @@ public class PerfCakeEditorGUI extends JPanel {
 
     private ScenarioGUI scenarioGUI;
 
+    private PerfCakeEditorUtil util;
 
-
-
-    public PerfCakeEditorGUI(@NotNull CommitAction commitAction,@NotNull UndoAction undoAction, @NotNull RedoAction redoAction){
-        this.getActionMap().put(ActionType.COMMIT, commitAction);
-        this.getActionMap().put(ActionType.UNDO, undoAction);
-        this.getActionMap().put(ActionType.REDO, redoAction);
+    public PerfCakeEditorGUI(@NotNull ActionMap baseActionMap, PerfCakeEditorUtil util) {
+        this.setActionMap(baseActionMap);
+        this.util = util;
         initComponents();
 
         this.setLayout(new GridLayout(1,1));
@@ -56,7 +53,7 @@ public class PerfCakeEditorGUI extends JPanel {
         panelMenu = new JPanel();
         scrollPaneMenu = ScrollPaneFactory.createScrollPane(panelMenu);
         additiveComponentsTree = new Tree(new DefaultTreeModel(new DefaultMutableTreeNode("root")));
-        scenarioGUI = new ScenarioGUI(this.getActionMap());
+        scenarioGUI = new ScenarioGUI(this.getActionMap(), util);
         scrollPaneScenario = ScrollPaneFactory.createScrollPane(scenarioGUI);
 
         jbSplitter.setFirstComponent(scrollPaneMenu);

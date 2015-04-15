@@ -2,6 +2,7 @@ package org.perfcake.pc4idea.editor.gui;
 
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.Messages;
+import org.perfcake.pc4idea.editor.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.editor.ScenarioDialogEditor;
 import org.perfcake.pc4idea.editor.actions.ActionType;
 import org.perfcake.pc4idea.editor.actions.AddPropertyAction;
@@ -32,9 +33,12 @@ public class SenderGUI extends AbstractComponentGUI {
 
     private int labelSenderClassWidth = 0;
 
-    public SenderGUI(SenderModelWrapper modelWrapper, ActionMap baseActionMap){
+    private PerfCakeEditorUtil util;
+
+    public SenderGUI(SenderModelWrapper modelWrapper, ActionMap baseActionMap, PerfCakeEditorUtil util) {
         super(baseActionMap);
         this.modelWrapper = modelWrapper;
+        this.util = util;
         initComponents();
         updateColors();
     }
@@ -80,7 +84,7 @@ public class SenderGUI extends AbstractComponentGUI {
 
     @Override
     public Object openEditorDialogAndGetResult() {
-        SenderEditor editor = new SenderEditor();
+        SenderEditor editor = new SenderEditor(util);
         editor.setSender((Scenario.Sender) modelWrapper.retrieveModel());
         ScenarioDialogEditor dialog = new ScenarioDialogEditor(editor);
         dialog.show();

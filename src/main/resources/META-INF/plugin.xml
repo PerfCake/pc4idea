@@ -33,11 +33,11 @@
     <!-- Add your project components here -->
   </project-components>
 
-    <module-components>
-        <component>
-            <implementation-class>org.perfcake.pc4idea.module.LoggerInitializer</implementation-class>
-        </component>
-    </module-components>
+    <!--<module-components>-->
+    <!--<component>-->
+    <!--<implementation-class>org.perfcake.pc4idea.module.LoggerInitializer</implementation-class>-->
+    <!--</component>-->
+    <!--</module-components>-->
 
     <actions>
         <action id="NewPCScenario" class="org.perfcake.pc4idea.wizard.NewScenarioAction" text="PerfCake Scenario"

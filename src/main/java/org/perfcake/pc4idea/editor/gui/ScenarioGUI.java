@@ -2,6 +2,7 @@ package org.perfcake.pc4idea.editor.gui;
 
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.editor.MessagesValidationSync;
+import org.perfcake.pc4idea.editor.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.editor.colors.ColorAdjustable;
 import org.perfcake.pc4idea.editor.colors.ColorComponents;
 import org.perfcake.pc4idea.editor.colors.ColorType;
@@ -33,7 +34,10 @@ public class ScenarioGUI extends JLayeredPane implements ColorAdjustable {
     private ModelWrapper reportingModel;
     private ModelWrapper propertiesModel;
 
-    public ScenarioGUI(ActionMap actionMap){
+    private PerfCakeEditorUtil util;
+
+    public ScenarioGUI(ActionMap actionMap, PerfCakeEditorUtil util) {
+        this.util = util;
         this.setActionMap(actionMap);
 
         initComponents();
@@ -87,7 +91,7 @@ public class ScenarioGUI extends JLayeredPane implements ColorAdjustable {
 
     private void initScenarioPanel(){
         generatorModel = new GeneratorModelWrapper(this.getActionMap());
-        senderModel = new SenderModelWrapper(this.getActionMap());
+        senderModel = new SenderModelWrapper(this.getActionMap(), util);
         messagesModel = new MessagesModelWrapper(this.getActionMap(), syncMV);
         validationModel = new ValidationModelWrapper(this.getActionMap(), syncMV);
         reportingModel = new ReportingModelWrapper(this.getActionMap());

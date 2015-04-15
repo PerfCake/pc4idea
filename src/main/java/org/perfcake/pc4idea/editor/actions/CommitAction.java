@@ -2,6 +2,7 @@ package org.perfcake.pc4idea.editor.actions;
 
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.editor.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.editor.editor.PerfCakeEditor;
 import org.perfcake.pc4idea.editor.manager.ScenarioManager;
 
@@ -14,16 +15,15 @@ import java.awt.event.ActionEvent;
  * Date: 4.3.2015
  */
 public class CommitAction extends AbstractAction {
-    private ScenarioManager manager;
-    private PerfCakeEditor editor;
-    public CommitAction(@NotNull ScenarioManager manager, @NotNull PerfCakeEditor editor){
-        this.manager = manager;
-        this.editor = editor;
+    private PerfCakeEditorUtil util;
+
+    public CommitAction(@NotNull PerfCakeEditorUtil util) {
+        this.util = util;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Scenario scenarioModel = editor.getComponent().getScenarioGUI().getScenarioModel();
-        manager.updateScenario(scenarioModel, e.getActionCommand());
+        Scenario scenarioModel = util.getEditor().getComponent().getScenarioGUI().getScenarioModel();
+        util.getManager().updateScenario(scenarioModel, e.getActionCommand());
     }
 }

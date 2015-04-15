@@ -1,5 +1,6 @@
 package org.perfcake.pc4idea.module;
 
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.ModuleTypeManager;
 import org.jetbrains.annotations.NonNls;
@@ -12,7 +13,7 @@ import javax.swing.*;
  */
 public class PerfCakeModuleType extends ModuleType<PerfCakeModuleBuilder> {
     @NonNls
-    private static final String ID = "PERFCAKE_MODULE";
+    public static final String ID = "PERFCAKE_MODULE";
 
     public PerfCakeModuleType() {
         super(ID);
@@ -22,9 +23,9 @@ public class PerfCakeModuleType extends ModuleType<PerfCakeModuleBuilder> {
         return (PerfCakeModuleType) ModuleTypeManager.getInstance().findByID(ID);
     }
 
-//    public static boolean isOfType(Module module) {
-//        return get(module) instanceof PerfCakeModuleType;
-//    }
+    public static boolean isOfType(Module module) {
+        return get(module) instanceof PerfCakeModuleType;
+    }
 
 
     @NotNull

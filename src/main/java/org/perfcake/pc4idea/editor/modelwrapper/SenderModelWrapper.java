@@ -2,6 +2,7 @@ package org.perfcake.pc4idea.editor.modelwrapper;
 
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.editor.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.editor.gui.AbstractComponentGUI;
 import org.perfcake.pc4idea.editor.gui.SenderGUI;
 import org.perfcake.pc4idea.editor.interfaces.CanAddProperty;
@@ -20,8 +21,8 @@ public class SenderModelWrapper implements ModelWrapper, HasGUIChildren, CanAddP
 
     private SenderGUI senderGUI;
 
-    public SenderModelWrapper(ActionMap baseActionMap){
-        senderGUI = new SenderGUI(this, baseActionMap);
+    public SenderModelWrapper(ActionMap baseActionMap, PerfCakeEditorUtil util) {
+        senderGUI = new SenderGUI(this, baseActionMap, util);
     }
 
     @Override
