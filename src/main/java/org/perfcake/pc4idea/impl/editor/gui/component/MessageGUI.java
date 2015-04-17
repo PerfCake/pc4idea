@@ -30,8 +30,8 @@ public class MessageGUI extends AbstractComponentGUI {
 
     private Dimension messageSize = new Dimension(40, 40);
 
-    public MessageGUI(MessageModelWrapper modelWrapper, MessagesModelWrapper parentModelWrapper, ActionMap actionMap) {
-        super(actionMap);
+    public MessageGUI(MessageModelWrapper modelWrapper, MessagesModelWrapper parentModelWrapper) {
+        super(parentModelWrapper.getGUI().getUtil());
         this.modelWrapper = modelWrapper;
         this.parentModelWrapper = parentModelWrapper;
         initComponents();
@@ -94,7 +94,7 @@ public class MessageGUI extends AbstractComponentGUI {
 
     @Override
     public Object openEditorDialogAndGetResult() {
-        MessageEditor editor = new MessageEditor(parentModelWrapper.getSync().getValidatorIDs());
+        MessageEditor editor = new MessageEditor(parentModelWrapper.getSync());
         editor.setMessage((Scenario.Messages.Message) modelWrapper.retrieveModel());
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();

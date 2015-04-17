@@ -5,8 +5,6 @@ import org.perfcake.pc4idea.api.editor.gui.component.AbstractComponentGUI;
 import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
 import org.perfcake.pc4idea.impl.editor.gui.component.PropertyGUI;
 
-import javax.swing.*;
-
 /**
  * Created by Stanislav Kaleta on 3/17/15.
  */
@@ -15,8 +13,8 @@ public class PropertyModelWrapper implements ModelWrapper {
 
     private PropertyGUI propertyGUI;
 
-    public PropertyModelWrapper(ModelWrapper parent, ActionMap baseActionMap){
-        propertyGUI = new PropertyGUI(this, parent, baseActionMap);
+    public PropertyModelWrapper(ModelWrapper parent) {
+        propertyGUI = new PropertyGUI(this, parent);
     }
 
     @Override

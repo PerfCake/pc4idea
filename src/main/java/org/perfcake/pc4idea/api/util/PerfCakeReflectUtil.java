@@ -45,10 +45,6 @@ public class PerfCakeReflectUtil {
         this.module = module;
     }
 
-    public PerfCakeReflectUtil() {
-        this.module = null;
-    }
-
     /**
      * Finds all not abstract subclasses in the jar file of the superclass.
      * If the module is PerfCake module, method also finds all subclasses in the lib directory.

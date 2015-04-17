@@ -1,5 +1,6 @@
 package org.perfcake.pc4idea.impl.editor.editor.component;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -10,10 +11,12 @@ import org.perfcake.model.Header;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.component.AbstractEditor;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
-import org.perfcake.pc4idea.todo.EditorTablePanel;
+import org.perfcake.pc4idea.api.editor.swing.EditorTablePanel;
+import org.perfcake.pc4idea.api.util.MessagesValidationSync;
+import org.perfcake.pc4idea.impl.editor.editor.tablemodel.AttachedValidatorsTableModel;
+import org.perfcake.pc4idea.impl.editor.editor.tablemodel.HeadersTableModel;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,9 +39,9 @@ public class MessageEditor extends AbstractEditor {
     private PropertiesEditor panelProperties;
     private AttachedValidatorsEditor panelAttachedValidators;
 
-    public MessageEditor(Set<String> usedValidatorIDSet){
+    public MessageEditor(MessagesValidationSync sync) {
         initComponents();
-        panelAttachedValidators.setUsedValidatorIDSet(usedValidatorIDSet);
+        panelAttachedValidators.setUsedValidatorIDSet(sync.getValidatorIds());
     }
 
     private void initComponents(){
@@ -49,64 +52,7 @@ public class MessageEditor extends AbstractEditor {
         textFieldMultiplicity = new JTextField(null);
         textFieldContent = new JTextField(null);
 
-        tablePanelHeaders = new EditorTablePanel(new HeadersTableModel(new ArrayList<Header>())) {
-            @Override
-            public void tableClickedActionPerformed(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3) {
-                    if (e.getClickCount() == 2) {
-                        int selectedRow = tablePanelHeaders.getTable().getSelectedRow();
-                        if (selectedRow >= 0) {
-                            HeaderEditor headerEditor = new HeaderEditor();
-                            headerEditor.setHeader(((HeadersTableModel) tablePanelHeaders.getTable().getModel()).getHeaderList().get(selectedRow));
-                            EditorDialog dialog = new EditorDialog(headerEditor);
-                            dialog.show();
-                            if (dialog.getExitCode() == 0) {
-                                ((HeadersTableModel) tablePanelHeaders.getTable().getModel()).getHeaderList().set(selectedRow, headerEditor.getHeader());
-                                tablePanelHeaders.getTable().repaint();
-                            }
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void buttonAddActionPerformed(ActionEvent e) {
-                HeaderEditor headerEditor = new HeaderEditor();
-                EditorDialog dialog = new EditorDialog(headerEditor);
-                dialog.show();
-                if (dialog.getExitCode() == 0) {
-                    Header header = headerEditor.getHeader();
-                    ((HeadersTableModel)tablePanelHeaders.getTable().getModel()).getHeaderList().add(header);
-                    tablePanelHeaders.getTable().repaint();
-                    tablePanelHeaders.getTable().revalidate();
-                }
-            }
-
-            @Override
-            public void buttonEditActionPerformed(ActionEvent e) {
-                int selectedRow = tablePanelHeaders.getTable().getSelectedRow();
-                if (selectedRow >= 0) {
-                    HeaderEditor headerEditor = new HeaderEditor();
-                    headerEditor.setHeader(((HeadersTableModel) tablePanelHeaders.getTable().getModel()).getHeaderList().get(selectedRow));
-                    EditorDialog dialog = new EditorDialog(headerEditor);
-                    dialog.show();
-                    if (dialog.getExitCode() == 0) {
-                        ((HeadersTableModel) tablePanelHeaders.getTable().getModel()).getHeaderList().set(selectedRow, headerEditor.getHeader());
-                        tablePanelHeaders.getTable().repaint();
-                    }
-                }
-            }
-
-            @Override
-            public void buttonDeleteActionPerformed(ActionEvent e) {
-                int selectedRow = tablePanelHeaders.getTable().getSelectedRow();
-                if (selectedRow >= 0) {
-                    ((HeadersTableModel)tablePanelHeaders.getTable().getModel()).getHeaderList().remove(selectedRow);
-                    tablePanelHeaders.getTable().repaint();
-                    tablePanelHeaders.getTable().revalidate();
-                }
-            }
-        };
+        tablePanelHeaders = new EditorTablePanel(new HeadersTableModel(new ArrayList<>()));
 
         panelProperties = new PropertiesEditor();
 
@@ -152,9 +98,12 @@ public class MessageEditor extends AbstractEditor {
         textFieldMessageURI.setText(message.getUri());
         textFieldMultiplicity.setText(message.getMultiplicity());
         textFieldContent.setText(message.getContent());
-        tablePanelHeaders.getTable().setModel(new HeadersTableModel(message.getHeader()));
-        panelProperties.setListProperties(message.getProperty());
+        tablePanelHeaders.setTableModel(new HeadersTableModel(message.getHeader()));
         panelAttachedValidators.setValidatorRefs(message.getValidatorRef());
+        panelProperties.setListProperties(message.getProperty());
+
+        /*TODO if Message has structure properties*/
+        panelProperties.setStructureProperties(new ArrayList<>());
     }
 
     public Scenario.Messages.Message getMessage(){
@@ -197,7 +146,7 @@ public class MessageEditor extends AbstractEditor {
             }
         }
 
-        newMessage.getHeader().addAll(((HeadersTableModel)tablePanelHeaders.getTable().getModel()).getHeaderList());
+        newMessage.getHeader().addAll(((HeadersTableModel) tablePanelHeaders.getTableModel()).getHeaderList());
         newMessage.getProperty().addAll(panelProperties.getListProperties());
         newMessage.getValidatorRef().addAll(panelAttachedValidators.getValidatorRefs());
         return newMessage;
@@ -212,44 +161,6 @@ public class MessageEditor extends AbstractEditor {
     public ValidationInfo areInsertedValuesValid() {
         // always valid
         return null;
-    }
-
-    private class HeadersTableModel extends AbstractTableModel {
-        private List<Header> headerList = new ArrayList<>();
-
-        private HeadersTableModel(List<Header> headers){
-            headerList.addAll(headers);
-        }
-
-        public List<Header> getHeaderList(){
-            return headerList;
-        }
-
-        @Override
-        public int getRowCount() {
-            return headerList.size();
-        }
-        @Override
-        public int getColumnCount() {
-            return 2;
-        }
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            Header header = headerList.get(rowIndex);
-            switch (columnIndex){
-                case 0: return header.getName();
-                case 1: return header.getValue();
-                default: return null;
-            }
-        }
-        @Override
-        public String getColumnName(int columnIndex){
-            switch (columnIndex){
-                case 0: return "Header Name";
-                case 1: return "Header Value";
-                default: return "";
-            }
-        }
     }
 
     private class AttachedValidatorsEditor extends JPanel {
@@ -270,7 +181,7 @@ public class MessageEditor extends AbstractEditor {
             scrollPaneTableAttachedValidators = ScrollPaneFactory.createScrollPane(tableAttachedValidators);
             ((DefaultTableCellRenderer)tableAttachedValidators.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.LEFT);
 
-            buttonAttach = new JButton("Attach");
+            buttonAttach = new JButton("Attach", AllIcons.General.Add);
             buttonAttach.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -298,7 +209,7 @@ public class MessageEditor extends AbstractEditor {
                 }
             });
 
-            buttonDetach = new JButton("Detach");
+            buttonDetach = new JButton("Detach", AllIcons.Actions.Delete);
             buttonDetach.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -317,8 +228,8 @@ public class MessageEditor extends AbstractEditor {
                     .addComponent(scrollPaneTableAttachedValidators)
                     .addGap(5)
                     .addGroup(layout.createParallelGroup()
-                            .addComponent(buttonAttach, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(buttonDetach, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)));
+                            .addComponent(buttonAttach, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buttonDetach, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)));
             layout.setVerticalGroup(layout.createParallelGroup()
                     .addComponent(scrollPaneTableAttachedValidators)
                     .addGroup(layout.createSequentialGroup()
@@ -336,42 +247,6 @@ public class MessageEditor extends AbstractEditor {
 
         private List<Scenario.Messages.Message.ValidatorRef> getValidatorRefs(){
             return ((AttachedValidatorsTableModel)tableAttachedValidators.getModel()).getValidatorRefList();
-        }
-
-        private class AttachedValidatorsTableModel extends AbstractTableModel {
-            private List<Scenario.Messages.Message.ValidatorRef> validatorRefList = new ArrayList<>();
-
-            private AttachedValidatorsTableModel(List<Scenario.Messages.Message.ValidatorRef> validatorRefs){
-                validatorRefList.addAll(validatorRefs);
-            }
-
-            public List<Scenario.Messages.Message.ValidatorRef> getValidatorRefList(){
-                return validatorRefList;
-            }
-
-            @Override
-            public int getRowCount() {
-                return validatorRefList.size();
-            }
-            @Override
-            public int getColumnCount() {
-                return 1;
-            }
-            @Override
-            public Object getValueAt(int rowIndex, int columnIndex) {
-                Scenario.Messages.Message.ValidatorRef validatorRef = validatorRefList.get(rowIndex);
-                switch (columnIndex){
-                    case 0: return validatorRef.getId();
-                    default: return null;
-                }
-            }
-            @Override
-            public String getColumnName(int columnIndex){
-                switch (columnIndex){
-                    case 0: return "Validator ID";
-                    default: return "";
-                }
-            }
         }
     }
 }

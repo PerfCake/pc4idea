@@ -4,6 +4,7 @@ import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.gui.component.AbstractComponentGUI;
 import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
 import org.perfcake.pc4idea.api.editor.swing.ComponentsPanel;
+import org.perfcake.pc4idea.api.util.PerfCakeEditorUtil;
 
 import javax.swing.*;
 
@@ -39,8 +40,8 @@ public class ReportingGUI extends AbstractComponentGUI /*implements HasListableC
 
     }
 
-    public ReportingGUI(ModelWrapper reportingModelWrapper, ActionMap actionMap){
-        super(actionMap);
+    public ReportingGUI(ModelWrapper reportingModelWrapper, PerfCakeEditorUtil util) {
+        super(util);
         //initComponents();
         updateColors();
     }

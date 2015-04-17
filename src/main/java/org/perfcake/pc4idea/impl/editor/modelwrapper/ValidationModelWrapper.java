@@ -6,9 +6,9 @@ import org.perfcake.pc4idea.api.editor.modelwrapper.HasGUIChildren;
 import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
 import org.perfcake.pc4idea.api.editor.modelwrapper.Togglable;
 import org.perfcake.pc4idea.api.util.MessagesValidationSync;
+import org.perfcake.pc4idea.api.util.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.impl.editor.gui.component.ValidationGUI;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +22,8 @@ public class ValidationModelWrapper implements ModelWrapper, HasGUIChildren, Tog
 
     private MessagesValidationSync sync;
 
-    public ValidationModelWrapper(ActionMap baseActionMap, MessagesValidationSync sync){
-        validationGUI = new ValidationGUI(this, baseActionMap);
+    public ValidationModelWrapper(PerfCakeEditorUtil util, MessagesValidationSync sync) {
+        validationGUI = new ValidationGUI(this, util);
         this.sync = sync;
     }
 
@@ -54,7 +54,7 @@ public class ValidationModelWrapper implements ModelWrapper, HasGUIChildren, Tog
     public List<ModelWrapper> getChildrenModels() {
         List<ModelWrapper> childrenModelList = new ArrayList<>();
         for (Scenario.Validation.Validator validator : validationModel.getValidator()){
-            ModelWrapper validatorModelWrapper = new ValidatorModelWrapper(this, validationGUI.getBaseActionMap());
+            ModelWrapper validatorModelWrapper = new ValidatorModelWrapper(this);
             validatorModelWrapper.updateModel(validator);
             validatorModelWrapper.getGUI().updateGUI();
             childrenModelList.add(validatorModelWrapper);

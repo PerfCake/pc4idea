@@ -9,6 +9,7 @@ import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.component.AbstractEditor;
+import org.perfcake.pc4idea.api.util.MessagesValidationSync;
 import org.perfcake.pc4idea.impl.editor.editor.component.*;
 
 import javax.swing.*;
@@ -26,7 +27,7 @@ import java.util.TreeSet;
  * Date: 13.11.2014
  */
 class WizardPanel extends JPanel {
-    private JList<String> wizardStepList;
+    private JBList wizardStepList;
     private JPanel panelEditors;
 
     private Map<Integer, AbstractEditor> editors;
@@ -35,12 +36,13 @@ class WizardPanel extends JPanel {
 
     private WizardDialog.WizardEvent wizardEvent;
 
-    @NotNull
     private Module module;
+    MessagesValidationSync sync;
 
-    WizardPanel(String defaultURI, Module module) {
+    WizardPanel(String defaultURI, @NotNull Module module) {
         this.module = module;
         this.defaultURI = defaultURI;
+        sync = new MessagesValidationSync();
         initComponents();
         this.setPreferredSize(new Dimension(480, 240));
     }
@@ -48,17 +50,34 @@ class WizardPanel extends JPanel {
     private void initComponents() {
         editors = new HashMap<>();
         editors.put(0, new URIEditor(defaultURI));
-        editors.put(1, new GeneratorEditor());
+        editors.put(1, new GeneratorEditor(module));
         editors.put(2, new SenderEditor(module));
-        editors.put(3, new MessagesEditor());
-        editors.put(4, new ReportingEditor());
-        editors.put(5, new ValidationEditor(null));
+        editors.put(3, new MessagesEditor(sync));
+        editors.put(4, new ReportingEditor(module));
+        editors.put(5, new ValidationEditor(module, sync));
         editors.put(6, new PropertiesEditor());
+
+        sync.setWizardMode((MessagesEditor) editors.get(3), (ValidationEditor) editors.get(5));
 
         panelEditors = new JPanel(new GridLayout(1, 1));
         panelEditors.add(editors.get(0));
 
-        wizardStepList = new JBList(new String[]{"Scenario", "Generator", "Sender", "Messages", "Reporting", "Validation", "Properties"});
+        ListModel<String> model = new AbstractListModel<String>() {
+            private final String[] steps = new String[]{"Scenario", "Generator", "Sender", "Messages",
+                    "Reporting", "Validation", "Properties"};
+
+            @Override
+            public int getSize() {
+                return steps.length;
+            }
+
+            @Override
+            public String getElementAt(int index) {
+                return steps[index];
+            }
+        };
+        wizardStepList = new JBList(model);
+
         wizardStepList.setCellRenderer(new DefaultListCellRenderer() {
             private boolean isSelected = false;
 
@@ -158,36 +177,8 @@ class WizardPanel extends JPanel {
     protected void selectEditor(int pointer) {
         panelEditors.removeAll();
 
-        if (pointer == 5) {
-            Set<String> attachedIDs = new TreeSet<>();
-            for (Scenario.Messages.Message message : ((MessagesEditor) editors.get(3)).getMessages().getMessage()) {
-                for (Scenario.Messages.Message.ValidatorRef validatorRef : message.getValidatorRef()) {
-                    attachedIDs.add(validatorRef.getId());
-                }
-            }
-            Scenario.Validation validation = ((ValidationEditor) editors.get(5)).getValidation();
-
-            Set<String> usedIDSet = new TreeSet<>();
-            for (Scenario.Validation.Validator validator : validation.getValidator()) {
-                usedIDSet.add(validator.getId());
-            }
-
-            ValidationEditor editor = new ValidationEditor(attachedIDs, usedIDSet);
-            editor.setValidation(validation);
-            editors.put(5, editor);
-        }
-        if (pointer == 3) {
-            Scenario.Messages messages = ((MessagesEditor) editors.get(3)).getMessages();
-
-            Set<String> usedIDSet = new TreeSet<>();
-            for (Scenario.Validation.Validator validator : ((ValidationEditor) editors.get(5)).getValidation().getValidator()) {
-                usedIDSet.add(validator.getId());
-            }
-
-            MessagesEditor editor = new MessagesEditor();
-            editor.setMessages(messages, usedIDSet);
-
-            editors.put(3, editor);
+        if (pointer == 5 || pointer == 3) {
+            sync.syncValidatorRef();
         }
 
         panelEditors.add(editors.get(pointer));
@@ -200,13 +191,13 @@ class WizardPanel extends JPanel {
     protected ValidationInfo areRequiredPartsInserted() {
         ValidationInfo info = null;
         if (editors.get(2).areInsertedValuesValid() != null) {
-            info = new ValidationInfo("Sender todo isn't complete : " + editors.get(2).areInsertedValuesValid().message);
+            info = new ValidationInfo("Sender editor isn't complete : " + editors.get(2).areInsertedValuesValid().message);
         }
         if (editors.get(1).areInsertedValuesValid() != null) {
-            info = new ValidationInfo("Generator todo isn't complete : " + editors.get(1).areInsertedValuesValid().message);
+            info = new ValidationInfo("Generator editor isn't complete : " + editors.get(1).areInsertedValuesValid().message);
         }
         if (editors.get(0).areInsertedValuesValid() != null) {
-            info = new ValidationInfo("Scenario todo isn't complete : " + editors.get(0).areInsertedValuesValid().message);
+            info = new ValidationInfo("Scenario editor isn't complete : " + editors.get(0).areInsertedValuesValid().message);
         }
         return info;
     }

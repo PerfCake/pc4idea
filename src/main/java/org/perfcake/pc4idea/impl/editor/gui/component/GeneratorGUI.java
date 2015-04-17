@@ -5,6 +5,7 @@ import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
 import org.perfcake.pc4idea.api.editor.gui.component.AbstractComponentGUI;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
+import org.perfcake.pc4idea.api.util.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.impl.editor.actions.AddPropertyAction;
 import org.perfcake.pc4idea.impl.editor.actions.EditAction;
 import org.perfcake.pc4idea.impl.editor.editor.component.GeneratorEditor;
@@ -28,8 +29,9 @@ public class GeneratorGUI extends AbstractComponentGUI {
 
     private int minimumWidth = 0;
 
-    public GeneratorGUI(GeneratorModelWrapper modelWrapper, ActionMap baseActionMap){
-        super(baseActionMap);
+
+    public GeneratorGUI(GeneratorModelWrapper modelWrapper, PerfCakeEditorUtil util) {
+        super(util);
         this.modelWrapper = modelWrapper;
         initComponents();
         updateColors();
@@ -72,7 +74,7 @@ public class GeneratorGUI extends AbstractComponentGUI {
 
     @Override
     public Object openEditorDialogAndGetResult() {
-        GeneratorEditor editor = new GeneratorEditor();
+        GeneratorEditor editor = new GeneratorEditor(getUtil().getModule());
         editor.setGenerator((Scenario.Generator) modelWrapper.retrieveModel());
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();

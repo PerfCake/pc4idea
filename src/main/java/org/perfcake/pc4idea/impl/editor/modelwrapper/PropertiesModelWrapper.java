@@ -6,9 +6,9 @@ import org.perfcake.pc4idea.api.editor.gui.component.AbstractComponentGUI;
 import org.perfcake.pc4idea.api.editor.modelwrapper.CanAddProperty;
 import org.perfcake.pc4idea.api.editor.modelwrapper.HasGUIChildren;
 import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
+import org.perfcake.pc4idea.api.util.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.impl.editor.gui.component.PropertiesGUI;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +20,8 @@ public class PropertiesModelWrapper implements ModelWrapper, HasGUIChildren, Can
 
     private PropertiesGUI propertiesGUI;
 
-    public PropertiesModelWrapper(ActionMap baseActionMap){
-        propertiesGUI = new PropertiesGUI(this, baseActionMap);
+    public PropertiesModelWrapper(PerfCakeEditorUtil util) {
+        propertiesGUI = new PropertiesGUI(this, util);
     }
 
 
@@ -50,7 +50,7 @@ public class PropertiesModelWrapper implements ModelWrapper, HasGUIChildren, Can
     public List<ModelWrapper> getChildrenModels() {
         List<ModelWrapper> childrenModelList = new ArrayList<>();
         for (Property property : propertiesModel.getProperty()){
-            ModelWrapper propertyModelWrapper = new PropertyModelWrapper(this, propertiesGUI.getBaseActionMap());
+            ModelWrapper propertyModelWrapper = new PropertyModelWrapper(this);
             propertyModelWrapper.updateModel(property);
             propertyModelWrapper.getGUI().updateGUI();
             childrenModelList.add(propertyModelWrapper);

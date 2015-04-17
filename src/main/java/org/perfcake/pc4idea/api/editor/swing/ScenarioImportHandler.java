@@ -1,5 +1,7 @@
 package org.perfcake.pc4idea.api.editor.swing;
 
+import com.intellij.openapi.diagnostic.Logger;
+
 import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -12,9 +14,10 @@ import java.io.IOException;
  * Date: 22.11.2014
  */
 public abstract class ScenarioImportHandler extends TransferHandler{
+    private static final Logger LOG = Logger.getInstance(ScenarioImportHandler.class);
+
     @Override
     public boolean canImport(TransferSupport support){
-        //support.setDropAction(COPY);
         return support.isDataFlavorSupported(DataFlavor.stringFlavor);
     }
 
@@ -27,10 +30,8 @@ public abstract class ScenarioImportHandler extends TransferHandler{
         String transferredData = "";
         try {
             transferredData = (String)t.getTransferData(DataFlavor.stringFlavor);
-        } catch (UnsupportedFlavorException e) {
-            e.printStackTrace();   /*TODO log*/
-        } catch (IOException e) {
-            e.printStackTrace();   /*TODO log*/
+        } catch (UnsupportedFlavorException | IOException e) {
+            LOG.error(e.getMessage());
         }
 
         performImport(transferredData);

@@ -8,8 +8,6 @@ import org.perfcake.pc4idea.api.editor.modelwrapper.CanAddProperty;
 import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
 import org.perfcake.pc4idea.impl.editor.gui.component.MessageGUI;
 
-import javax.swing.*;
-
 /**
  * Created by Stanislav Kaleta on 3/27/15.
  */
@@ -19,9 +17,9 @@ public class MessageModelWrapper implements ModelWrapper, CanAddProperty {
 
     private MessageGUI messageGUI;
 
-    public MessageModelWrapper(MessagesModelWrapper parent, ActionMap baseActionMap){
+    public MessageModelWrapper(MessagesModelWrapper parent) {
         this.parent = parent;
-        messageGUI = new MessageGUI(this, parent, baseActionMap);
+        messageGUI = new MessageGUI(this, parent);
     }
 
     @Override
@@ -65,7 +63,7 @@ public class MessageModelWrapper implements ModelWrapper, CanAddProperty {
         if (ref == null) {
             throw new NullPointerException("validator ref to add is null");
         }
-        if (!parent.getSync().getValidatorIDs().contains(ref.getId())) {
+        if (!parent.getSync().getValidatorIds().contains(ref.getId())) {
             throw new IllegalArgumentException("validator with id " + ref.getId() + " does not exists");
         }
         messageModel.getValidatorRef().add(ref);

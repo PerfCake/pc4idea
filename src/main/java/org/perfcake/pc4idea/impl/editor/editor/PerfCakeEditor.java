@@ -17,13 +17,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.LightVirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.manager.ScenarioManager;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
 import org.perfcake.pc4idea.api.util.PerfCakeEditorUtil;
-import org.perfcake.pc4idea.impl.editor.actions.CommitAction;
-import org.perfcake.pc4idea.impl.editor.actions.RedoAction;
-import org.perfcake.pc4idea.impl.editor.actions.UndoAction;
 import org.perfcake.pc4idea.impl.editor.gui.PerfCakeEditorGUI;
 import org.perfcake.pc4idea.todo.Messages;
 
@@ -67,13 +63,8 @@ public class PerfCakeEditor implements FileEditor { /*TODO UNDO/REDO/externa zme
             throw new IllegalArgumentException("No module for file " + file + " in project " + project);
         }
 
-        ActionMap baseActionMap = new ActionMap();
         PerfCakeEditorUtil editorUtil = new PerfCakeEditorUtil(project, file, module, this, manager);
-        baseActionMap.put(ActionType.COMMIT, new CommitAction(editorUtil));
-        baseActionMap.put(ActionType.UNDO, new UndoAction());
-        baseActionMap.put(ActionType.REDO, new RedoAction());
-
-        editorGUI = new PerfCakeEditorGUI(baseActionMap, editorUtil);
+        editorGUI = new PerfCakeEditorGUI(editorUtil);
         setUpEditor();
     }
 

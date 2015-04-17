@@ -34,12 +34,9 @@ public class SenderGUI extends AbstractComponentGUI {
 
     private int labelSenderClassWidth = 0;
 
-    private PerfCakeEditorUtil util;
-
-    public SenderGUI(SenderModelWrapper modelWrapper, ActionMap baseActionMap, PerfCakeEditorUtil util) {
-        super(baseActionMap);
+    public SenderGUI(SenderModelWrapper modelWrapper, PerfCakeEditorUtil util) {
+        super(util);
         this.modelWrapper = modelWrapper;
-        this.util = util;
         initComponents();
         updateColors();
     }
@@ -85,7 +82,7 @@ public class SenderGUI extends AbstractComponentGUI {
 
     @Override
     public Object openEditorDialogAndGetResult() {
-        SenderEditor editor = new SenderEditor(util.getModule());
+        SenderEditor editor = new SenderEditor(getUtil().getModule());
         editor.setSender((Scenario.Sender) modelWrapper.retrieveModel());
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();

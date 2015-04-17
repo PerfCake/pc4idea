@@ -6,6 +6,7 @@ import org.perfcake.pc4idea.api.editor.color.ColorType;
 import org.perfcake.pc4idea.api.editor.gui.component.AbstractComponentGUI;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.editor.swing.ComponentsPanel;
+import org.perfcake.pc4idea.api.util.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.impl.editor.actions.AddMessageAction;
 import org.perfcake.pc4idea.impl.editor.actions.EditAction;
 import org.perfcake.pc4idea.impl.editor.actions.ReorderAction;
@@ -30,8 +31,8 @@ public class MessagesGUI extends AbstractComponentGUI {/*TODO attach validator*/
 
     private int labelMessagesWidth = 0;
 
-    public MessagesGUI(MessagesModelWrapper modelWrapper, ActionMap baseActionMap){
-        super(baseActionMap);
+    public MessagesGUI(MessagesModelWrapper modelWrapper, PerfCakeEditorUtil util) {
+        super(util);
         this.modelWrapper = modelWrapper;
         initComponents();
         updateColors();
@@ -86,9 +87,9 @@ public class MessagesGUI extends AbstractComponentGUI {/*TODO attach validator*/
 
     @Override
     public Object openEditorDialogAndGetResult() {
-        MessagesEditor editor = new MessagesEditor();
+        MessagesEditor editor = new MessagesEditor(modelWrapper.getSync());
         Scenario.Messages model = (Scenario.Messages) modelWrapper.retrieveModel();
-        editor.setMessages((model == null) ? new Scenario.Messages() : model, modelWrapper.getSync().getValidatorIDs());
+        editor.setMessages((model == null) ? new Scenario.Messages() : model);
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {

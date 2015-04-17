@@ -5,9 +5,9 @@ import org.perfcake.pc4idea.api.editor.gui.component.AbstractComponentGUI;
 import org.perfcake.pc4idea.api.editor.modelwrapper.HasGUIChildren;
 import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
 import org.perfcake.pc4idea.api.util.MessagesValidationSync;
+import org.perfcake.pc4idea.api.util.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.impl.editor.gui.component.MessagesGUI;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +21,8 @@ public class MessagesModelWrapper implements ModelWrapper, HasGUIChildren {
 
     private MessagesValidationSync sync;
 
-    public MessagesModelWrapper(ActionMap baseActionMap, MessagesValidationSync sync) {
-        messagesGUI = new MessagesGUI(this, baseActionMap);
+    public MessagesModelWrapper(PerfCakeEditorUtil util, MessagesValidationSync sync) {
+        messagesGUI = new MessagesGUI(this, util);
         this.sync = sync;
     }
 
@@ -52,7 +52,7 @@ public class MessagesModelWrapper implements ModelWrapper, HasGUIChildren {
     public List<ModelWrapper> getChildrenModels() {
         List<ModelWrapper> childrenModelList = new ArrayList<>();
         for (Scenario.Messages.Message message : messagesModel.getMessage()){
-            ModelWrapper messageModelWrapper = new MessageModelWrapper(this, messagesGUI.getBaseActionMap());
+            ModelWrapper messageModelWrapper = new MessageModelWrapper(this);
             messageModelWrapper.updateModel(message);
             messageModelWrapper.getGUI().updateGUI();
             childrenModelList.add(messageModelWrapper);

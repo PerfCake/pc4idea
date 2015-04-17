@@ -27,11 +27,11 @@ public class AddValidatorAction extends AbstractAction {
     }
 
     public void actionPerformedWrapper(String validatorClass){
-        ValidatorEditor editor = new ValidatorEditor(target.getSync().getValidatorIDs());
+        ValidatorEditor editor = new ValidatorEditor(target.getGUI().getUtil().getModule(), target.getSync());
         if (validatorClass != null){
             Scenario.Validation.Validator validator = new Scenario.Validation.Validator();
             validator.setClazz(validatorClass);
-            editor.setValidator(validator, false);
+            editor.setValidator(validator);
         }
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();

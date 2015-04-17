@@ -9,7 +9,6 @@ import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
 import org.perfcake.pc4idea.api.util.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.impl.editor.gui.component.SenderGUI;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +20,8 @@ public class SenderModelWrapper implements ModelWrapper, HasGUIChildren, CanAddP
 
     private SenderGUI senderGUI;
 
-    public SenderModelWrapper(ActionMap baseActionMap, PerfCakeEditorUtil util) {
-        senderGUI = new SenderGUI(this, baseActionMap, util);
+    public SenderModelWrapper(PerfCakeEditorUtil util) {
+        senderGUI = new SenderGUI(this, util);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class SenderModelWrapper implements ModelWrapper, HasGUIChildren, CanAddP
     public List<ModelWrapper> getChildrenModels() {
         List<ModelWrapper> childrenModelList = new ArrayList<>();
         for (Property property : senderModel.getProperty()){
-            ModelWrapper propertyModelWrapper = new PropertyModelWrapper(this, senderGUI.getBaseActionMap());
+            ModelWrapper propertyModelWrapper = new PropertyModelWrapper(this);
             propertyModelWrapper.updateModel(property);
             propertyModelWrapper.getGUI().updateGUI();
             childrenModelList.add(propertyModelWrapper);

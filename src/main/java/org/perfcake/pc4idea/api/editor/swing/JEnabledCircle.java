@@ -4,6 +4,7 @@ import org.perfcake.pc4idea.api.editor.swing.plaf.EnabledCircleUI;
 import org.perfcake.pc4idea.impl.editor.actions.ToggleAction;
 
 import javax.swing.*;
+import javax.swing.plaf.PanelUI;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -42,27 +43,31 @@ public class JEnabledCircle extends JPanel {
         repaint();
     }
 
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
     }
 
+    @Override
     public String getUIClassID() {
         return uiClassID;
     }
 
+    @Override
     public EnabledCircleUI getUI() {
         return (EnabledCircleUI) ui;
     }
 
-    public void setUI(EnabledCircleUI ui) {
+    @Override
+    public void setUI(PanelUI ui) {
         super.setUI(ui);
     }
 
+    @Override
     public void updateUI() {
         if (UIManager.get(getUIClassID()) != null) {
             setUI((EnabledCircleUI) UIManager.getUI(this));
         } else {
-            //fallback if UIDefaults table was not set
             setUI(new EnabledCircleUI());
         }
     }

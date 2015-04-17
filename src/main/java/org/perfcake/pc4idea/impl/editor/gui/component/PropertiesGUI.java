@@ -6,6 +6,7 @@ import org.perfcake.pc4idea.api.editor.color.ColorType;
 import org.perfcake.pc4idea.api.editor.gui.component.AbstractComponentGUI;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.editor.swing.ComponentsPanel;
+import org.perfcake.pc4idea.api.util.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.impl.editor.actions.AddPropertyAction;
 import org.perfcake.pc4idea.impl.editor.actions.EditAction;
 import org.perfcake.pc4idea.impl.editor.actions.ReorderAction;
@@ -30,8 +31,8 @@ public class PropertiesGUI extends AbstractComponentGUI {
 
     private int labelPropertiesWidth = 0;
 
-    public PropertiesGUI(PropertiesModelWrapper modelWrapper, ActionMap baseActionMap){
-        super(baseActionMap);
+    public PropertiesGUI(PropertiesModelWrapper modelWrapper, PerfCakeEditorUtil util) {
+        super(util);
         this.modelWrapper = modelWrapper;
         initComponents();
         updateColors();

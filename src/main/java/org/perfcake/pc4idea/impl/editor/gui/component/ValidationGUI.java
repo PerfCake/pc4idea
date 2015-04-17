@@ -8,6 +8,7 @@ import org.perfcake.pc4idea.api.editor.gui.component.AbstractComponentGUI;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.editor.swing.ComponentsPanel;
 import org.perfcake.pc4idea.api.editor.swing.JEnabledCircle;
+import org.perfcake.pc4idea.api.util.PerfCakeEditorUtil;
 import org.perfcake.pc4idea.impl.editor.actions.AddValidatorAction;
 import org.perfcake.pc4idea.impl.editor.actions.EditAction;
 import org.perfcake.pc4idea.impl.editor.actions.ReorderAction;
@@ -34,8 +35,8 @@ public class ValidationGUI extends AbstractComponentGUI {
 
     private int labelValidationWidth = 0;
 
-    public ValidationGUI(ValidationModelWrapper modelWrapper, ActionMap baseActionMap){
-        super(baseActionMap);
+    public ValidationGUI(ValidationModelWrapper modelWrapper, PerfCakeEditorUtil util) {
+        super(util);
         this.modelWrapper = modelWrapper;
         initComponents();
         updateColors();
@@ -106,7 +107,7 @@ public class ValidationGUI extends AbstractComponentGUI {
 
     @Override
     public Object openEditorDialogAndGetResult() {
-        ValidationEditor editor = new ValidationEditor(modelWrapper.getSync());
+        ValidationEditor editor = new ValidationEditor(getUtil().getModule(), modelWrapper.getSync());
         Scenario.Validation model = (Scenario.Validation) modelWrapper.retrieveModel();
         editor.setValidation((model == null) ? new Scenario.Validation() : model);
         EditorDialog dialog = new EditorDialog(editor);

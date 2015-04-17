@@ -23,7 +23,7 @@ public class AddMessageAction extends AbstractAction {
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        MessageEditor editor = new MessageEditor(target.getSync().getValidatorIDs());
+        MessageEditor editor = new MessageEditor(target.getSync());
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {

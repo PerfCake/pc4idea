@@ -5,8 +5,8 @@ import org.perfcake.pc4idea.api.editor.color.ColorAdjustable;
 import org.perfcake.pc4idea.api.editor.swing.JRoundedRectangle;
 import org.perfcake.pc4idea.api.editor.swing.ScenarioImportHandler;
 import org.perfcake.pc4idea.api.editor.swing.ScenarioPopupMenu;
+import org.perfcake.pc4idea.api.util.PerfCakeEditorUtil;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -17,12 +17,12 @@ import java.awt.event.MouseEvent;
  * Date: 3.3.2015
  */
 public abstract class AbstractComponentGUI extends JRoundedRectangle implements ColorAdjustable {
-    private ActionMap baseActionMap;
-    public AbstractComponentGUI(ActionMap actionMap) {
-        this.baseActionMap = actionMap;
-        for (Object o : actionMap.allKeys()){
-            this.getActionMap().put(o,actionMap.get(o));
-        }
+    private PerfCakeEditorUtil util;
+
+    public AbstractComponentGUI(PerfCakeEditorUtil util) {
+        this.util = util;
+
+        this.setActionMap(util.getBaseActionMap());
 
         this.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
@@ -34,12 +34,6 @@ public abstract class AbstractComponentGUI extends JRoundedRectangle implements 
                 if (evt.getButton() == MouseEvent.BUTTON3) {
                     ScenarioPopupMenu popupMenu = new ScenarioPopupMenu(getActionMap());
                     popupMenu.show(AbstractComponentGUI.this, evt.getX(), evt.getY());
-                    System.out.print(AbstractComponentGUI.this.getClass() + " = ");
-                    for (Object s : AbstractComponentGUI.this.getActionMap().allKeys()) {
-                        System.out.print(s + " | ");
-                    }
-                    System.out.println();/*TODO*/
-
                 }
             }
         });
@@ -52,9 +46,10 @@ public abstract class AbstractComponentGUI extends JRoundedRectangle implements 
         });
     }
 
-    public ActionMap getBaseActionMap(){
-        return baseActionMap;
+    public PerfCakeEditorUtil getUtil() {
+        return util;
     }
+
     public void commitChanges(String message){
         getActionMap().get(ActionType.COMMIT).actionPerformed(new ActionEvent(this,1, message));
     }

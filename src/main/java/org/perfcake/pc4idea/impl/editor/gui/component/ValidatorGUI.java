@@ -34,8 +34,8 @@ public class ValidatorGUI extends AbstractComponentGUI {
 
     private Dimension validatorSize = new Dimension(40,40);
 
-    public ValidatorGUI(ValidatorModelWrapper modelWrapper, ValidationModelWrapper parentModelWrapper, ActionMap actionMap) {
-        super(actionMap);
+    public ValidatorGUI(ValidatorModelWrapper modelWrapper, ValidationModelWrapper parentModelWrapper) {
+        super(parentModelWrapper.getGUI().getUtil());
         this.modelWrapper = modelWrapper;
         this.parentModelWrapper = parentModelWrapper;
         initComponents();
@@ -91,10 +91,8 @@ public class ValidatorGUI extends AbstractComponentGUI {
     @Override
     public Object openEditorDialogAndGetResult() {
         MessagesValidationSync sync = parentModelWrapper.getSync();
-        ValidatorEditor editor = new ValidatorEditor(sync.getValidatorIDs());
-        Set<String> attachedValidatorIDs = sync.getAttachedValidatorIDs();
-        Scenario.Validation.Validator validator = (Scenario.Validation.Validator) modelWrapper.retrieveModel();
-        editor.setValidator(validator,attachedValidatorIDs.contains(validator.getId()));
+        ValidatorEditor editor = new ValidatorEditor(getUtil().getModule(), parentModelWrapper.getSync());
+        editor.setValidator((Scenario.Validation.Validator) modelWrapper.retrieveModel());
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {

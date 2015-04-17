@@ -3,6 +3,7 @@ package org.perfcake.pc4idea.api.editor.swing;
 import org.perfcake.pc4idea.api.editor.swing.plaf.RoundedRectangleUI;
 
 import javax.swing.*;
+import javax.swing.plaf.PanelUI;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -10,20 +11,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * Created by miron on 15.4.2014.
+ * Created by miron on 15.4.2014. + me
  */
 public class JRoundedRectangle extends JPanel {
     private static final String uiClassID = "RoundedRectangleUI";
     private Boolean selected = Boolean.FALSE;
 
     public JRoundedRectangle() {
-        //set default layout
-        //setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         setLayout(new BorderLayout());
-        //this component is rounded, so we will set opacity to false to see background in corners
         setOpaque(Boolean.FALSE);
 
-        //add selection support
         setFocusable(true);
         addFocusListener(new FocusAdapter() {
             @Override
@@ -44,23 +41,26 @@ public class JRoundedRectangle extends JPanel {
         });
     }
 
+    @Override
     public String getUIClassID() {
         return uiClassID;
     }
 
+    @Override
     public RoundedRectangleUI getUI() {
         return (RoundedRectangleUI) ui;
     }
 
-    public void setUI(RoundedRectangleUI ui) {
+    @Override
+    public void setUI(PanelUI ui) {
         super.setUI(ui);
     }
 
+    @Override
     public void updateUI() {
         if (UIManager.get(getUIClassID()) != null) {
             setUI((RoundedRectangleUI) UIManager.getUI(this));
         } else {
-            //fallback if UIDefaults table was not set
             setUI(new RoundedRectangleUI());
         }
 

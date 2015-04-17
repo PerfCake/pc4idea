@@ -8,8 +8,6 @@ import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
 import org.perfcake.pc4idea.api.util.MessagesValidationSync;
 import org.perfcake.pc4idea.impl.editor.gui.component.ValidatorGUI;
 
-import javax.swing.*;
-
 /**
  * Created by Stanislav Kaleta on 3/31/15.
  */
@@ -19,8 +17,8 @@ public class ValidatorModelWrapper implements ModelWrapper, CanAddProperty {
     private ValidatorGUI validatorGUI;
     private MessagesValidationSync sync;
 
-    public ValidatorModelWrapper(ValidationModelWrapper parent, ActionMap baseActionMap) {
-        validatorGUI = new ValidatorGUI(this, parent, baseActionMap);
+    public ValidatorModelWrapper(ValidationModelWrapper parent) {
+        validatorGUI = new ValidatorGUI(this, parent);
         sync = parent.getSync();
     }
 

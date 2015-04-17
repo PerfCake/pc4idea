@@ -1,9 +1,10 @@
 package org.perfcake.pc4idea.impl.editor.editor.tablemodel;
 
-import org.perfcake.model.Property;
+import com.intellij.openapi.module.Module;
+import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.tablemodel.EditorTableModel;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
-import org.perfcake.pc4idea.impl.editor.editor.component.PropertyEditor;
+import org.perfcake.pc4idea.impl.editor.editor.component.ReporterEditor;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
@@ -12,20 +13,22 @@ import java.util.List;
 /**
  * Created by Stanislav Kaleta on 4/17/15.
  */
-public class PropertiesTableModel extends AbstractTableModel implements EditorTableModel {
-    private List<Property> propertyList = new ArrayList<>();
+public class ReportersTableModel extends AbstractTableModel implements EditorTableModel {
+    private List<Scenario.Reporting.Reporter> reporterList = new ArrayList<>();
+    private Module module;
 
-    public PropertiesTableModel(List<Property> properties) {
-        propertyList.addAll(properties);
+    public ReportersTableModel(List<Scenario.Reporting.Reporter> reporters, Module module) {
+        reporterList.addAll(reporters);
+        this.module = module;
     }
 
-    public List<Property> getPropertyList() {
-        return propertyList;
+    public List<Scenario.Reporting.Reporter> getReporterList() {
+        return reporterList;
     }
 
     @Override
     public int getRowCount() {
-        return propertyList.size();
+        return reporterList.size();
     }
 
     @Override
@@ -35,12 +38,12 @@ public class PropertiesTableModel extends AbstractTableModel implements EditorTa
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Property property = propertyList.get(rowIndex);
+        Scenario.Reporting.Reporter reporter = reporterList.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                return property.getName();
+                return reporter.isEnabled();
             case 1:
-                return property.getValue();
+                return reporter.getClazz();
             default:
                 return null;
         }
@@ -50,9 +53,9 @@ public class PropertiesTableModel extends AbstractTableModel implements EditorTa
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return "Property Name";
+                return "Enabled";
             case 1:
-                return "Property Value";
+                return "Reporter type";
             default:
                 return "";
         }
@@ -60,38 +63,39 @@ public class PropertiesTableModel extends AbstractTableModel implements EditorTa
 
     @Override
     public void reorderRows(int fromIndex, int toIndex) {
-        Property property = propertyList.get(fromIndex);
-        propertyList.remove(property);
-        propertyList.add(toIndex, property);
+        Scenario.Reporting.Reporter reporter = reporterList.get(fromIndex);
+        reporterList.remove(fromIndex);
+        reporterList.add(toIndex, reporter);
     }
 
     @Override
     public void addRow() {
-        PropertyEditor editor = new PropertyEditor();
+        ReporterEditor editor = new ReporterEditor(module);
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {
-            Property property = editor.getProperty();
-            propertyList.add(property);
+            Scenario.Reporting.Reporter reporter = editor.getReporter();
+            reporterList.add(reporter);
             fireTableDataChanged();
         }
     }
 
     @Override
     public void editRow(int row) {
-        PropertyEditor editor = new PropertyEditor();
-        editor.setProperty(propertyList.get(row));
+        ReporterEditor editor = new ReporterEditor(module);
+        editor.setReporter(reporterList.get(row));
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {
-            propertyList.set(row, editor.getProperty());
+            Scenario.Reporting.Reporter reporter = editor.getReporter();
+            reporterList.set(row, reporter);
             fireTableDataChanged();
         }
     }
 
     @Override
     public void deleteRow(int row) {
-        propertyList.remove(row);
+        reporterList.remove(row);
         fireTableDataChanged();
     }
 }

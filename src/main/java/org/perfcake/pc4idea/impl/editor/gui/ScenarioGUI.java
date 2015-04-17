@@ -36,10 +36,8 @@ public class ScenarioGUI extends JLayeredPane implements ColorAdjustable {
 
     private PerfCakeEditorUtil util;
 
-    public ScenarioGUI(ActionMap actionMap, PerfCakeEditorUtil util) {
+    public ScenarioGUI(PerfCakeEditorUtil util) {
         this.util = util;
-        this.setActionMap(actionMap);
-
         initComponents();
         initScenarioPanel();
         updateColors();
@@ -86,18 +84,19 @@ public class ScenarioGUI extends JLayeredPane implements ColorAdjustable {
                 SpringLayout.SOUTH,labelError);
 
 
-        syncMV = new MessagesValidationSync(layerDependencies);
+        syncMV = new MessagesValidationSync();
     }
 
     private void initScenarioPanel(){
-        generatorModel = new GeneratorModelWrapper(this.getActionMap());
-        senderModel = new SenderModelWrapper(this.getActionMap(), util);
-        messagesModel = new MessagesModelWrapper(this.getActionMap(), syncMV);
-        validationModel = new ValidationModelWrapper(this.getActionMap(), syncMV);
-        reportingModel = new ReportingModelWrapper(this.getActionMap());
-        propertiesModel = new PropertiesModelWrapper(this.getActionMap());
+        generatorModel = new GeneratorModelWrapper(util);
+        senderModel = new SenderModelWrapper(util);
+        messagesModel = new MessagesModelWrapper(util, syncMV);
+        validationModel = new ValidationModelWrapper(util, syncMV);
+        reportingModel = new ReportingModelWrapper(util);
+        propertiesModel = new PropertiesModelWrapper(util);
 
-        syncMV.setModels((MessagesModelWrapper) messagesModel, (ValidationModelWrapper) validationModel);
+        syncMV.setEditorMode((MessagesModelWrapper) messagesModel,
+                (ValidationModelWrapper) validationModel, layerDependencies);
 
         GroupLayout scenarioLayout = new GroupLayout(layerScenario);
         layerScenario.setLayout(scenarioLayout);

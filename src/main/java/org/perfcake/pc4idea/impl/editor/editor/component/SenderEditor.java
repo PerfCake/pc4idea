@@ -3,17 +3,14 @@ package org.perfcake.pc4idea.impl.editor.editor.component;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.ui.ScrollPaneFactory;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.component.AbstractEditor;
-import org.perfcake.pc4idea.api.editor.swing.SenderPropertiesTable;
 import org.perfcake.pc4idea.api.util.PerfCakeReflectUtil;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 /**
@@ -23,8 +20,7 @@ import java.util.List;
  */
 public class SenderEditor extends AbstractEditor {
     private JComboBox comboBoxSenderType;
-    private SenderPropertiesTable senderPropertiesTable;
-    private JScrollPane scrollPaneTable;
+    private PropertiesEditor panelProperties;
 
     private Module module;
 
@@ -39,19 +35,17 @@ public class SenderEditor extends AbstractEditor {
         String[] senders = new PerfCakeReflectUtil(module).findComponentClassNames(PerfCakeReflectUtil.SENDER);
         comboBoxSenderType = new ComboBox(new DefaultComboBoxModel<>(senders));
         comboBoxSenderType.setSelectedIndex(-1);
-        comboBoxSenderType.addItemListener(new ItemListener() {
+        comboBoxSenderType.addActionListener(new ActionListener() {
             @Override
-            public void itemStateChanged(ItemEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 String className = (String) comboBoxSenderType.getSelectedItem();
                 PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(module);
-                List<Property> properties = reflectUtil.findComponentProperties(PerfCakeReflectUtil.SENDER, className);
-                senderPropertiesTable.setStructureProperties(properties);
+                List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.SENDER, className);
+                panelProperties.setStructureProperties(structureProp);
             }
         });
 
-        senderPropertiesTable = new SenderPropertiesTable();
-        scrollPaneTable = ScrollPaneFactory.createScrollPane(senderPropertiesTable);
-        scrollPaneTable.setMinimumSize(new Dimension(scrollPaneTable.getMinimumSize().width, 100));
+        panelProperties = new PropertiesEditor();
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -59,29 +53,28 @@ public class SenderEditor extends AbstractEditor {
                 .addGroup(layout.createSequentialGroup()
                         .addComponent(labelSenderType, GroupLayout.PREFERRED_SIZE, 90, GroupLayout.PREFERRED_SIZE)
                         .addComponent(comboBoxSenderType))
-                .addComponent(scrollPaneTable));
+                .addComponent(panelProperties));
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup()
                         .addComponent(labelSenderType, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
                         .addComponent(comboBoxSenderType, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
                 .addGap(10)
-                .addComponent(scrollPaneTable));
+                .addComponent(panelProperties));
     }
 
     public void setSender(Scenario.Sender sender){
         comboBoxSenderType.setSelectedItem(sender.getClazz());
-
-        senderPropertiesTable.setModelProperties(sender.getProperty());
+        panelProperties.setListProperties(sender.getProperty());
 
         PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(module);
-        List<Property> properties = reflectUtil.findComponentProperties(PerfCakeReflectUtil.SENDER, sender.getClazz());
-        senderPropertiesTable.setStructureProperties(properties);
+        List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.SENDER, sender.getClazz());
+        panelProperties.setStructureProperties(structureProp);
     }
 
     public Scenario.Sender getSender(){
         Scenario.Sender newSender = new Scenario.Sender();
         newSender.setClazz((String)comboBoxSenderType.getSelectedItem());
-        newSender.getProperty().addAll(senderPropertiesTable.getProperties());
+        newSender.getProperty().addAll(panelProperties.getListProperties());
         return newSender;
     }
 

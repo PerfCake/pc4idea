@@ -2,25 +2,23 @@ package org.perfcake.pc4idea.api.editor.swing;
 
 import com.intellij.ui.table.JBTable;
 import org.perfcake.model.Property;
-import org.perfcake.pc4idea.impl.editor.editor.tablemodel.PropertiesTableModel;
+import org.perfcake.pc4idea.impl.editor.editor.tablemodel.StructurePropertiesTableModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Stanislav Kaleta on 4/15/15.
  */
-public class SenderPropertiesTable extends JBTable {
+public class StructurePropertiesTable extends JBTable {
     private List<Property> modelPropertyList = new ArrayList<>();
     private List<Property> structurePropertyList = new ArrayList<>();
 
-    public SenderPropertiesTable() {
-        this.setModel(new PropertiesTableModel());
+    public StructurePropertiesTable() {
+        this.setModel(new StructurePropertiesTableModel(new ArrayList<>(), new ArrayList<>()));
         this.getTableHeader().setReorderingAllowed(false);
 
 
@@ -29,7 +27,7 @@ public class SenderPropertiesTable extends JBTable {
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-                PropertiesTableModel model = (PropertiesTableModel) table.getModel();
+                StructurePropertiesTableModel model = (StructurePropertiesTableModel) table.getModel();
                 String hint = (String) model.getValueAt(row, 2);
                 float bgBrightness = 1f;
                 float fgBrightness = 0.5f;
@@ -63,16 +61,6 @@ public class SenderPropertiesTable extends JBTable {
         this.getColumnModel().getColumn(2).setCellRenderer(defaultRenderer);
 
         ((DefaultTableCellRenderer) this.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.LEFT);
-
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int selectedRow = SenderPropertiesTable.this.getSelectedRow();
-                if (selectedRow >= 0) {
-                    /*TODO edit*/
-                }
-            }
-        });
     }
 
 
@@ -84,10 +72,6 @@ public class SenderPropertiesTable extends JBTable {
     public void setStructureProperties(List<Property> structurePropertyList) {
         this.structurePropertyList = structurePropertyList;
         update();
-    }
-
-    public List<Property> getProperties() {
-        return modelPropertyList;
     }
 
     private void update() {
@@ -126,7 +110,8 @@ public class SenderPropertiesTable extends JBTable {
             }
         }
 
-        ((PropertiesTableModel) this.getModel()).updateModel(tableHints, tableProperties);
+        ((StructurePropertiesTableModel) this.getModel()).getHints().addAll(tableHints);
+        ((StructurePropertiesTableModel) this.getModel()).getProperties().addAll(tableProperties);
         this.revalidate();
         this.repaint();
     }

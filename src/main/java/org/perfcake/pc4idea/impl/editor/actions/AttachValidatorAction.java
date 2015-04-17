@@ -27,7 +27,7 @@ public class AttachValidatorAction extends AbstractAction {
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        Set<String> unattachedIDs = sync.getUnattachedValidatorIDs((Scenario.Messages.Message) target.retrieveModel());
+        Set<String> unattachedIDs = sync.getUnattachedValidatorIds((Scenario.Messages.Message) target.retrieveModel());
         AttachValidatorEditor editor = new AttachValidatorEditor(unattachedIDs);
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();

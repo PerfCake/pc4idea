@@ -22,7 +22,7 @@ import java.awt.datatransfer.Transferable;
  * Date: 27.2.2015
  */
 public class PerfCakeEditorGUI extends JPanel {
-    private static final Logger LOG = Logger.getInstance("#...todo.PerfCakeEditorGUI");
+    private static final Logger LOG = Logger.getInstance(PerfCakeEditorGUI.class);
 
     private JBSplitter jbSplitter;
     private JScrollPane scrollPaneMenu;
@@ -33,11 +33,8 @@ public class PerfCakeEditorGUI extends JPanel {
 
     private ScenarioGUI scenarioGUI;
 
-    private PerfCakeEditorUtil util;
-
-    public PerfCakeEditorGUI(@NotNull ActionMap baseActionMap, PerfCakeEditorUtil util) {
-        this.setActionMap(baseActionMap);
-        this.util = util;
+    public PerfCakeEditorGUI(@NotNull PerfCakeEditorUtil util) {
+        scenarioGUI = new ScenarioGUI(util);
         initComponents();
 
         this.setLayout(new GridLayout(1,1));
@@ -49,7 +46,7 @@ public class PerfCakeEditorGUI extends JPanel {
         panelMenu = new JPanel();
         scrollPaneMenu = ScrollPaneFactory.createScrollPane(panelMenu);
         additiveComponentsTree = new Tree(new DefaultTreeModel(new DefaultMutableTreeNode("root")));
-        scenarioGUI = new ScenarioGUI(this.getActionMap(), util);
+
         scrollPaneScenario = ScrollPaneFactory.createScrollPane(scenarioGUI);
 
         jbSplitter.setFirstComponent(scrollPaneMenu);
@@ -60,7 +57,7 @@ public class PerfCakeEditorGUI extends JPanel {
         panelMenu.add(additiveComponentsTree);
         panelMenu.setBackground(EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground());
 
-        PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil();
+        PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(null);
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) additiveComponentsTree.getModel().getRoot();
 
         DefaultMutableTreeNode messages = new DefaultMutableTreeNode("Messages");

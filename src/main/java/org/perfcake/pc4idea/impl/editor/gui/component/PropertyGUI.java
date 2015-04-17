@@ -31,8 +31,8 @@ public class PropertyGUI extends AbstractComponentGUI {
 
     private Dimension propertySize = new Dimension(40, 40);
 
-    public PropertyGUI(ModelWrapper modelWrapper, ModelWrapper parentModelWrapper, ActionMap baseActionMap) {
-        super(baseActionMap);
+    public PropertyGUI(ModelWrapper modelWrapper, ModelWrapper parentModelWrapper) {
+        super(parentModelWrapper.getGUI().getUtil());
         this.modelWrapper = modelWrapper;
         this.parentModelWrapper = parentModelWrapper;
         initComponents();

@@ -1,19 +1,19 @@
 package org.perfcake.pc4idea.impl.editor.editor.component;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.component.AbstractEditor;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
-import org.perfcake.pc4idea.todo.EditorTablePanel;
+import org.perfcake.pc4idea.api.editor.swing.EditorTablePanel;
+import org.perfcake.pc4idea.impl.editor.editor.tablemodel.ReportersTableModel;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,71 +25,15 @@ public class ReportingEditor extends AbstractEditor {
     private PropertiesEditor panelProperties;
 
     private boolean warningShown = false;
+    private Module module;
 
-    public ReportingEditor(){
+    public ReportingEditor(Module module) {
+        this.module = module;
         initComponents();
     }
 
     private void initComponents(){
-        tablePanelReporters = new EditorTablePanel(new ReportersTableModel(new ArrayList<>())) {
-            @Override
-            public void tableClickedActionPerformed(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3) {
-                    if (e.getClickCount() == 2) {
-                        int selectedRow = tablePanelReporters.getTable().getSelectedRow();
-                        if (selectedRow >= 0) {
-                            ReporterEditor reporterEditor = new ReporterEditor();
-
-                            reporterEditor.setReporter(((ReportersTableModel) tablePanelReporters.getTable().getModel()).getReporterList().get(selectedRow));
-                            EditorDialog dialog = new EditorDialog(reporterEditor);
-                            dialog.show();
-                            if (dialog.getExitCode() == 0) {
-                                ((ReportersTableModel) tablePanelReporters.getTable().getModel()).getReporterList().set(selectedRow, reporterEditor.getReporter());
-                                tablePanelReporters.getTable().repaint();
-                            }
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void buttonAddActionPerformed(ActionEvent e) {
-                ReporterEditor reporterEditor = new ReporterEditor();
-                EditorDialog dialog = new EditorDialog(reporterEditor);
-                dialog.show();
-                if (dialog.getExitCode() == 0) {
-                    Scenario.Reporting.Reporter reporter = reporterEditor.getReporter();
-                    ((ReportersTableModel)tablePanelReporters.getTable().getModel()).getReporterList().add(reporter);
-                    tablePanelReporters.getTable().repaint();
-                    tablePanelReporters.getTable().revalidate();
-                }
-            }
-
-            @Override
-            public void buttonEditActionPerformed(ActionEvent e) {
-                int selectedRow = tablePanelReporters.getTable().getSelectedRow();
-                if (selectedRow >= 0) {
-                    ReporterEditor reporterEditor = new ReporterEditor();
-                    reporterEditor.setReporter(((ReportersTableModel) tablePanelReporters.getTable().getModel()).getReporterList().get(selectedRow));
-                    EditorDialog dialog = new EditorDialog(reporterEditor);
-                    dialog.show();
-                    if (dialog.getExitCode() == 0) {
-                        ((ReportersTableModel) tablePanelReporters.getTable().getModel()).getReporterList().set(selectedRow, reporterEditor.getReporter());
-                        tablePanelReporters.getTable().repaint();
-                    }
-                }
-            }
-
-            @Override
-            public void buttonDeleteActionPerformed(ActionEvent e) {
-                int selectedRow = tablePanelReporters.getTable().getSelectedRow();
-                if (selectedRow >= 0) {
-                    ((ReportersTableModel)tablePanelReporters.getTable().getModel()).getReporterList().remove(selectedRow);
-                    tablePanelReporters.getTable().repaint();
-                    tablePanelReporters.getTable().revalidate();
-                }
-            }
-        };
+        tablePanelReporters = new EditorTablePanel(new ReportersTableModel(new ArrayList<>(), module));
 
         panelProperties = new PropertiesEditor();
 
@@ -105,13 +49,16 @@ public class ReportingEditor extends AbstractEditor {
     }
 
     public void setReporting(Scenario.Reporting reporting){
-        tablePanelReporters.getTable().setModel(new ReportersTableModel(reporting.getReporter()));
+        tablePanelReporters.setTableModel(new ReportersTableModel(reporting.getReporter(), module));
         panelProperties.setListProperties(reporting.getProperty());
+
+        /*TODO if Reporting has structure properties*/
+        panelProperties.setStructureProperties(new ArrayList<>());
     }
 
     public Scenario.Reporting getReporting(){
         Scenario.Reporting newReporting = new Scenario.Reporting();
-        newReporting.getReporter().addAll(((ReportersTableModel) tablePanelReporters.getTable().getModel()).getReporterList());
+        newReporting.getReporter().addAll(((ReportersTableModel) tablePanelReporters.getTableModel()).getReporterList());
         newReporting.getProperty().addAll(panelProperties.getListProperties());
         return newReporting;
     }
@@ -124,7 +71,7 @@ public class ReportingEditor extends AbstractEditor {
     @Override
     public ValidationInfo areInsertedValuesValid() {
         ValidationInfo info = null;
-        boolean noneReporter = ((ReportersTableModel) tablePanelReporters.getTable().getModel()).getReporterList().isEmpty();
+        boolean noneReporter = ((ReportersTableModel) tablePanelReporters.getTableModel()).getReporterList().isEmpty();
 
         if (noneReporter && !panelProperties.getListProperties().isEmpty() && !warningShown){
             int result = Messages.showYesNoDialog("There are no reporters, but there are some properties\n" +
@@ -139,43 +86,5 @@ public class ReportingEditor extends AbstractEditor {
         }
 
         return info;
-    }
-
-    private class ReportersTableModel extends AbstractTableModel {
-        private List<Scenario.Reporting.Reporter> reporterList = new ArrayList<>();
-
-        private ReportersTableModel(List<Scenario.Reporting.Reporter> reporters){
-            reporterList.addAll(reporters);
-        }
-
-        public List<Scenario.Reporting.Reporter> getReporterList(){
-            return reporterList;
-        }
-
-        @Override
-        public int getRowCount() {
-            return reporterList.size();
-        }
-        @Override
-        public int getColumnCount() {
-            return 2;
-        }
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            Scenario.Reporting.Reporter reporter = reporterList.get(rowIndex);
-            switch (columnIndex){
-                case 0: return reporter.isEnabled();
-                case 1: return reporter.getClazz();
-                default: return null;
-            }
-        }
-        @Override
-        public String getColumnName(int columnIndex){
-            switch (columnIndex){
-                case 0: return "Enabled";
-                case 1: return "Reporter type";
-                default: return "";
-            }
-        }
     }
 }

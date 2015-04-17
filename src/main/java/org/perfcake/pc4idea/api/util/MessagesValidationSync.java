@@ -1,8 +1,12 @@
 package org.perfcake.pc4idea.api.util;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.swing.DependenciesPanel;
+import org.perfcake.pc4idea.impl.editor.editor.component.MessagesEditor;
+import org.perfcake.pc4idea.impl.editor.editor.component.ValidationEditor;
 import org.perfcake.pc4idea.impl.editor.gui.component.MessagesGUI;
 import org.perfcake.pc4idea.impl.editor.gui.component.ValidationGUI;
 import org.perfcake.pc4idea.impl.editor.modelwrapper.MessagesModelWrapper;
@@ -17,25 +21,81 @@ import java.util.TreeSet;
  * Created by Stanislav Kaleta on 3/27/15.
  */
 public class MessagesValidationSync {
+    private static final Logger LOG = Logger.getInstance(MessagesValidationSync.class);
+
     private MessagesModelWrapper messagesModelWrapper;
     private ValidationModelWrapper validationModelWrapper;
     private DependenciesPanel dependenciesPanel;
+    private MessagesEditor messagesEditor;
+    private ValidationEditor validationEditor;
 
+    private Boolean isEditorMode;
 
-    public MessagesValidationSync(DependenciesPanel dependenciesPanel){
-        this.dependenciesPanel = dependenciesPanel;
-
-
+    public MessagesValidationSync() {
+        isEditorMode = null;
     }
 
-    public void setModels(MessagesModelWrapper messagesModelWrapper, ValidationModelWrapper validationModelWrapper){
+    /**
+     * @param messagesEditor
+     * @param validationEditor
+     */
+    public void setWizardMode(@NotNull MessagesEditor messagesEditor,
+                              @NotNull ValidationEditor validationEditor) {
+        this.messagesEditor = messagesEditor;
+        this.validationEditor = validationEditor;
+        isEditorMode = Boolean.FALSE;
+        messagesModelWrapper = null;
+        validationModelWrapper = null;
+        dependenciesPanel = null;
+    }
+
+    /**
+     *
+     * @param messagesModelWrapper
+     * @param validationModelWrapper
+     * @param dependenciesPanel
+     */
+    public void setEditorMode(@NotNull MessagesModelWrapper messagesModelWrapper,
+                              @NotNull ValidationModelWrapper validationModelWrapper,
+                              @NotNull DependenciesPanel dependenciesPanel) {
         this.messagesModelWrapper = messagesModelWrapper;
         this.validationModelWrapper = validationModelWrapper;
+        this.dependenciesPanel = dependenciesPanel;
+        isEditorMode = Boolean.TRUE;
+        messagesEditor = null;
+        validationEditor = null;
     }
 
-    public Set<String> getValidatorIDs(){
+    private Scenario.Validation getValidationModel() {
+        if (isEditorMode == null) {
+            LOG.error("One of Editor or Wizard mode must be selected!");
+            return null;
+        }
+        if (isEditorMode) {
+            return (Scenario.Validation) validationModelWrapper.retrieveModel();
+        } else {
+            return validationEditor.getValidation();
+        }
+    }
+
+    private Scenario.Messages getMessagesModel() {
+        if (isEditorMode == null) {
+            LOG.error("One of Editor or Wizard mode must be selected!");
+            return null;
+        }
+        if (isEditorMode) {
+            return (Scenario.Messages) messagesModelWrapper.retrieveModel();
+        } else {
+            return messagesEditor.getMessages();
+        }
+    }
+
+    /**
+     * @return
+     */
+    public Set<String> getValidatorIds() {
         Set<String> iDSet = new TreeSet<>();
-        Scenario.Validation validation = (Scenario.Validation) validationModelWrapper.retrieveModel();
+        Scenario.Validation validation = getValidationModel();
         if (validation != null) {
             for (Scenario.Validation.Validator validator : validation.getValidator()) {
                 iDSet.add(validator.getId());
@@ -44,8 +104,13 @@ public class MessagesValidationSync {
         return iDSet;
     }
 
-    public Set<String> getUnattachedValidatorIDs(Scenario.Messages.Message message){
-        Set<String> allIDs = this.getValidatorIDs();
+    /**
+     *
+     * @param message
+     * @return
+     */
+    public Set<String> getUnattachedValidatorIds(Scenario.Messages.Message message) {
+        Set<String> allIDs = this.getValidatorIds();
         Set<String> notAttachedIDs = new TreeSet<>();
         for (String id : allIDs){
             boolean isRef = false;
@@ -61,9 +126,13 @@ public class MessagesValidationSync {
         return notAttachedIDs;
     }
 
-    public Set<String> getAttachedValidatorIDs(){
+    /**
+     *
+     * @return
+     */
+    public Set<String> getAttachedValidatorIds() {
         Set<String> attachedIDs = new TreeSet<>();
-        Scenario.Messages messages = (Scenario.Messages) messagesModelWrapper.retrieveModel();
+        Scenario.Messages messages = getMessagesModel();
         if (messages != null) {
             for (Scenario.Messages.Message message : messages.getMessage()) {
                 for (Scenario.Messages.Message.ValidatorRef validatorRef : message.getValidatorRef()) {
@@ -74,8 +143,11 @@ public class MessagesValidationSync {
         return attachedIDs;
     }
 
+    /**
+     *
+     */
     public void syncValidatorRef() {
-       Scenario.Messages messages = (Scenario.Messages) messagesModelWrapper.retrieveModel();
+       Scenario.Messages messages = getMessagesModel();
         if (messages != null){
             for (Scenario.Messages.Message message : messages.getMessage()){
                 java.util.List<Scenario.Messages.Message.ValidatorRef> tempList = new ArrayList<>();
@@ -83,7 +155,7 @@ public class MessagesValidationSync {
 
                 for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()){
                     boolean refIsValid = false;
-                    for (String id : this.getValidatorIDs()){
+                    for (String id : this.getValidatorIds()) {
                         if (id.equals(ref.getId())){
                             refIsValid = true;
                         }
@@ -98,8 +170,32 @@ public class MessagesValidationSync {
         }
     }
 
+    /**
+     *
+     * @param validator
+     * @return
+     */
+    public boolean isValidatorAttached(Scenario.Validation.Validator validator) {
+        return this.getAttachedValidatorIds().contains(validator.getId());
+    }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public boolean isIdUsed(String id) {
+        return this.getValidatorIds().contains(id);
+    }
+
+    /**
+     *
+     */
     public void repaintDependencies(){
+        if (!isEditorMode) {
+            LOG.error("dependency lines isn't allowed in wizard mode!");
+            return;
+        }
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
             public void run() {
