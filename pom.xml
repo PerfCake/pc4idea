@@ -91,7 +91,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                    <descriptor>assemblyDescriptor.xml</descriptor>
+                    <descriptor>assembly.xml</descriptor>
                     <finalName>PerfCakePlugin</finalName>
                 </configuration>
                 <executions>

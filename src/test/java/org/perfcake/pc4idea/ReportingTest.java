@@ -5,9 +5,9 @@ import com.intellij.openapi.fileEditor.FileEditorProvider;
 import com.intellij.openapi.fileEditor.ex.FileEditorProviderManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import org.perfcake.pc4idea.editor.editor.PerfCakeEditor;
-import org.perfcake.pc4idea.editor.editor.PerfCakeEditorProvider;
-import org.perfcake.pc4idea.editor.modelwrapper.SenderModelWrapper;
+import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditor;
+import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditorProvider;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.SenderModelWrapper;
 
 import java.io.File;
 
@@ -31,7 +31,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
             }
         }
         if (pcProvider == null) {
-            throw new AssertionError("Error setting up editor - cant find PerfCakeEditorProvider instance");
+            throw new AssertionError("Error setting up todo - cant find PerfCakeEditorProvider instance");
         }
         assertTrue(pcProvider.accept(getProject(), file));
         PerfCakeEditor editor = (PerfCakeEditor) pcProvider.createEditor(getProject(), file);

@@ -19,10 +19,10 @@
     -->
 
   <extensions defaultExtensionNs="com.intellij">
-      <fileEditorProvider implementation="org.perfcake.pc4idea.editor.editor.PerfCakeEditorProvider"/>
-      <applicationConfigurable instance="org.perfcake.pc4idea.module.PerfCakeIdeSettings"/>
-      <moduleType id="PERFCAKE_MODULE" implementationClass="org.perfcake.pc4idea.module.PerfCakeModuleType"/>
-      <fileIconPatcher implementation="org.perfcake.pc4idea.module.PerfCakeIconPatcher"/>
+      <fileEditorProvider implementation="org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditorProvider"/>
+      <applicationConfigurable instance="org.perfcake.pc4idea.todo.settings.PerfCakeIdeSettings"/>
+      <moduleType id="PERFCAKE_MODULE" implementationClass="org.perfcake.pc4idea.impl.module.PerfCakeModuleType"/>
+      <fileIconPatcher implementation="org.perfcake.pc4idea.impl.module.PerfCakeIconPatcher"/>
   </extensions>
 
   <application-components>
@@ -35,12 +35,12 @@
 
     <!--<module-components>-->
     <!--<component>-->
-    <!--<implementation-class>org.perfcake.pc4idea.module.LoggerInitializer</implementation-class>-->
+    <!--<implementation-class>org.perfcake.pc4idea.todo.LoggerInitializer</implementation-class>-->
     <!--</component>-->
     <!--</module-components>-->
 
     <actions>
-        <action id="NewPCScenario" class="org.perfcake.pc4idea.wizard.NewScenarioAction" text="PerfCake Scenario"
+        <action id="NewPCScenario" class="org.perfcake.pc4idea.impl.wizard.NewScenarioAction" text="PerfCake Scenario"
                 description="Create new PerfCake Scenario">
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>
