@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenario xmlns="urn:perfcake:scenario:4.0">
+    <properties>
+        <property name="p1" value="v1"/>
+        <property name="p2" value="v2"/>
+        <property name="p3" value="v3"/>
+        <property name="px" value="vx"/>
+        <property name="newName" value="newValue"/>
+    </properties>
+    <generator class="DefaultMessageGenerator" threads="10">
+        <run type="time" value="10"/>
+        <property name="name" value="value"/>
+    </generator>
+    <sender class="PlainSocketSender">
+        <property name="target" value="value"/>
+    </sender>
+</scenario>

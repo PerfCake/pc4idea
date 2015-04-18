@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenario xmlns="urn:perfcake:scenario:4.0">
+    <generator class="DefaultMessageGenerator" threads="10">
+        <run type="time" value="10"/>
+        <property name="first_property" value="changedValue"/>
+        <property name="third_property" value="third_value"/>
+        <property name="newProperty" value="newValue"/>
+    </generator>
+    <sender class="PlainSocketSender">
+        <property name="target" value="value"/>
+    </sender>
+</scenario>

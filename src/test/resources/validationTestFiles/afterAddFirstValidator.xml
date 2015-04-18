@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenario xmlns="urn:perfcake:scenario:4.0">
+    <properties>
+        <property name="p" value="v"/>
+    </properties>
+    <generator class="DefaultMessageGenerator" threads="10">
+        <run type="time" value="10"/>
+        <property name="name" value="value"/>
+    </generator>
+    <sender class="PlainSocketSender">
+        <property name="target" value="value"/>
+    </sender>
+    <messages>
+        <message uri="a" multiplicity="1"/>
+    </messages>
+    <validation>
+        <validator id="added" class="RulesValidator"/>
+    </validation>
+</scenario>

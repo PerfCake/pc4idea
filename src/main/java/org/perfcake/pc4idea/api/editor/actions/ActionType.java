@@ -1,0 +1,9 @@
+package org.perfcake.pc4idea.api.editor.actions;
+
+/**
+ * Created by Stanislav Kaleta on 3/16/15.
+ */
+public enum ActionType {
+    UNDO, REDO, COMMIT, EDIT, ADDP, DEL, ADDM, ADDH,
+    ATTV, ADDV, TOGGLE, REORDER, ADDR, ADDD, ADDPE
+}

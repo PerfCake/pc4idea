@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenario xmlns="urn:perfcake:scenario:4.0">
+    <properties>
+        <property name="p" value="v"/>
+    </properties>
+    <generator class="DefaultMessageGenerator" threads="10">
+        <run type="time" value="10"/>
+        <property name="name" value="value"/>
+    </generator>
+    <sender class="PlainSocketSender">
+        <property name="target" value="value"/>
+    </sender>
+    <messages>
+        <message uri="1" multiplicity="1">
+            <validatorRef id="attached"/>
+        </message>
+    </messages>
+    <validation enabled="false" fastForward="false">
+        <validator id="1" class="DictionaryValidator"/>
+        <validator id="prop" class="ScriptValidator">
+            <property name="a" value="newValue"/>
+            <property name="newName" value="b"/>
+            <property name="newName" value="newValue"/>
+            <property name="x" value="x"/>
+        </validator>
+        <validator id="attached" class="DictionaryValidator"/>
+    </validation>
+</scenario>

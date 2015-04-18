@@ -1,40 +1,46 @@
 <idea-plugin version="2">
-    <id>org.perfcake</id>
+    <id>org.perfcake.pc4idea</id>
     <name>PerfCake Plugin</name>
-    <version>3.3</version>
+    <version>4.0</version>
     <vendor email="kstanleykale@gmail.com">Stanislav Kaleta</vendor>
 
-    <description>
-        <![CDATA[Enter short description for your plugin here.]]>
-    </description>
 
-    <change-notes>
-        <![CDATA[ Add change notes here.]]>
-    </change-notes>
-
-    <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-    <idea-version since-build="131"/>  <!--until-build="135"-->
+    <description> <!--TODO--> </description>
 
 
-    <extensions defaultExtensionNs="com.intellij">
-        <moduleType id="PERFCAKE_MODULE" implementationClass="org.perfcake.pc4idea.module.PCModuleType"/>
-        <fileEditorProvider implementation="org.perfcake.pc4idea.editor.PerfCakeEditorProvider"/>
-        <fileIconPatcher implementation="org.perfcake.pc4idea.editor.designer.common.PerfCakeIconPatcher"/>
-        <runConfigurationProducer implementation="org.perfcake.pc4idea.configuration.PCRunConfigurationProducer"/>
-        <configurationType implementation="org.perfcake.pc4idea.configuration.PCConfigurationType"/>
-        <programRunner implementation="org.perfcake.pc4idea.execution.PCProgramRunner"/>
-    </extensions>
+    <change-notes> <!--TODO--> </change-notes>
 
-    <application-components>
-        <!-- Add your application comp here -->
-    </application-components>
+  <idea-version since-build="131"/>
 
-    <project-components>
-        <!-- Add your project comp here -->
-    </project-components>
+  <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends> TODO
+    -->
+
+  <extensions defaultExtensionNs="com.intellij">
+      <fileEditorProvider implementation="org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditorProvider"/>
+      <applicationConfigurable instance="org.perfcake.pc4idea.todo.settings.PerfCakeIdeSettings"/>
+      <moduleType id="PERFCAKE_MODULE" implementationClass="org.perfcake.pc4idea.impl.module.PerfCakeModuleType"/>
+      <fileIconPatcher implementation="org.perfcake.pc4idea.impl.module.PerfCakeIconPatcher"/>
+  </extensions>
+
+  <application-components>
+    <!-- Add your application components here --> <!--TODO register .dsl to .txt-->
+  </application-components>
+
+  <project-components>
+    <!-- Add your project components here -->
+  </project-components>
+
+    <!--<module-components>-->
+    <!--<component>-->
+    <!--<implementation-class>org.perfcake.pc4idea.todo.LoggerInitializer</implementation-class>-->
+    <!--</component>-->
+    <!--</module-components>-->
 
     <actions>
-        <action id="NewPCScenario" class="org.perfcake.pc4idea.wizard.NewScenarioAction" text="PerfCake Scenario"
+        <action id="NewPCScenario" class="org.perfcake.pc4idea.impl.wizard.NewScenarioAction" text="PerfCake Scenario"
                 description="Create new PerfCake Scenario">
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>
