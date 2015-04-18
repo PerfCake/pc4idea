@@ -10,7 +10,6 @@ import org.perfcake.pc4idea.impl.editor.editor.component.ValidatorEditor;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Stanislav Kaleta on 4/17/15.

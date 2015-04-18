@@ -14,6 +14,7 @@ import java.util.List;
  */
 public class PropertiesTableModel extends AbstractTableModel implements EditorTableModel {
     private List<Property> propertyList = new ArrayList<>();
+    private List<String> structurePropertyNames = null;
 
     public PropertiesTableModel(List<Property> properties) {
         propertyList.addAll(properties);
@@ -21,6 +22,27 @@ public class PropertiesTableModel extends AbstractTableModel implements EditorTa
 
     public List<Property> getPropertyList() {
         return propertyList;
+    }
+
+    public void setStructureProperties(List<Property> structureProperties) {
+        structurePropertyNames = new ArrayList<>();
+        for (Property p : structureProperties) {
+            structurePropertyNames.add(p.getName());
+        }
+    }
+
+    public Boolean isPropertyValid(int row) {
+        if (structurePropertyNames == null) {
+            return null;
+        } else {
+            boolean isValid = false;
+            for (String structPropName : structurePropertyNames) {
+                if (structPropName.equals(propertyList.get(row).getName())) {
+                    isValid = true;
+                }
+            }
+            return isValid;
+        }
     }
 
     @Override
@@ -67,7 +89,14 @@ public class PropertiesTableModel extends AbstractTableModel implements EditorTa
 
     @Override
     public void addRow() {
-        PropertyEditor editor = new PropertyEditor();
+        PropertyEditor editor;
+        if (structurePropertyNames != null) {
+            String[] hints = new String[]{};
+            hints = structurePropertyNames.toArray(hints);
+            editor = new PropertyEditor(hints);
+        } else {
+            editor = new PropertyEditor();
+        }
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {
@@ -79,7 +108,15 @@ public class PropertiesTableModel extends AbstractTableModel implements EditorTa
 
     @Override
     public void editRow(int row) {
-        PropertyEditor editor = new PropertyEditor();
+        PropertyEditor editor;
+        if (structurePropertyNames != null) {
+            String[] hints = new String[]{};
+            hints = structurePropertyNames.toArray(hints);
+            System.out.print(structurePropertyNames.size() + " vs " + hints.length);
+            editor = new PropertyEditor(hints);
+        } else {
+            editor = new PropertyEditor();
+        }
         editor.setProperty(propertyList.get(row));
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();

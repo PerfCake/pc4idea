@@ -1,24 +1,15 @@
 package org.perfcake.pc4idea.impl.editor.editor.component;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.component.AbstractEditor;
-import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.editor.swing.EditorTablePanel;
 import org.perfcake.pc4idea.api.util.MessagesValidationSync;
 import org.perfcake.pc4idea.impl.editor.editor.tablemodel.ValidatorsTableModel;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Created with IntelliJ IDEA.

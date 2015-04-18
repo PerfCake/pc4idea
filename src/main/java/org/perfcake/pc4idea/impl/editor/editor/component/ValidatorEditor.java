@@ -16,7 +16,6 @@ import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,9 +30,12 @@ public class ValidatorEditor extends AbstractEditor {
     private Module module;
     private MessagesValidationSync sync;
 
+    private String idBefore;
+
     public ValidatorEditor(Module module, MessagesValidationSync sync) {
         this.module = module;
         this.sync = sync;
+        idBefore = null;
         initComponents();
     }
 
@@ -88,6 +90,8 @@ public class ValidatorEditor extends AbstractEditor {
         List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.VALIDATOR, validator.getClazz());
         panelProperties.setStructureProperties(structureProp);
 
+        idBefore = validator.getId();
+
         if (sync.isValidatorAttached(validator)) {
             textFieldId.getDocument().addDocumentListener(new DocumentListener() {
                 private boolean warningShown = false;
@@ -120,7 +124,6 @@ public class ValidatorEditor extends AbstractEditor {
                 }
             });
         }
-
     }
 
     public Scenario.Validation.Validator getValidator(){
@@ -139,7 +142,7 @@ public class ValidatorEditor extends AbstractEditor {
     @Override
     public ValidationInfo areInsertedValuesValid() {
         ValidationInfo info = null;
-        if (sync.isIdUsed(textFieldId.getText())) {
+        if (sync.isIdUsed(textFieldId.getText()) && !textFieldId.getText().equals(idBefore)) {
             info = new ValidationInfo("ID must be unique! \"" + textFieldId.getText() + "\" is already used.");
         }
         if (textFieldId.getText().isEmpty()) {

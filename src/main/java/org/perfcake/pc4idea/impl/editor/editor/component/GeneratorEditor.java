@@ -52,7 +52,7 @@ public class GeneratorEditor extends AbstractEditor {
         });
 
         String[] runs = new String[]{"iteration", "time", "percentage"};
-        comboBoxRunType = new ComboBox(new DefaultComboBoxModel<>(generators));
+        comboBoxRunType = new ComboBox(new DefaultComboBoxModel<>(runs));
         comboBoxRunType.setSelectedIndex(-1);
         textFieldRunValue = new JTextField();
         textFieldNumOfThreads = new JTextField();

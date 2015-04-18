@@ -17,6 +17,8 @@ public class StructurePropertiesTable extends JBTable {
     private List<Property> modelPropertyList = new ArrayList<>();
     private List<Property> structurePropertyList = new ArrayList<>();
 
+    private int height = 0;
+
     public StructurePropertiesTable() {
         this.setModel(new StructurePropertiesTableModel(new ArrayList<>(), new ArrayList<>()));
         this.getTableHeader().setReorderingAllowed(false);
@@ -78,21 +80,6 @@ public class StructurePropertiesTable extends JBTable {
         List<Property> tableProperties = new ArrayList<>();
         List<String> tableHints = new ArrayList<>();
 
-        for (Property modelP : modelPropertyList) {
-            boolean isValidProperty = false;
-            for (Property structureP : structurePropertyList) {
-                if (modelP.getName().equals(structureP.getName())) {
-                    isValidProperty = true;
-                }
-            }
-            tableProperties.add(modelP);
-            if (isValidProperty) {
-                tableHints.add("ok");
-            } else {
-                tableHints.add("wrong");
-            }
-        }
-
         for (Property structureP : structurePropertyList) {
             boolean isSet = false;
             for (Property modelP : modelPropertyList) {
@@ -109,10 +96,19 @@ public class StructurePropertiesTable extends JBTable {
                 }
             }
         }
-
-        ((StructurePropertiesTableModel) this.getModel()).getHints().addAll(tableHints);
-        ((StructurePropertiesTableModel) this.getModel()).getProperties().addAll(tableProperties);
+        height = this.getRowHeight() * (tableProperties.size() + 1);
+        StructurePropertiesTableModel model = (StructurePropertiesTableModel) this.getModel();
+        model.getProperties().clear();
+        model.getProperties().addAll(tableProperties);
+        model.getHints().clear();
+        model.getHints().addAll(tableHints);
         this.revalidate();
         this.repaint();
     }
+
+    @Override
+    public Dimension getMinimumSize() {
+        return new Dimension(super.getMinimumSize().width, height);
+    }
+
 }

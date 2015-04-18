@@ -9,8 +9,6 @@ import org.perfcake.pc4idea.impl.editor.editor.tablemodel.MessagesTableModel;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Created with IntelliJ IDEA.

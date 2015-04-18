@@ -7,7 +7,6 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.table.JBTable;
-import org.perfcake.model.Header;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.component.AbstractEditor;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
@@ -20,7 +19,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -231,7 +229,7 @@ public class MessageEditor extends AbstractEditor {
                             .addComponent(buttonAttach, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
                             .addComponent(buttonDetach, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)));
             layout.setVerticalGroup(layout.createParallelGroup()
-                    .addComponent(scrollPaneTableAttachedValidators)
+                    .addComponent(scrollPaneTableAttachedValidators, 0, GroupLayout.PREFERRED_SIZE, 100)
                     .addGroup(layout.createSequentialGroup()
                             .addComponent(buttonAttach)
                             .addComponent(buttonDetach)));

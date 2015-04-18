@@ -6,7 +6,6 @@ import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.component.AbstractEditor;
-import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.editor.swing.EditorTablePanel;
 import org.perfcake.pc4idea.api.util.PerfCakeReflectUtil;
 import org.perfcake.pc4idea.impl.editor.editor.tablemodel.DestinationsTableModel;
@@ -14,7 +13,6 @@ import org.perfcake.pc4idea.impl.editor.editor.tablemodel.DestinationsTableModel
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 

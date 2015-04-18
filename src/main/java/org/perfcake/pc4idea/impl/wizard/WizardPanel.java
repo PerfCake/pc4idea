@@ -18,8 +18,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Created with IntelliJ IDEA.

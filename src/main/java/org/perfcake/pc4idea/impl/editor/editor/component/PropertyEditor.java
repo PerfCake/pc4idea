@@ -1,5 +1,6 @@
 package org.perfcake.pc4idea.impl.editor.editor.component;
 
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Property;
 import org.perfcake.pc4idea.api.editor.editor.component.AbstractEditor;
@@ -12,17 +13,26 @@ import javax.swing.*;
  * Date: 19.10.2014
  */
 public class PropertyEditor extends AbstractEditor {
-    private JTextField textFieldName;
+    private JComboBox comboBoxName;
     private JTextField textFieldValue;
 
     public PropertyEditor(){
+        comboBoxName = new ComboBox(new DefaultComboBoxModel<>());
+        initComponents();
+    }
+
+    public PropertyEditor(String[] hints) {
+        comboBoxName = new ComboBox(new DefaultComboBoxModel<>(hints));
         initComponents();
     }
 
     private void initComponents(){
         JLabel labelName = new JLabel("Name:");
         JLabel labelValue = new JLabel("Value:");
-        textFieldName = new JTextField();
+
+        comboBoxName.setEditable(true);
+        comboBoxName.setSelectedIndex(-1);
+
         textFieldValue = new JTextField();
 
         GroupLayout layout = new GroupLayout(this);
@@ -30,14 +40,14 @@ public class PropertyEditor extends AbstractEditor {
         layout.setHorizontalGroup(layout.createParallelGroup()
             .addGroup(layout.createSequentialGroup()
                 .addComponent(labelName,GroupLayout.PREFERRED_SIZE,50,GroupLayout.PREFERRED_SIZE)
-                .addComponent(textFieldName))
+                    .addComponent(comboBoxName))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(labelValue,GroupLayout.PREFERRED_SIZE,50,GroupLayout.PREFERRED_SIZE)
                 .addComponent(textFieldValue)));
         layout.setVerticalGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup()
                     .addComponent(labelName, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(textFieldName, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+                    .addComponent(comboBoxName, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
             .addGap(10)
             .addGroup(layout.createParallelGroup()
                     .addComponent(labelValue, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
@@ -45,13 +55,13 @@ public class PropertyEditor extends AbstractEditor {
     }
 
     public void setProperty(Property property){
-        textFieldName.setText(property.getName());
+        comboBoxName.setSelectedItem(property.getName());
         textFieldValue.setText(property.getValue());
     }
 
     public Property getProperty(){
         Property newProperty = new Property();
-        newProperty.setName(textFieldName.getText());
+        newProperty.setName((String) comboBoxName.getSelectedItem());
         newProperty.setValue(textFieldValue.getText());
         return newProperty;
     }
@@ -63,7 +73,14 @@ public class PropertyEditor extends AbstractEditor {
 
     @Override
     public ValidationInfo areInsertedValuesValid() {
-        return (textFieldName.getText().isEmpty() || textFieldValue.getText().isEmpty()) ?
-                new ValidationInfo("Text fields can't be empty") : null;
+        String name = (String) comboBoxName.getSelectedItem();
+        ValidationInfo info = null;
+        if (name.trim().isEmpty()) {
+            info = new ValidationInfo("Name can't be empty");
+        }
+        if (textFieldValue.getText().trim().isEmpty()) {
+            info = new ValidationInfo("Value can't be empty");
+        }
+        return info;
     }
 }
