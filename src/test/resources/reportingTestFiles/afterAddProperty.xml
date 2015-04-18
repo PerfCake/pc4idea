@@ -12,6 +12,7 @@
         <property name="reportingP2" value="v2"/>
         <property name="reportingP3" value="v3"/>
         <property name="reportingP4" value="v4"/>
+        <property name="addedN" value="addedV"/>
         <reporter class="MemoryUsageReporter" enabled="true">
             <property name="reporterP1" value="v1"/>
             <property name="reporterP2" value="v2"/>

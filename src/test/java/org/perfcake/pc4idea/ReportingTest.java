@@ -5,11 +5,16 @@ import com.intellij.openapi.fileEditor.FileEditorProvider;
 import com.intellij.openapi.fileEditor.ex.FileEditorProviderManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import org.perfcake.model.Property;
+import org.perfcake.model.Scenario;
+import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
 import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditor;
 import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditorProvider;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.SenderModelWrapper;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.ReportingModelWrapper;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Stanislav Kaleta on 4/7/15.
@@ -21,7 +26,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         return new File(PathManager.getJarPathForClass(GeneratorTest.class) + "/reportingTestFiles").getPath();
     }
 
-    private SenderModelWrapper setUpEditorAndGetModel() {
+    private ReportingModelWrapper setUpEditorAndGetModel() {
         VirtualFile file = myFixture.getFile().getVirtualFile();
         FileEditorProvider[] possibleProviders = FileEditorProviderManager.getInstance().getProviders(getProject(), file);
         PerfCakeEditorProvider pcProvider = null;
@@ -31,45 +36,128 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
             }
         }
         if (pcProvider == null) {
-            throw new AssertionError("Error setting up todo - cant find PerfCakeEditorProvider instance");
+            throw new AssertionError("Error setting up editor - cant find PerfCakeEditorProvider instance");
         }
         assertTrue(pcProvider.accept(getProject(), file));
         PerfCakeEditor editor = (PerfCakeEditor) pcProvider.createEditor(getProject(), file);
 
-        return (SenderModelWrapper) editor.getComponent().getScenarioGUI().getComponentModel(5);
+        return (ReportingModelWrapper) editor.getComponent().getScenarioGUI().getComponentModel(5);
     }
 
     //reporting
-    public void testEditReporters() {/*com.intellij.testFramework.fixtures.JavaCodeInsightTestFixture*/
-        fail();
+    public void testEditReporters() {
+        myFixture.configureByFile("beforeReportingTest.xml");
+        ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
+        Scenario.Reporting beforeModel = (Scenario.Reporting) reportingModelWrapper.retrieveModel();
+
+        Scenario.Reporting afterModel = new Scenario.Reporting();
+        afterModel.getProperty().addAll(beforeModel.getProperty());
+
+        List<Scenario.Reporting.Reporter> reporterList = beforeModel.getReporter();
+        reporterList.get(0).setClazz("ConsoleDestination");
+        reporterList.get(0).setEnabled(false);
+        reporterList.get(1).setEnabled(true);
+        reporterList.get(2).setClazz("WarmUpReporter");
+        afterModel.getReporter().addAll(reporterList);
+
+        reportingModelWrapper.updateModel(afterModel);
+        reportingModelWrapper.getGUI().commitChanges("test");
+        myFixture.checkResultByFile("afterEditReporters.xml");
     }
 
     public void testEditProperties() {
-        fail();
+        myFixture.configureByFile("beforeReportingTest.xml");
+        ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
+        Scenario.Reporting beforeModel = (Scenario.Reporting) reportingModelWrapper.retrieveModel();
+
+        Scenario.Reporting afterModel = new Scenario.Reporting();
+        afterModel.getReporter().addAll(beforeModel.getReporter());
+
+        List<Property> propertyList = beforeModel.getProperty();
+        propertyList.get(0).setName("editedN");
+        propertyList.get(0).setValue("editedV");
+        propertyList.get(1).setName("editedN");
+        propertyList.get(2).setValue("editedV");
+        afterModel.getProperty().addAll(propertyList);
+
+        reportingModelWrapper.updateModel(afterModel);
+        reportingModelWrapper.getGUI().commitChanges("test");
+        myFixture.checkResultByFile("afterEditProperties.xml");
     }
 
     public void testAddProperty() {
-        fail();
+        myFixture.configureByFile("beforeReportingTest.xml");
+        ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
+
+        Property property = new Property();
+        property.setName("addedN");
+        property.setValue("addedV");
+
+        reportingModelWrapper.addProperty(property);
+        reportingModelWrapper.getGUI().commitChanges("test");
+        myFixture.checkResultByFile("afterAddProperty.xml");
     }
 
     public void testAddReporter() {
-        fail();
+        myFixture.configureByFile("beforeReportingTest.xml");
+        ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
+
+        Scenario.Reporting.Reporter reporter = new Scenario.Reporting.Reporter();
+        reporter.setClazz("MemoryUsageReporter");
+        reporter.setEnabled(false);
+
+        reportingModelWrapper.addReporter(reporter);
+        reportingModelWrapper.getGUI().commitChanges("test");
+        myFixture.checkResultByFile("afterAddReporter.xml");
     }
 
     public void testAddFirstReporter() {
-        fail();
+        myFixture.configureByFile("beforeReportingTestEmpty.xml");
+        ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
+
+        Scenario.Reporting.Reporter reporter = new Scenario.Reporting.Reporter();
+        reporter.setClazz("MemoryUsageReporter");
+        reporter.setEnabled(false);
+
+        reportingModelWrapper.addReporter(reporter);
+        reportingModelWrapper.getGUI().commitChanges("test");
+        myFixture.checkResultByFile("afterAddFirstReporter.xml");
     }
 
     public void testReorderReporters() {
-        fail();
+        myFixture.configureByFile("beforeReportingTest.xml");
+        ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
+
+        List<ModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        Collections.swap(reporterModelList, 2, 3);
+
+        reportingModelWrapper.setChildrenFromModels(reporterModelList);
+        reportingModelWrapper.getGUI().commitChanges("test");
+        myFixture.checkResultByFile("afterReorderReporters.xml");
     }
 
     public void testDeleteReporter() {
-        fail();
+        myFixture.configureByFile("beforeReportingTest.xml");
+        ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
+
+        List<ModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+
+        reportingModelWrapper.deleteChild(reporterModelList.get(2));
+        reportingModelWrapper.getGUI().commitChanges("test");
+        myFixture.checkResultByFile("afterDeleteReporter.xml");
     }
 
     public void testDeleteAllReporters() {
-        fail();
+        myFixture.configureByFile("beforeReportingTest.xml");
+        ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
+
+        List<ModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+
+        for (ModelWrapper modelWrapper : reporterModelList) {
+            reportingModelWrapper.deleteChild(modelWrapper);
+        }
+        reportingModelWrapper.getGUI().commitChanges("test");
+        myFixture.checkResultByFile("afterDeleteAllReporters.xml");
     }
 
     //single reporter
@@ -145,4 +233,6 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
     public void testDisableSingleDestination() {
         fail();
     }
+
+    /*TODO if Period can be null*/
 }

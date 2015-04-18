@@ -39,7 +39,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
             }
         }
         if (pcProvider == null) {
-            throw new AssertionError("Error setting up todo - cant find PerfCakeEditorProvider instance");
+            throw new AssertionError("Error setting up editor - cant find PerfCakeEditorProvider instance");
         }
         assertTrue(pcProvider.accept(getProject(), file));
         PerfCakeEditor editor = (PerfCakeEditor) pcProvider.createEditor(getProject(), file);

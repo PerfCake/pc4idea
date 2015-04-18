@@ -8,9 +8,9 @@
         <property name="target" value="value"/>
     </sender>
     <reporting>
-        <property name="reportingP1" value="v1"/>
-        <property name="reportingP2" value="v2"/>
-        <property name="reportingP3" value="v3"/>
+        <property name="editedN" value="editedV"/>
+        <property name="editedN" value="v2"/>
+        <property name="reportingP3" value="editedV"/>
         <property name="reportingP4" value="v4"/>
         <reporter class="MemoryUsageReporter" enabled="true">
             <property name="reporterP1" value="v1"/>

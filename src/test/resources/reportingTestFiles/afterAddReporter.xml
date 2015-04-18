@@ -34,5 +34,6 @@
         <reporter class="WarmUpReporter" enabled="false"/>
         <reporter class="ThroughputStatsReporter" enabled="true"/>
         <reporter class="ThroughputStatsReporter" enabled="false"/>
+        <reporter class="MemoryUsageReporter" enabled="false"/>
     </reporting>
 </scenario>

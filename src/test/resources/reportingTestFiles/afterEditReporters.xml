@@ -12,7 +12,7 @@
         <property name="reportingP2" value="v2"/>
         <property name="reportingP3" value="v3"/>
         <property name="reportingP4" value="v4"/>
-        <reporter class="MemoryUsageReporter" enabled="true">
+        <reporter class="ConsoleDestination" enabled="false">
             <property name="reporterP1" value="v1"/>
             <property name="reporterP2" value="v2"/>
             <property name="reporterP3" value="v3"/>
@@ -31,8 +31,8 @@
             </destination>
             <destination class="Log4jDestination" enabled="true"/>
         </reporter>
-        <reporter class="WarmUpReporter" enabled="false"/>
-        <reporter class="ThroughputStatsReporter" enabled="true"/>
+        <reporter class="WarmUpReporter" enabled="true"/>
+        <reporter class="WarmUpReporter" enabled="true"/>
         <reporter class="ThroughputStatsReporter" enabled="false"/>
     </reporting>
 </scenario>
