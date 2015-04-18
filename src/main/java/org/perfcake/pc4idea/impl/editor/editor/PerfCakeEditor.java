@@ -32,7 +32,7 @@ import java.beans.PropertyChangeListener;
  * Date: 17.9.2014
  */
 public class PerfCakeEditor implements FileEditor { /*TODO UNDO/REDO/externa zmena > upadte gui*/
-    private static final Logger LOG = Logger.getInstance(".todo.todo.PerfCakeEditor");
+    private static final Logger LOG = Logger.getInstance(PerfCakeEditor.class);
     public static final String PERFCAKE_NOTIFICATION_ID = "PerfCake Plugin";
 
     private Project project;

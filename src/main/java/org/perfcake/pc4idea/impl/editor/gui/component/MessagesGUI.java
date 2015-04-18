@@ -63,13 +63,13 @@ public class MessagesGUI extends AbstractComponentGUI {/*TODO attach validator*/
                 SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, panelMessages,8,SpringLayout.SOUTH, labelMessages);
 
-        this.getActionMap().put(ActionType.ADDM, new AddMessageAction(modelWrapper, Messages.BUNDLE.getString("ADD")+" Message"));
+        getActionMap().put(ActionType.ADDM, new AddMessageAction(modelWrapper, Messages.BUNDLE.getString("ADD") + " Message"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.SHIFT_MASK), ActionType.ADDM);
 
-        this.getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT")+" Message"));
+        getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT") + " Message"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
 
-        this.getActionMap().put(ActionType.REORDER, new ReorderAction(modelWrapper, "Messages: " + Messages.BUNDLE.getString("REORDER") + " Message"));
+        getActionMap().put(ActionType.REORDER, new ReorderAction(modelWrapper, "Messages: " + Messages.BUNDLE.getString("REORDER") + " Message"));
     }
 
     public Point getMessageAnchorPoint(Scenario.Messages.Message message){

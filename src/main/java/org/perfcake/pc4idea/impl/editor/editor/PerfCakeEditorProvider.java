@@ -25,7 +25,7 @@ import org.perfcake.pc4idea.impl.manager.XMLScenarioManager;
  * Date: 17.9.2014
  */
 public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
-    private static final Logger LOG = Logger.getInstance("#...todo.PerfCakeEditorProvider");
+    private static final Logger LOG = Logger.getInstance(PerfCakeEditorProvider.class);
     private static final String EDITOR_TYPE_ID = "PerfCakeEditor";
 
     private ScenarioType scenarioType;

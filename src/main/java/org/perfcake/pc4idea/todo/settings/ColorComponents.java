@@ -21,7 +21,7 @@ import java.util.Map;
 
 /**
  * Created by miron on 30. 10. 2014.
- * This method provides coloring of scenario todo according to user preferences,
+ * This method provides coloring of scenario editor according to user preferences,
  * default settings, and disabling of coloring.
  */
 public class ColorComponents {

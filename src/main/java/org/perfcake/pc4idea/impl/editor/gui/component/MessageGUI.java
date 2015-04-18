@@ -69,20 +69,20 @@ public class MessageGUI extends AbstractComponentGUI {
             }
         });
 
-        this.getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT")+" Message"));
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
+        getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT") + " Message"));
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
 
-        this.getActionMap().put(ActionType.DEL, new DeleteAction(parentModelWrapper, modelWrapper,Messages.BUNDLE.getString("DEL")+" Message"));
-        this.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), ActionType.DEL);
+        getActionMap().put(ActionType.DEL, new DeleteAction(parentModelWrapper, modelWrapper, Messages.BUNDLE.getString("DEL") + " Message"));
+        getInputMap().put(KeyStroke.getKeyStroke("DELETE"), ActionType.DEL);
 
-        this.getActionMap().put(ActionType.ADDH, new AddHeaderAction(modelWrapper, Messages.BUNDLE.getString("ADD")+" Header"));
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.SHIFT_MASK), ActionType.ADDH);
+        getActionMap().put(ActionType.ADDH, new AddHeaderAction(modelWrapper, Messages.BUNDLE.getString("ADD") + " Header"));
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.SHIFT_MASK), ActionType.ADDH);
 
-        this.getActionMap().put(ActionType.ADDP, new AddPropertyAction(modelWrapper, Messages.BUNDLE.getString("ADD")+" Property"));
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK), ActionType.ADDP);
+        getActionMap().put(ActionType.ADDP, new AddPropertyAction(modelWrapper, Messages.BUNDLE.getString("ADD") + " Property"));
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK), ActionType.ADDP);
 
-        this.getActionMap().put(ActionType.ATTV, new AttachValidatorAction(modelWrapper, Messages.BUNDLE.getString("ATTACH")+" Validator", parentModelWrapper.getSync()));
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.SHIFT_MASK), ActionType.ATTV);
+        getActionMap().put(ActionType.ATTV, new AttachValidatorAction(modelWrapper, Messages.BUNDLE.getString("ATTACH") + " Validator", parentModelWrapper.getSync()));
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.SHIFT_MASK), ActionType.ATTV);
     }
 
     @Override

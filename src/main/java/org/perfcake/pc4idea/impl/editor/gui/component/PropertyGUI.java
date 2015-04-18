@@ -71,12 +71,11 @@ public class PropertyGUI extends AbstractComponentGUI {
         });
 
 
+        getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT") + " Property"));
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
 
-        this.getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper,Messages.BUNDLE.getString("EDIT")+" Property"));
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
-
-        this.getActionMap().put(ActionType.DEL, new DeleteAction((HasGUIChildren) parentModelWrapper, modelWrapper,Messages.BUNDLE.getString("DEL")+" Property"));
-        this.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), ActionType.DEL);
+        getActionMap().put(ActionType.DEL, new DeleteAction((HasGUIChildren) parentModelWrapper, modelWrapper, Messages.BUNDLE.getString("DEL") + " Property"));
+        getInputMap().put(KeyStroke.getKeyStroke("DELETE"), ActionType.DEL);
     }
 
     @Override

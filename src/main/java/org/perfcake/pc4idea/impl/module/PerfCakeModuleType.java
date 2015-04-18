@@ -44,7 +44,7 @@ public class PerfCakeModuleType extends ModuleType<PerfCakeModuleBuilder> {
     @NotNull
     @Override
     public String getDescription() {
-        return "PerfCake scenario todo";
+        return "PerfCake scenario editor";
     }
 
 

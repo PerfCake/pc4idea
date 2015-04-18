@@ -64,13 +64,13 @@ public class SenderGUI extends AbstractComponentGUI {
                 SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, panelProperties,8,SpringLayout.SOUTH, labelSenderClass);
 
-        this.getActionMap().put(ActionType.ADDP, new AddPropertyAction(modelWrapper, Messages.BUNDLE.getString("ADD")+" Property"));
+        getActionMap().put(ActionType.ADDP, new AddPropertyAction(modelWrapper, Messages.BUNDLE.getString("ADD") + " Property"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK), ActionType.ADDP);
 
-        this.getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT")+" Sender"));
+        getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT") + " Sender"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
 
-        this.getActionMap().put(ActionType.REORDER, new ReorderAction(modelWrapper, "Sender: " + Messages.BUNDLE.getString("REORDER") + " Property"));
+        getActionMap().put(ActionType.REORDER, new ReorderAction(modelWrapper, "Sender: " + Messages.BUNDLE.getString("REORDER") + " Property"));
     }
 
     @Override

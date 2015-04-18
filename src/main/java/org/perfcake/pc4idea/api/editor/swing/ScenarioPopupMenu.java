@@ -74,6 +74,29 @@ public class ScenarioPopupMenu extends JPopupMenu {
             add(addValItem);
         }
 
+        Action addReporterAction = actionMap.get(ActionType.ADDR);
+        if (addReporterAction != null) {
+            JMenuItem addRepItem = new JMenuItem();
+            addRepItem.setAction(addReporterAction);
+            addRepItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_MASK));
+            add(addRepItem);
+        }
+
+        Action addDestinationAction = actionMap.get(ActionType.ADDD);
+        if (addDestinationAction != null) {
+            JMenuItem addDestItem = new JMenuItem();
+            addDestItem.setAction(addDestinationAction);
+            addDestItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.SHIFT_MASK));
+            add(addDestItem);
+        }
+
+        Action addPeriodAction = actionMap.get(ActionType.ADDPE);
+        if (addPeriodAction != null) {
+            JMenuItem addPeriodItem = new JMenuItem();
+            addPeriodItem.setAction(addPeriodAction);
+            addPeriodItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.SHIFT_MASK));
+            add(addPeriodItem);
+        }
 
         //edit
         Action editAction = actionMap.get(ActionType.EDIT);

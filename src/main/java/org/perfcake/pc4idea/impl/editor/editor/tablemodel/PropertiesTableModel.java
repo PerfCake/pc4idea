@@ -112,7 +112,6 @@ public class PropertiesTableModel extends AbstractTableModel implements EditorTa
         if (structurePropertyNames != null) {
             String[] hints = new String[]{};
             hints = structurePropertyNames.toArray(hints);
-            System.out.print(structurePropertyNames.size() + " vs " + hints.length);
             editor = new PropertyEditor(hints);
         } else {
             editor = new PropertyEditor();

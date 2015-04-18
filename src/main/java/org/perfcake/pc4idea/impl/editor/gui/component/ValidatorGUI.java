@@ -72,14 +72,14 @@ public class ValidatorGUI extends AbstractComponentGUI {
             }
         });
 
-        this.getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT")+" Validator"));
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
+        getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT") + " Validator"));
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
 
-        this.getActionMap().put(ActionType.DEL, new DeleteAction(parentModelWrapper, modelWrapper,Messages.BUNDLE.getString("DEL")+" Validator"));
-        this.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), ActionType.DEL);
+        getActionMap().put(ActionType.DEL, new DeleteAction(parentModelWrapper, modelWrapper, Messages.BUNDLE.getString("DEL") + " Validator"));
+        getInputMap().put(KeyStroke.getKeyStroke("DELETE"), ActionType.DEL);
 
-        this.getActionMap().put(ActionType.ADDP, new AddPropertyAction(modelWrapper, Messages.BUNDLE.getString("ADD")+" Property"));
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK), ActionType.ADDP);
+        getActionMap().put(ActionType.ADDP, new AddPropertyAction(modelWrapper, Messages.BUNDLE.getString("ADD") + " Property"));
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK), ActionType.ADDP);
     }
 
     @Override

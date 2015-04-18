@@ -126,7 +126,7 @@ public class XMLScenarioManager implements ScenarioManager {
                             marshaller.marshal(scenarioModel, stringWriter);
                             if (!stringWriter.toString().trim().isEmpty() && stringWriter.toString() != null) {
                                 /*TODO for testing purpose*/
-                                System.out.println("TEST LOG: scenario successfully saved");
+                                System.out.println("TEST LOG: scenario successfully saved: " + actionCommand);
                                 document.setText(stringWriter.toString());
                             }
                             stringWriter.close();

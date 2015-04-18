@@ -1,6 +1,5 @@
 package org.perfcake.pc4idea.impl.editor.gui.component;
 
-import com.intellij.icons.AllIcons;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
@@ -48,7 +47,7 @@ public class ValidationGUI extends AbstractComponentGUI {
         FontMetrics fontMetrics = labelValidation.getFontMetrics(labelValidation.getFont());
         labelValidationWidth = fontMetrics.stringWidth(labelValidation.getText());
 
-        enabledCircle = new JEnabledCircle(new ToggleAction(modelWrapper, "Validation"));
+        enabledCircle = new JEnabledCircle(new ToggleAction(modelWrapper, "Validation", false));
 
         panelValidators = new ComponentsPanel(modelWrapper);
 
@@ -79,16 +78,16 @@ public class ValidationGUI extends AbstractComponentGUI {
                 8,
                 SpringLayout.SOUTH, labelValidation);
 
-        this.getActionMap().put(ActionType.ADDV, new AddValidatorAction(modelWrapper, Messages.BUNDLE.getString("ADD")+" Validator"));
+        getActionMap().put(ActionType.ADDV, new AddValidatorAction(modelWrapper, Messages.BUNDLE.getString("ADD") + " Validator"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.SHIFT_MASK), ActionType.ADDV);
 
-        this.getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT")+" Validator"));
+        getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper, Messages.BUNDLE.getString("EDIT") + " Validator"));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);
 
-        this.getActionMap().put(ActionType.TOGGLE, new ToggleAction(modelWrapper, "Validation"));
+        getActionMap().put(ActionType.TOGGLE, new ToggleAction(modelWrapper, "Validation", false));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.SHIFT_MASK), ActionType.TOGGLE);
 
-        this.getActionMap().put(ActionType.REORDER, new ReorderAction(modelWrapper, "Validation: " + Messages.BUNDLE.getString("REORDER") + " Validator"));
+        getActionMap().put(ActionType.REORDER, new ReorderAction(modelWrapper, "Validation: " + Messages.BUNDLE.getString("REORDER") + " Validator"));
     }
 
     public Point getValidatorAnchorPoint(Scenario.Validation.Validator validator){
@@ -125,18 +124,12 @@ public class ValidationGUI extends AbstractComponentGUI {
             enabledCircle.setVisible(false);
         } else {
             enabledCircle.setVisible(true);
-            enabledCircle.setState(validation.isEnabled());
+
             boolean isEnabled = validation.isEnabled();
-            if (isEnabled) {
-                String actionName = Messages.BUNDLE.getString("DISABLE") + " Validation";
-                Icon icon = AllIcons.Debugger.MuteBreakpoints;
-                this.getActionMap().put(ActionType.TOGGLE, new ToggleAction(modelWrapper, actionName, icon, isEnabled));
-            } else {
-                String actionName = Messages.BUNDLE.getString("ENABLE") + " Validation";
-                Icon icon = AllIcons.Debugger.Db_muted_verified_breakpoint;
-                this.getActionMap().put(ActionType.TOGGLE, new ToggleAction(modelWrapper, actionName, icon, isEnabled));
-            }
+            enabledCircle.setState(isEnabled);
+            getActionMap().put(ActionType.TOGGLE, new ToggleAction(modelWrapper, "Validation", isEnabled));
         }
+
         panelValidators.updateComponents();
         modelWrapper.getSync().repaintDependencies();
     }

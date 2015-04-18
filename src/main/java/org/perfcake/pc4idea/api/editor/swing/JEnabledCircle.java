@@ -1,5 +1,6 @@
 package org.perfcake.pc4idea.api.editor.swing;
 
+import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.swing.plaf.EnabledCircleUI;
 import org.perfcake.pc4idea.impl.editor.actions.ToggleAction;
 
@@ -22,12 +23,13 @@ public class JEnabledCircle extends JPanel {
     private Dimension enabledSize = new Dimension(15,20);
 
     public JEnabledCircle(ToggleAction action) {
+        getActionMap().put(ActionType.TOGGLE, action);
         setOpaque(Boolean.FALSE);
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    action.preActionPerformed(state);
+                    JEnabledCircle.this.getActionMap().get(ActionType.TOGGLE).actionPerformed(null);
                 }
             }
         });
@@ -41,6 +43,8 @@ public class JEnabledCircle extends JPanel {
             this.setBackground(disabledColor);
         }
         repaint();
+
+        ((ToggleAction) getActionMap().get(ActionType.TOGGLE)).setCurrentState(state);
     }
 
     @Override
