@@ -11,11 +11,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * Created by miron on 21. 11. 2014. + me
+ * Created by miron on 21. 11. 2014. + me TODO documentation
  */
 public class JEnabledCircle extends JPanel {
     private static final String uiClassID = "EnabledCircleUI";
-    private boolean state = false;
 
     private Color enabledColor = Color.getHSBColor(120/360f,0.75f,0.75f);
     private Color disabledColor = Color.getHSBColor(0/360f,0.75f,0.75f);
@@ -36,7 +35,6 @@ public class JEnabledCircle extends JPanel {
     }
 
     public void setState(boolean state){
-        this.state = state;
         if (state){
             this.setBackground(enabledColor);
         } else {

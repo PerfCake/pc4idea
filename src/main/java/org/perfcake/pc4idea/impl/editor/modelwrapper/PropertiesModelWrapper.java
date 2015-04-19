@@ -71,7 +71,4 @@ public class PropertiesModelWrapper implements ModelWrapper, HasGUIChildren, Can
         Property propertyToDel = (Property) childModelWrapper.retrieveModel();
         propertiesModel.getProperty().remove(propertyToDel);
     }
-
-
-
 }

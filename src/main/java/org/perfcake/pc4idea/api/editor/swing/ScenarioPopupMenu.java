@@ -8,7 +8,7 @@ import java.awt.event.KeyEvent;
 
 /**
  * Created with IntelliJ IDEA.
- * User: Stanislav Kaleta
+ * User: Stanislav Kaleta                   TODO documentation
  * Date: 3.3.2015
  */
 public class ScenarioPopupMenu extends JPopupMenu {
@@ -31,7 +31,6 @@ public class ScenarioPopupMenu extends JPopupMenu {
         }
 
         add(new JSeparator());
-
 
         //adds
         Action addPropertyAction = actionMap.get(ActionType.ADDP);
@@ -124,13 +123,5 @@ public class ScenarioPopupMenu extends JPopupMenu {
             delItem.setAccelerator(KeyStroke.getKeyStroke("DELETE"));
             add(delItem);
         }
-
-
-
     }
-
-
-
-
-
 }

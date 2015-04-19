@@ -22,7 +22,6 @@ public class DeleteAction extends AbstractAction {
         this.actionName = actionName;
     }
 
-
     @Override
     public void actionPerformed(ActionEvent e) {
         target.deleteChild(childToDel);

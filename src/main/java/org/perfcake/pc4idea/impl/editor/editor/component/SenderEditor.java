@@ -87,5 +87,4 @@ public class SenderEditor extends AbstractEditor {
     public ValidationInfo areInsertedValuesValid() {
         return (comboBoxSenderType.getSelectedIndex() == -1) ? new ValidationInfo("Sender type isn't selected") : null;
     }
-
 }

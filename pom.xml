@@ -8,7 +8,7 @@
     <properties>
         <perfcake.version>4.0</perfcake.version>
         <intellij.version>14.0.3</intellij.version>
-        <intellijHome>{please set intellijHome property}</intellijHome>
+        <intellijHome>{please set path to intellij home folder}</intellijHome>
     </properties>
 
     <dependencies>

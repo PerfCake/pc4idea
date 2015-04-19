@@ -5,7 +5,7 @@ import org.perfcake.model.Scenario;
 /**
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
- * Date: 27.2.2015
+ * Date: 27.2.2015                         TODO documentation
  */
 public interface ScenarioManager {
 
@@ -14,5 +14,4 @@ public interface ScenarioManager {
     public Scenario retrieveScenario() throws ScenarioManagerException;
 
     public void updateScenario(Scenario scenarioModel, String actionCommand) throws ScenarioManagerException;
-
 }

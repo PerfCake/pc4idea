@@ -11,7 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * Created by miron on 15.4.2014. + me
+ * Created by miron on 15.4.2014. + me       TODO documentation
  */
 public class JRoundedRectangle extends JPanel {
     private static final String uiClassID = "RoundedRectangleUI";
@@ -63,7 +63,6 @@ public class JRoundedRectangle extends JPanel {
         } else {
             setUI(new RoundedRectangleUI());
         }
-
     }
 
     private void select() {
@@ -83,6 +82,4 @@ public class JRoundedRectangle extends JPanel {
     public Boolean isSelected() {
         return selected;
     }
-
-
 }

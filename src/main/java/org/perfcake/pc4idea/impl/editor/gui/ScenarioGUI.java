@@ -83,7 +83,6 @@ public class ScenarioGUI extends JLayeredPane implements ColorAdjustable {
                 0,
                 SpringLayout.SOUTH,labelError);
 
-
         syncMV = new MessagesValidationSync();
     }
 

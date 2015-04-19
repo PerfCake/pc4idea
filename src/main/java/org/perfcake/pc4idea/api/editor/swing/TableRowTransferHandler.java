@@ -12,7 +12,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragSource;
 
 /**
- * Created by Stanislav Kaleta on 4/17/15.
+ * Created by Stanislav Kaleta on 4/17/15.              TODO documentation
  */
 public class TableRowTransferHandler extends TransferHandler {
     private static final Logger LOG = Logger.getInstance(TableRowTransferHandler.class);
@@ -69,5 +69,4 @@ public class TableRowTransferHandler extends TransferHandler {
             table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
-
 }
