@@ -5,7 +5,7 @@ import javax.swing.plaf.PanelUI;
 import java.awt.*;
 
 /**
- * Created by miron on 21. 11. 2014. + me
+ * Created by miron on 21. 11. 2014. + me TODO documentation
  */
 public class EnabledCircleUI extends PanelUI {
 

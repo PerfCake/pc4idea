@@ -39,7 +39,6 @@ public class PerfCakeEditor implements FileEditor { /*TODO UNDO/REDO/externa zme
     private VirtualFile file;
     private ScenarioManager manager;
 
-
     private final PerfCakeEditorGUI editorGUI;
 
     public PerfCakeEditor(final Project project, final VirtualFile file, @NotNull final ScenarioManager manager){

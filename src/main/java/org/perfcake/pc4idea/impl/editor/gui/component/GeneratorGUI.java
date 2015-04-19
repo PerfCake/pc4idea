@@ -29,7 +29,6 @@ public class GeneratorGUI extends AbstractComponentGUI {
 
     private int minimumWidth = 0;
 
-
     public GeneratorGUI(GeneratorModelWrapper modelWrapper, PerfCakeEditorUtil util) {
         super(util);
         this.modelWrapper = modelWrapper;

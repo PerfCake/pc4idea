@@ -19,6 +19,7 @@ import java.io.IOException;
  * Date: 5.12.2014
  */
 public class PerfCakeIconPatcher implements FileIconPatcher {
+
     @Override
     public Icon patchIcon(Icon icon, VirtualFile virtualFile, @Iconable.IconFlags int i, @Nullable Project project) {
         boolean accepting = false;

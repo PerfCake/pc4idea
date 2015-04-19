@@ -44,7 +44,6 @@ public class ReporterModelWrapper implements ModelWrapper, CanAddProperty, HasGU
             reporterModel.getDestination().clear();
             reporterModel.getDestination().addAll(tempModel.getDestination());
         }
-
     }
 
     @Override

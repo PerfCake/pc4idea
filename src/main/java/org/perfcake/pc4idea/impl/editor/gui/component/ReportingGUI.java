@@ -24,7 +24,7 @@ import java.awt.event.KeyEvent;
 /**
  * Created by Stanislav Kaleta on 3/7/15.
  */
-public class ReportingGUI extends AbstractComponentGUI /*implements HasListableChildren*/ {
+public class ReportingGUI extends AbstractComponentGUI {
     private ReportingModelWrapper modelWrapper;
 
     private JLabel labelReporting;

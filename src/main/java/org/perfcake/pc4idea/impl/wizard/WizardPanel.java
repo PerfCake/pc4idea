@@ -76,6 +76,7 @@ class WizardPanel extends JPanel {
         };
         wizardStepList = new JBList(model);
 
+        /*TODO maybe refact as class*/
         wizardStepList.setCellRenderer(new DefaultListCellRenderer() {
             private boolean isSelected = false;
 

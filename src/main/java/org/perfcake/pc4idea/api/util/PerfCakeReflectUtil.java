@@ -26,19 +26,30 @@ import java.util.jar.JarFile;
 
 /**
  * This class provides abilities to retrieve classes, classes names and properties for
- * PerfCake Scenario component using reflection.
+ * PerfCake Scenario components using reflection.
  *
  * @author Stanislav Kaleta
  */
 public class PerfCakeReflectUtil {
+
+    /**
+     * A logger
+     */
     private static final Logger LOG = Logger.getInstance(PerfCakeReflectUtil.class);
 
+    /**
+     * Constants which represent Scenario components
+     */
     public static final int SENDER = 1;
     public static final int GENERATOR = 2;
     public static final int VALIDATOR = 3;
     public static final int REPORTER = 4;
     public static final int DESTINATION = 5;
 
+    /**
+     * Module in which scenario is placed. This util isn't able to use plugin jars, if module isn't
+     * set or module type isn't PerfCake, i.e. "lib" dir can't be identified.
+     */
     private Module module;
 
     public PerfCakeReflectUtil(Module module) {
@@ -47,9 +58,9 @@ public class PerfCakeReflectUtil {
 
     /**
      * Finds all not abstract subclasses in the jar file of the superclass.
-     * If the module is PerfCake module, method also finds all subclasses in the lib directory.
+     * If the module type is PerfCake module, method also finds all subclasses in jars in the lib directory.
      *
-     * @param superclass for which to find subclasses
+     * @param superclass class for which to find subclasses
      * @return list of not abstract subclasses
      */
     @NotNull
@@ -122,7 +133,7 @@ public class PerfCakeReflectUtil {
     /**
      * Finds all properties for specific Scenario component defined with class name.
      *
-     * @param component          for which to find properties
+     * @param component for which to find properties
      * @param componentClassName class name of component for which to find properties
      * @return list of properties
      */
@@ -223,6 +234,4 @@ public class PerfCakeReflectUtil {
         Arrays.sort(namesArray);
         return namesArray;
     }
-
-
 }

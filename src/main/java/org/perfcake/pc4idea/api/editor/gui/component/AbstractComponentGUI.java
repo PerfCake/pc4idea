@@ -12,11 +12,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Stanislav Kaleta
- * Date: 3.3.2015
+ * Superclass for every Scenario component gui.
+ *
+ * @author Stanislav Kaleta
  */
 public abstract class AbstractComponentGUI extends JRoundedRectangle implements ColorAdjustable {
+
+    /**
+     * Editor util
+     */
     private PerfCakeEditorUtil util;
 
     public AbstractComponentGUI(PerfCakeEditorUtil util) {
@@ -46,20 +50,45 @@ public abstract class AbstractComponentGUI extends JRoundedRectangle implements 
         });
     }
 
+    /**
+     * Returns util of this editor.
+     *
+     * @return editor util
+     * @see org.perfcake.pc4idea.api.util.PerfCakeEditorUtil
+     */
     public PerfCakeEditorUtil getUtil() {
         return util;
     }
 
+    /**
+     * Performs commit action. This will cause that competent manager will load the model from the editor
+     * and will invoke update scenario file action. This methods should be called right after
+     * action which modifies scenario.
+     *
+     * @param message name of the action which modifies scenario
+     */
     public void commitChanges(String message){
         getActionMap().get(ActionType.COMMIT).actionPerformed(new ActionEvent(this,1, message));
     }
 
+    /**
+     * Performs DnD import for this component. Every subclass implements this method by its preferences.
+     *
+     * @param transferredData imported data
+     */
     public abstract void performImport(String transferredData);
 
-    // returns model if dialog closed with OK, null otherwise
+    /**
+     * Opens dialog editor for this component and returns component model after end of the editing.
+     *
+     * @return component model if dialog was closed with confirmation button, null otherwise
+     */
     public abstract Object openEditorDialogAndGetResult();
 
-    //update
+    /**
+     * Updates gui according to actual component model. This method should be used to refresh gui
+     * after model modifications.
+     */
     public abstract void updateGUI();
 
 

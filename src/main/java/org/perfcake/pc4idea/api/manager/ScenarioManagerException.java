@@ -1,7 +1,7 @@
 package org.perfcake.pc4idea.api.manager;
 
 /**
- * Created by Stanislav Kaleta on 3/7/15.
+ * Created by Stanislav Kaleta on 3/7/15.              TODO documentation
  */
 public class ScenarioManagerException extends RuntimeException {
 

@@ -14,7 +14,7 @@ import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditor;
 import javax.swing.*;
 
 /**
- * Created by Stanislav Kaleta on 4/15/15.
+ * Created by Stanislav Kaleta on 4/15/15.             TODO documentation
  */
 public class PerfCakeEditorUtil {
     private Project project;

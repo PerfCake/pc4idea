@@ -25,11 +25,6 @@ public class PerfCakeEditorGUI extends JPanel {
     private static final Logger LOG = Logger.getInstance(PerfCakeEditorGUI.class);
 
     private JBSplitter jbSplitter;
-    private JScrollPane scrollPaneMenu;
-    private JPanel panelMenu;
-    private JTree additiveComponentsTree;
-
-    private JScrollPane scrollPaneScenario;
 
     private ScenarioGUI scenarioGUI;
 
@@ -43,11 +38,11 @@ public class PerfCakeEditorGUI extends JPanel {
 
     private void initComponents() {
         jbSplitter = new JBSplitter(false);
-        panelMenu = new JPanel();
-        scrollPaneMenu = ScrollPaneFactory.createScrollPane(panelMenu);
-        additiveComponentsTree = new Tree(new DefaultTreeModel(new DefaultMutableTreeNode("root")));
+        JPanel panelMenu = new JPanel();
+        JScrollPane scrollPaneMenu = ScrollPaneFactory.createScrollPane(panelMenu);
+        JTree additiveComponentsTree = new Tree(new DefaultTreeModel(new DefaultMutableTreeNode("root")));
 
-        scrollPaneScenario = ScrollPaneFactory.createScrollPane(scenarioGUI);
+        JScrollPane scrollPaneScenario = ScrollPaneFactory.createScrollPane(scenarioGUI);
 
         jbSplitter.setFirstComponent(scrollPaneMenu);
         jbSplitter.setSecondComponent(scrollPaneScenario);
@@ -110,13 +105,6 @@ public class PerfCakeEditorGUI extends JPanel {
                 }
             }
         });
-
-
-
-
-
-
-
     }
 
     public ScenarioGUI getScenarioGUI(){
@@ -128,9 +116,7 @@ public class PerfCakeEditorGUI extends JPanel {
     }
 
     public void dispose() {
-/*TODO dont forget to save*/
-//        System.out.println(Thread.activeCount() + " " +
-//                Thread.currentThread().getName());
+/*TODO dont forget to save -- ale toto vsetko asi do editoru*/
 //        /*TODO threadIntrpted exc.(dispose in porgress?)*/
 //        /*TODO filewatcher?*/
 //        file.getFileSystem().removeVirtualFileListener(scenarioVirtualFileListener);
@@ -138,7 +124,6 @@ public class PerfCakeEditorGUI extends JPanel {
 //
 //        xmlEditor.dispose();
 //        EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
-
     }
 
 

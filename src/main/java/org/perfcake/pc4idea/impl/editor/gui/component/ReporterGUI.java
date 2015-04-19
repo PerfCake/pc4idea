@@ -172,6 +172,4 @@ public class ReporterGUI extends AbstractComponentGUI {
         int width = (panelMinWidth + 20 > labelReporterClassWidth + 30 + 20) ? panelMinWidth + 20 : labelReporterClassWidth + 30 + 20;
         return new Dimension(width, panelDestinations.getMinimumSize().height + 50);
     }
-
-
 }
