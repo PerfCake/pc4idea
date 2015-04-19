@@ -91,7 +91,6 @@ public class DestinationsTableModel extends AbstractTableModel implements Editor
             destinationList.set(row, destination);
             fireTableDataChanged();
         }
-
     }
 
     @Override

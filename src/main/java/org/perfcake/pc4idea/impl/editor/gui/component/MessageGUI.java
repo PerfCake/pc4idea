@@ -127,7 +127,6 @@ public class MessageGUI extends AbstractComponentGUI {
                 messageAttr.setText("*");
                 messageSize.width = 40;
             }
-
         }
         parentModelWrapper.getSync().syncValidatorRef();
         parentModelWrapper.getSync().repaintDependencies();

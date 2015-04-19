@@ -50,5 +50,4 @@ public class ValidatorModelWrapper implements ModelWrapper, CanAddProperty {
     public void addProperty(Property property) {
         validatorModel.getProperty().add(property);
     }
-
 }

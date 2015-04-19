@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Stanislav Kaleta on 3/7/15.
+ * Created by Stanislav Kaleta on 3/7/15.        TODO documentation
  */
 public class ComponentsPanel extends JPanel {
     private HasGUIChildren parent;
@@ -28,7 +28,7 @@ public class ComponentsPanel extends JPanel {
         componentList = new ArrayList<>();
         this.setLayout(new WrapLayout(FlowLayout.LEADING,0,0));
 
-        //this.setOpaque(false);/*TODO*/
+        this.setOpaque(false);
         setUpReordering();
     }
 

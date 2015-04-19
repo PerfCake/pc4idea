@@ -18,7 +18,7 @@ import java.io.IOException;
 /**
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
- * Date: 4.12.2014
+ * Date: 4.12.2014                              TODO documentation
  */
 public class PerfCakeModuleUtil {
     private static final Logger LOG = Logger.getInstance(PerfCakeModuleUtil.class);
@@ -172,5 +172,4 @@ public class PerfCakeModuleUtil {
         }
         return new VirtualFile[]{scenariosDir, messagesDir, libDir};
     }
-
 }

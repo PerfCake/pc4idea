@@ -23,8 +23,6 @@ public class PerfCakeModuleBuilder extends JavaModuleBuilder {
     @NonNls private final String scenariosDirName = "scenarios";
     @NonNls private final String libDirName = "lib";
 
-
-
     @Override
     public ModuleType getModuleType() {
         return PerfCakeModuleType.getInstance();
@@ -35,12 +33,7 @@ public class PerfCakeModuleBuilder extends JavaModuleBuilder {
         return "PerfCake";
     }
 
-    /**
-     * Creates module directories on module creation. + ...
-     *
-     * @param rootModel
-     * @throws com.intellij.openapi.options.ConfigurationException
-     */
+    @Override
     public void setupRootModel(ModifiableRootModel rootModel) throws ConfigurationException {
         super.setupRootModel(rootModel);
 

@@ -76,6 +76,4 @@ public class ReportingModelWrapper implements ModelWrapper, CanAddProperty, HasG
         Scenario.Reporting.Reporter reporterToDel = (Scenario.Reporting.Reporter) childModelWrapper.retrieveModel();
         reportingModel.getReporter().remove(reporterToDel);
     }
-
-
 }

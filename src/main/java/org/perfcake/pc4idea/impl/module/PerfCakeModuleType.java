@@ -12,6 +12,7 @@ import javax.swing.*;
  * Created by miron on 8.1.2014.  + changes
  */
 public class PerfCakeModuleType extends ModuleType<PerfCakeModuleBuilder> {
+
     @NonNls
     public static final String ID = "PERFCAKE_MODULE";
 

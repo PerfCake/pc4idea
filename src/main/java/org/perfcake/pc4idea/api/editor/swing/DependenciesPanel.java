@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
- * Date: 18.11.2014
+ * Date: 18.11.2014                  TODO documentation
  */
 public class DependenciesPanel extends JPanel {
     private List<DependencyLine> dependencyLines;
@@ -51,6 +51,7 @@ public class DependenciesPanel extends JPanel {
         private Point getLineStart(){
             return lineStart;
         }
+
         private Point getLineEnd(){
             return lineEnd;
         }

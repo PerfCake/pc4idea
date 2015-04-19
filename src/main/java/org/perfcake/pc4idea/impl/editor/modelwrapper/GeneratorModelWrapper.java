@@ -18,7 +18,6 @@ public class GeneratorModelWrapper implements ModelWrapper, CanAddProperty {
 
     public GeneratorModelWrapper(PerfCakeEditorUtil util) {
         generatorGUI = new GeneratorGUI(this, util);
-
     }
 
     @Override

@@ -5,10 +5,10 @@
     <vendor email="kstanleykale@gmail.com">Stanislav Kaleta</vendor>
 
 
-    <description> <!--TODO--> </description>
+    <description> <!--TODO add description--> </description>
 
 
-    <change-notes> <!--TODO--> </change-notes>
+    <change-notes> <!--TODO add change notes--> </change-notes>
 
   <idea-version since-build="131"/>
 
@@ -45,5 +45,4 @@
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>
     </actions>
-
 </idea-plugin>

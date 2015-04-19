@@ -25,6 +25,7 @@ public class AttachValidatorAction extends AbstractAction {
         this.actionName = actionName;
         this.sync = sync;
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         Set<String> unattachedIDs = sync.getUnattachedValidatorIds((Scenario.Messages.Message) target.retrieveModel());

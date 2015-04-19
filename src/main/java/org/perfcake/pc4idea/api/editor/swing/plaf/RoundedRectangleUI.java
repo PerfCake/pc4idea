@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
 /**
- * Created by miron on 17.4.2014. + me
+ * Created by miron on 17.4.2014. + me TODO documentation
  */
 public class RoundedRectangleUI extends PanelUI {
     private final int arcWidth = 20;

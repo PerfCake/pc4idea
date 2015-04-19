@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Stanislav Kaleta on 4/15/15.
+ * Created by Stanislav Kaleta on 4/15/15.                TODO documentation
  */
 public class StructurePropertiesTable extends JBTable {
     private List<Property> modelPropertyList = new ArrayList<>();
@@ -23,7 +23,7 @@ public class StructurePropertiesTable extends JBTable {
         this.setModel(new StructurePropertiesTableModel(new ArrayList<>(), new ArrayList<>()));
         this.getTableHeader().setReorderingAllowed(false);
 
-
+        /*TODO refact. new class maybe*/
         DefaultTableCellRenderer defaultRenderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -110,5 +110,4 @@ public class StructurePropertiesTable extends JBTable {
     public Dimension getMinimumSize() {
         return new Dimension(super.getMinimumSize().width, height);
     }
-
 }

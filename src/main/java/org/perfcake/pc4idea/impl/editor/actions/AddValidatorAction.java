@@ -21,6 +21,7 @@ public class AddValidatorAction extends AbstractAction {
         this.target = target;
         this.actionName = actionName;
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         actionPerformedWrapper(null);

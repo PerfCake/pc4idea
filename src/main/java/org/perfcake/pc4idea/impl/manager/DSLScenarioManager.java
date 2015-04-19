@@ -20,18 +20,17 @@ public class DSLScenarioManager implements ScenarioManager {
 
     @Override
     public void createScenario(String name, Scenario model) throws ScenarioManagerException {
-
+        /*TODO*/
     }
 
     @Override
     public Scenario retrieveScenario() {
+        /*TODO*/
         return null;
     }
 
     @Override
     public void updateScenario(Scenario scenarioModel, String actionCommand) {
-
+        /*TODO*/
     }
-
-
 }

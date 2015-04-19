@@ -10,7 +10,7 @@ import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
- * User: Stanislav Kaleta
+ * User: Stanislav Kaleta              TODO documentation
  * Date: 22.11.2014
  */
 public abstract class ScenarioImportHandler extends TransferHandler{

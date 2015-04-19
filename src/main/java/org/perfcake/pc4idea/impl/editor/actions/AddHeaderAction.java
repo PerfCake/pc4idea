@@ -33,6 +33,5 @@ public class AddHeaderAction extends AbstractAction {
             target.getGUI().commitChanges(actionName);
             target.getGUI().updateGUI();
         }
-
     }
 }
