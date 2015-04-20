@@ -23,16 +23,13 @@
                 <property name="destinationP2" value="v2"/>
                 <property name="destinationP3" value="v3"/>
             </destination>
-            <destination class="CsvDestination" enabled="true">
-                <period type="CsvPe" value="v"/>
-            </destination>
             <destination class="Log4jDestination" enabled="true">
                 <period type="Log4jPe" value="v"/>
             </destination>
             <destination class="Log4jDestination" enabled="false"/>
         </reporter>
         <reporter class="WarmUpReporter" enabled="false"/>
-        <reporter class="ThroughputStatsReporter" enabled="false"/>
         <reporter class="ThroughputStatsReporter" enabled="true"/>
+        <reporter class="ThroughputStatsReporter" enabled="false"/>
     </reporting>
 </scenario>

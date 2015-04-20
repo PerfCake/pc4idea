@@ -19,6 +19,7 @@
             <property name="reporterP4" value="v4"/>
             <destination class="ConsoleDestination" enabled="true">
                 <period type="ConsolePe" value="v"/>
+                <period type="new" value="value"/>
                 <property name="destinationP1" value="v1"/>
                 <property name="destinationP2" value="v2"/>
                 <property name="destinationP3" value="v3"/>
@@ -32,7 +33,7 @@
             <destination class="Log4jDestination" enabled="false"/>
         </reporter>
         <reporter class="WarmUpReporter" enabled="false"/>
-        <reporter class="ThroughputStatsReporter" enabled="false"/>
         <reporter class="ThroughputStatsReporter" enabled="true"/>
+        <reporter class="ThroughputStatsReporter" enabled="false"/>
     </reporting>
 </scenario>

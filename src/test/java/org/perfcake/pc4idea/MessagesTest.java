@@ -154,7 +154,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         message.setUri("edited");
 
         messageModelList.get(0).updateModel(message);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messageModelList.get(0).getGUI().commitChanges("test");
         myFixture.checkResultByFile("afterEditURIInSingleMessage.xml");
     }
 
@@ -167,7 +167,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         message.setContent("edited");
 
         messageModelList.get(1).updateModel(message);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messageModelList.get(1).getGUI().commitChanges("test");
         myFixture.checkResultByFile("afterEditContentInSingleMessage.xml");
     }
 
@@ -180,7 +180,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         message.setMultiplicity("100");
 
         messageModelList.get(1).updateModel(message);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messageModelList.get(1).getGUI().commitChanges("test");
         myFixture.checkResultByFile("afterEditMultiplicityInSingleMessage.xml");
     }
 
@@ -206,7 +206,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         newMessage.getHeader().addAll(oldMessage.getHeader());
 
         messageModelList.get(4).updateModel(newMessage);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messageModelList.get(4).getGUI().commitChanges("test");
         myFixture.checkResultByFile("afterEditHeadersInSingleMessage.xml");
     }
 
@@ -232,7 +232,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         newMessage.getProperty().addAll(oldMessage.getProperty());
 
         messageModelList.get(3).updateModel(newMessage);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messageModelList.get(3).getGUI().commitChanges("test");
         myFixture.checkResultByFile("afterEditPropertiesInSingleMessage.xml");
     }
 
@@ -259,7 +259,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         newMessage.getValidatorRef().add(ref1);
 
         messageModelList.get(3).updateModel(newMessage);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messageModelList.get(3).getGUI().commitChanges("test");
         myFixture.checkResultByFile("afterEditAttachedValidatorsInSingleMessage.xml");
     }
 

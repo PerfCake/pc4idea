@@ -13,9 +13,9 @@
         <property name="reportingP3" value="v3"/>
         <property name="reportingP4" value="v4"/>
         <reporter class="MemoryUsageReporter" enabled="true">
-            <property name="reporterP1" value="v1"/>
-            <property name="reporterP2" value="v2"/>
-            <property name="reporterP3" value="v3"/>
+            <property name="editedN" value="editedV"/>
+            <property name="editedN" value="v2"/>
+            <property name="reporterP3" value="editedV"/>
             <property name="reporterP4" value="v4"/>
             <destination class="ConsoleDestination" enabled="true">
                 <period type="ConsolePe" value="v"/>
@@ -32,7 +32,7 @@
             <destination class="Log4jDestination" enabled="false"/>
         </reporter>
         <reporter class="WarmUpReporter" enabled="false"/>
-        <reporter class="ThroughputStatsReporter" enabled="false"/>
         <reporter class="ThroughputStatsReporter" enabled="true"/>
+        <reporter class="ThroughputStatsReporter" enabled="false"/>
     </reporting>
 </scenario>

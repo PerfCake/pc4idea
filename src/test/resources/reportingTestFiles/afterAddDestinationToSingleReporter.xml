@@ -31,8 +31,12 @@
             </destination>
             <destination class="Log4jDestination" enabled="false"/>
         </reporter>
-        <reporter class="WarmUpReporter" enabled="false"/>
-        <reporter class="ThroughputStatsReporter" enabled="false"/>
+        <reporter class="WarmUpReporter" enabled="false">
+            <destination class="Log4jDestination" enabled="true">
+                <period type="period" value="value"/>
+            </destination>
+        </reporter>
         <reporter class="ThroughputStatsReporter" enabled="true"/>
+        <reporter class="ThroughputStatsReporter" enabled="false"/>
     </reporting>
 </scenario>

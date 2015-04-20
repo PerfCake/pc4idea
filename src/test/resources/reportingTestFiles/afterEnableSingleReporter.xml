@@ -32,7 +32,7 @@
             <destination class="Log4jDestination" enabled="false"/>
         </reporter>
         <reporter class="WarmUpReporter" enabled="false"/>
-        <reporter class="ThroughputStatsReporter" enabled="false"/>
+        <reporter class="ThroughputStatsReporter" enabled="true"/>
         <reporter class="ThroughputStatsReporter" enabled="true"/>
     </reporting>
 </scenario>

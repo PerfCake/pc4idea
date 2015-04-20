@@ -125,7 +125,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         property.setName("newName");
 
         propertyModelList.get(0).updateModel(property);
-        senderModelWrapper.getGUI().commitChanges("test");
+        propertyModelList.get(0).getGUI().commitChanges("test");
         myFixture.checkResultByFile("afterEditNameInSingleProperty.xml");
     }
 
@@ -138,7 +138,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         property.setValue("newValue");
 
         propertyModelList.get(0).updateModel(property);
-        senderModelWrapper.getGUI().commitChanges("test");
+        propertyModelList.get(0).getGUI().commitChanges("test");
         myFixture.checkResultByFile("afterEditValueInSingleProperty.xml");
     }
 

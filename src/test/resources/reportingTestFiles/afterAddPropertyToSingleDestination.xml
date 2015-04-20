@@ -25,6 +25,7 @@
             </destination>
             <destination class="CsvDestination" enabled="true">
                 <period type="CsvPe" value="v"/>
+                <property name="newN" value="newV"/>
             </destination>
             <destination class="Log4jDestination" enabled="true">
                 <period type="Log4jPe" value="v"/>
@@ -32,7 +33,7 @@
             <destination class="Log4jDestination" enabled="false"/>
         </reporter>
         <reporter class="WarmUpReporter" enabled="false"/>
-        <reporter class="ThroughputStatsReporter" enabled="false"/>
         <reporter class="ThroughputStatsReporter" enabled="true"/>
+        <reporter class="ThroughputStatsReporter" enabled="false"/>
     </reporting>
 </scenario>

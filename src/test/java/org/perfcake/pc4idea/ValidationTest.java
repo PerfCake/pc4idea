@@ -196,7 +196,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         newValidator.setClazz("RulesValidator");
 
         validatorModelList.get(1).updateModel(newValidator);
-        validationModelWrapper.getGUI().commitChanges("test");
+        validatorModelList.get(1).getGUI().commitChanges("test");
         myFixture.checkResultByFile("afterEditClassInSingleValidator.xml");
     }
 
@@ -214,7 +214,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         newValidator.setId("edited");
 
         validatorModelList.get(1).updateModel(newValidator);
-        validationModelWrapper.getGUI().commitChanges("test");
+        validatorModelList.get(1).getGUI().commitChanges("test");
         myFixture.checkResultByFile("afterEditIdInSingleValidator.xml");
     }
 
@@ -232,7 +232,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         newValidator.setId("edited");
 
         validatorModelList.get(2).updateModel(newValidator);
-        validationModelWrapper.getGUI().commitChanges("test");
+        validatorModelList.get(2).getGUI().commitChanges("test");
         myFixture.checkResultByFile("afterEditIdInSingleAttachedValidator.xml");
     }
 
@@ -255,7 +255,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         newValidator.getProperty().addAll(oldValidator.getProperty());
 
         validatorModelList.get(1).updateModel(newValidator);
-        validationModelWrapper.getGUI().commitChanges("test");
+        validatorModelList.get(1).getGUI().commitChanges("test");
         myFixture.checkResultByFile("afterEditPropertiesInSingleValidator.xml");
     }
 
@@ -297,7 +297,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
             // OK
         }
         myFixture.checkResultByFile("beforeValidationTest.xml");
-        //reorder null validators
+        //reorder null Validators
         ValidationModelWrapper validationModelWrapper3 = setUpEditorAndGetModel();
         try {
             validationModelWrapper3.setChildrenFromModels(null);

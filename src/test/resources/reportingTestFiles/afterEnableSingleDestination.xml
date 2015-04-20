@@ -29,10 +29,10 @@
             <destination class="Log4jDestination" enabled="true">
                 <period type="Log4jPe" value="v"/>
             </destination>
-            <destination class="Log4jDestination" enabled="false"/>
+            <destination class="Log4jDestination" enabled="true"/>
         </reporter>
         <reporter class="WarmUpReporter" enabled="false"/>
-        <reporter class="ThroughputStatsReporter" enabled="false"/>
         <reporter class="ThroughputStatsReporter" enabled="true"/>
+        <reporter class="ThroughputStatsReporter" enabled="false"/>
     </reporting>
 </scenario>

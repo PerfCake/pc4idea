@@ -31,8 +31,10 @@
             </destination>
             <destination class="Log4jDestination" enabled="false"/>
         </reporter>
-        <reporter class="WarmUpReporter" enabled="false"/>
-        <reporter class="ThroughputStatsReporter" enabled="false"/>
+        <reporter class="WarmUpReporter" enabled="false">
+            <property name="addedName" value="addedValue"/>
+        </reporter>
         <reporter class="ThroughputStatsReporter" enabled="true"/>
+        <reporter class="ThroughputStatsReporter" enabled="false"/>
     </reporting>
 </scenario>
