@@ -6,11 +6,15 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 import org.perfcake.pc4idea.impl.module.PerfCakeModuleType;
 
 import java.io.IOException;
@@ -127,7 +131,41 @@ public class PerfCakeModuleUtil {
         return null;
     }
 
-    public static boolean isPerfCakeModule(Module module) {
+
+    /**
+     * TODO doc.
+     *
+     * @param module
+     * @param file
+     * @return
+     */
+    public static boolean isPerfCakeScenarioFile(@NotNull Module module, @NotNull VirtualFile file){
+        /*TODO dorobit poriadne + dsl*/
+        if (file.getFileType() == StdFileTypes.XML && !StdFileTypes.XML.isBinary()){
+            Document document = FileDocumentManager.getInstance().getDocument(file);
+            if (document != null){
+                String text = document.getText();
+                if (text.contains("<scenario xmlns=\"urn:perfcake:scenario:4.0\">")) {
+                    return true;
+                }
+            }
+        }
+
+        if (file.getName().contains(".dsl")){/*TODO urn or someting*/
+            return true;
+        }
+        return false;
+    }
+
+
+
+    /**
+     * TODO doc.
+     *
+     * @param module
+     * @return
+     */
+    public static boolean isPerfCakeModule(@NotNull Module module) {
         return PerfCakeModuleType.isOfType(module);
     }
 
@@ -136,31 +174,31 @@ public class PerfCakeModuleUtil {
      * returns them as VirtualFiles.
      *
      * @param module for which to find directories
-     * @return array of directories as VirtualFiles , where index 0 is "scenarios" directory,
+     * @return array of directories as VirtualFile, where index 0 is "scenarios" directory,
      * index 1 is "messages" directory and index 2 is "lib" directory
      */
-    public static VirtualFile[] getPerfCakeModuleDirsUri(Module module) {
+    public static VirtualFile[] findPerfCakeModuleDirs(@NotNull Module module) {
         VirtualFile scenariosDir = null;
         VirtualFile messagesDir = null;
         VirtualFile libDir = null;
-        if (module != null) {
-            if (isPerfCakeModule(module)) {
-                VirtualFile moduleFile = module.getModuleFile();
-                if (moduleFile != null) {
-                    for (VirtualFile file : moduleFile.getParent().getChildren()) {
-                        if (file.getName().equals("scenarios")) {
-                            scenariosDir = file;
-                        }
-                        if (file.getName().equals("messages")) {
-                            messagesDir = file;
-                        }
-                        if (file.getName().equals("lib")) {
-                            libDir = file;
-                        }
+
+        if (isPerfCakeModule(module)) {
+            VirtualFile moduleFile = module.getModuleFile();
+            if (moduleFile != null) {
+                for (VirtualFile file : moduleFile.getParent().getChildren()) {
+                    if (file.getName().equals("scenarios")) {
+                        scenariosDir = file;
+                    }
+                    if (file.getName().equals("messages")) {
+                        messagesDir = file;
+                    }
+                    if (file.getName().equals("lib")) {
+                        libDir = file;
                     }
                 }
             }
         }
+
         if (scenariosDir == null) {
             LOG.error("unable to find \"sceanrios\" directory in module root directory");
         }

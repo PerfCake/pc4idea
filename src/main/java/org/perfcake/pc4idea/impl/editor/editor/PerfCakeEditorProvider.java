@@ -2,19 +2,20 @@ package org.perfcake.pc4idea.impl.editor.editor;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.fileEditor.*;
-import com.intellij.openapi.fileTypes.StdFileTypes;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorPolicy;
+import com.intellij.openapi.fileEditor.FileEditorProvider;
+import com.intellij.openapi.fileEditor.FileEditorState;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.testFramework.LightVirtualFile;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
-import org.perfcake.pc4idea.api.editor.editor.ScenarioType;
 import org.perfcake.pc4idea.api.manager.ScenarioManager;
+import org.perfcake.pc4idea.api.util.PerfCakeModuleUtil;
 import org.perfcake.pc4idea.impl.manager.DSLScenarioManager;
 import org.perfcake.pc4idea.impl.manager.XMLScenarioManager;
 
@@ -28,29 +29,27 @@ public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
     private static final Logger LOG = Logger.getInstance(PerfCakeEditorProvider.class);
     private static final String EDITOR_TYPE_ID = "PerfCakeEditor";
 
-    private ScenarioType scenarioType;
+    private final String[] scenarioTypes = new String[]{"xml", "dsl"};
 
     public static PerfCakeEditorProvider getInstance() {
         return ApplicationManager.getApplication().getComponent(PerfCakeEditorProvider.class);
     }
 
     @Override
-    public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
-        /*TODO xml or DSL*/
-        if (virtualFile.getFileType() == StdFileTypes.XML && !StdFileTypes.XML.isBinary() &&
-                (ModuleUtil.findModuleForFile(virtualFile, project) != null || virtualFile instanceof LightVirtualFile) ) {
-            Document document = FileDocumentManager.getInstance().getDocument(virtualFile);
-            if (document != null){
-                String text = document.getText();
-                if (text.contains("<scenario xmlns=\"urn:perfcake:scenario:4.0\">")) {
-                    scenarioType = ScenarioType.XML;
-                    return true;
+    public boolean accept(@NotNull Project project, @NotNull VirtualFile file) {
+        Module module = ModuleUtil.findModuleForFile(file, project);
+
+        if (module != null) {
+            boolean isScenario = PerfCakeModuleUtil.isPerfCakeScenarioFile(module,file);
+            if (isScenario){
+                int nameLength = file.getName().length();
+                String extension = file.getName().substring(nameLength - 3, nameLength);
+                for (String scenarioType : scenarioTypes) {
+                    if (scenarioType.equals(extension)) {
+                        return true;
+                    }
                 }
             }
-        }
-        if (virtualFile.getName().contains(".dsl")){/*TODO urn or someting*/
-            scenarioType = ScenarioType.DSL;
-            return true;
         }
 
         return false;
@@ -58,21 +57,24 @@ public class PerfCakeEditorProvider implements FileEditorProvider, DumbAware {
 
     @NotNull
     @Override
-    public FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile virtualFile) {
-        LOG.assertTrue(accept(project, virtualFile));
+    public FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {
+        LOG.assertTrue(accept(project, file));
 
         ScenarioManager manager;
-        switch (scenarioType){
-            case XML:
-                manager = new XMLScenarioManager(virtualFile, project);
+        int nameLength = file.getName().length();
+        String extension = file.getName().substring(nameLength - 3, nameLength);
+        switch (extension) {
+            case "xml":
+                manager = new XMLScenarioManager(file, project);
                 break;
-            case DSL:
-                manager = new DSLScenarioManager(virtualFile);
+            case "dsl":
+                manager = new DSLScenarioManager(file);
                 break;
-            default: manager = null;
+            default:
+                throw new UnsupportedOperationException("unexpected file extension!");
         }
 
-        return new PerfCakeEditor(project, virtualFile, manager);
+        return new PerfCakeEditor(project, file, manager);
     }
 
     @Override

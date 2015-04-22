@@ -86,7 +86,8 @@ public class ReportingGUI extends AbstractComponentGUI {
     @Override
     public Object openEditorDialogAndGetResult() {
         ReportingEditor editor = new ReportingEditor(getUtil().getModule());
-        editor.setReporting((Scenario.Reporting) modelWrapper.retrieveModel());
+        Scenario.Reporting model = (Scenario.Reporting) modelWrapper.retrieveModel();
+        editor.setReporting((model == null) ? new Scenario.Reporting() : model);
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {

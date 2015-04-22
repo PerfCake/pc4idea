@@ -20,9 +20,12 @@
 
   <extensions defaultExtensionNs="com.intellij">
       <fileEditorProvider implementation="org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditorProvider"/>
-      <applicationConfigurable instance="org.perfcake.pc4idea.todo.settings.PerfCakeIdeSettings"/>
       <moduleType id="PERFCAKE_MODULE" implementationClass="org.perfcake.pc4idea.impl.module.PerfCakeModuleType"/>
       <fileIconPatcher implementation="org.perfcake.pc4idea.impl.module.PerfCakeIconPatcher"/>
+      <configurationType implementation="org.perfcake.pc4idea.impl.run.configuration.PerfCakeConfigurationType"/>
+      <runConfigurationProducer implementation="org.perfcake.pc4idea.impl.run.configuration.PerfCakeRunConfigurationProducer"/>
+      <programRunner implementation="org.perfcake.pc4idea.impl.run.execution.PerfCakeProgramRunner"/>
+      <applicationConfigurable instance="org.perfcake.pc4idea.todo.settings.PerfCakeIdeSettings"/>
   </extensions>
 
   <application-components>
@@ -33,11 +36,11 @@
     <!-- Add your project components here -->
   </project-components>
 
-    <!--<module-components>-->
-    <!--<component>-->
-    <!--<implementation-class>org.perfcake.pc4idea.todo.LoggerInitializer</implementation-class>-->
-    <!--</component>-->
-    <!--</module-components>-->
+    <module-components>
+    <component>
+    <implementation-class>org.perfcake.pc4idea.todo.LoggerInitializer</implementation-class>
+    </component>
+    </module-components>
 
     <actions>
         <action id="NewPCScenario" class="org.perfcake.pc4idea.impl.wizard.NewScenarioAction" text="PerfCake Scenario"
