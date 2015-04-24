@@ -1,11 +1,13 @@
 package org.perfcake.pc4idea.impl.module;
 
 import com.intellij.ide.FileIconPatcher;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.Nullable;
-import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditorProvider;
+import org.perfcake.pc4idea.api.util.PerfCakeScenarioUtil;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -24,7 +26,10 @@ public class PerfCakeIconPatcher implements FileIconPatcher {
     public Icon patchIcon(Icon icon, VirtualFile virtualFile, @Iconable.IconFlags int i, @Nullable Project project) {
         boolean accepting = false;
         if (project != null && virtualFile != null){
-            accepting = new PerfCakeEditorProvider().accept(project,virtualFile);
+            Module module = ModuleUtil.findModuleForFile(virtualFile, project);
+            if (module != null){
+                accepting = PerfCakeScenarioUtil.isPerfCakeScenario(virtualFile);
+            }
         }
         Icon perfCakeIcon = loadIcon();
         if (perfCakeIcon == null){

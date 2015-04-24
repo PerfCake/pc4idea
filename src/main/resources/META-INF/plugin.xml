@@ -19,7 +19,7 @@
     -->
 
   <extensions defaultExtensionNs="com.intellij">
-      <fileEditorProvider implementation="org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditorProvider"/>
+      <fileEditorProvider implementation="org.perfcake.pc4idea.impl.editor.editor.ScenarioEditorProvider"/>
       <moduleType id="PERFCAKE_MODULE" implementationClass="org.perfcake.pc4idea.impl.module.PerfCakeModuleType"/>
       <fileIconPatcher implementation="org.perfcake.pc4idea.impl.module.PerfCakeIconPatcher"/>
       <configurationType implementation="org.perfcake.pc4idea.impl.run.configuration.PerfCakeConfigurationType"/>

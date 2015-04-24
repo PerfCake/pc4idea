@@ -5,8 +5,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.table.JBTable;
 import org.perfcake.pc4idea.api.editor.editor.tablemodel.EditorTableModel;
+import org.perfcake.pc4idea.api.util.Messages;
 import org.perfcake.pc4idea.impl.editor.editor.tablemodel.PropertiesTableModel;
-import org.perfcake.pc4idea.todo.Messages;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -37,10 +37,10 @@ public class EditorTablePanel extends JPanel {
     private void initComponents(){
         table = new JBTable();
         JScrollPane scrollPaneTable = ScrollPaneFactory.createScrollPane(table);
-        JButton buttonMoveUp = new JButton(Messages.BUNDLE.getString("UP"), AllIcons.Actions.MoveUp);
-        JButton buttonMoveDown = new JButton(Messages.BUNDLE.getString("DOWN"), AllIcons.Actions.MoveDown);
-        JButton buttonEdit = new JButton(Messages.BUNDLE.getString("EDIT"), AllIcons.Actions.Edit);
-        JButton buttonDelete = new JButton(Messages.BUNDLE.getString("DEL"), AllIcons.Actions.Delete);
+        JButton buttonMoveUp = new JButton(Messages.Command.UP, AllIcons.Actions.MoveUp);
+        JButton buttonMoveDown = new JButton(Messages.Command.DOWN, AllIcons.Actions.MoveDown);
+        JButton buttonEdit = new JButton(Messages.Command.EDIT, AllIcons.Actions.Edit);
+        JButton buttonDelete = new JButton(Messages.Command.DEL, AllIcons.Actions.Delete);
 
         table.getTableHeader().setReorderingAllowed(false);
         ((DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.LEFT);
@@ -75,7 +75,7 @@ public class EditorTablePanel extends JPanel {
             }
         });
 
-        JButton buttonAdd = new JButton(Messages.BUNDLE.getString("ADD"), AllIcons.General.Add);
+        JButton buttonAdd = new JButton(Messages.Command.ADD, AllIcons.General.Add);
         buttonAdd.setHorizontalAlignment(JButton.LEFT);
         buttonAdd.addActionListener(new ActionListener() {
             @Override
@@ -195,7 +195,7 @@ public class EditorTablePanel extends JPanel {
 
     public void setTableModel(AbstractTableModel model) {
         if (!(model instanceof EditorTableModel)) {
-            LOG.error("model isn't instance of EditorTableModel!");
+            LOG.error(Messages.Log.INCORRECT_TABLE_MODEL);
         }
         table.setModel(model);
         table.getColumnModel().getColumn(0).setCellRenderer(defaultTableCellRenderer);

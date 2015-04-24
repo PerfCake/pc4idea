@@ -7,12 +7,12 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
-import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditor;
-import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditorProvider;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.ValidationModelWrapper;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.ValidatorModelWrapper;
+import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditor;
+import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditorProvider;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.ValidationModelWrapper;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.ValidatorModelWrapper;
 
 import java.io.File;
 import java.util.Collections;
@@ -31,19 +31,19 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
     private ValidationModelWrapper setUpEditorAndGetModel() {
         VirtualFile file = myFixture.getFile().getVirtualFile();
         FileEditorProvider[] possibleProviders = FileEditorProviderManager.getInstance().getProviders(getProject(), file);
-        PerfCakeEditorProvider pcProvider = null;
-        for (int i = 0; i < possibleProviders.length; i++) {
-            if (possibleProviders[i].getEditorTypeId().equals("PerfCakeEditor")) {
-                pcProvider = (PerfCakeEditorProvider) possibleProviders[i];
+        ScenarioEditorProvider pcProvider = null;
+        for (FileEditorProvider possibleProvider : possibleProviders) {
+            if (possibleProvider.getEditorTypeId().equals("PerfCakeEditor")) {
+                pcProvider = (ScenarioEditorProvider) possibleProvider;
             }
         }
         if (pcProvider == null) {
             throw new AssertionError("Error setting up editor - cant find PerfCakeEditorProvider instance");
         }
         assertTrue(pcProvider.accept(getProject(), file));
-        PerfCakeEditor editor = (PerfCakeEditor) pcProvider.createEditor(getProject(), file);
+        ScenarioEditor editor = (ScenarioEditor) pcProvider.createEditor(getProject(), file);
 
-        return (ValidationModelWrapper) editor.getComponent().getScenarioGUI().getComponentModel(4);
+        return (ValidationModelWrapper) editor.getModel().getScenarioComponents()[3];
     }
 
     //validation
@@ -63,7 +63,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         afterModel.getValidator().addAll(validatorList);
 
         validationModelWrapper.updateModel(afterModel);
-        validationModelWrapper.getGUI().commitChanges("test");
+        validationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditValidators.xml");
     }
 
@@ -79,7 +79,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         afterModel.setEnabled(true);
 
         validationModelWrapper.updateModel(afterModel);
-        validationModelWrapper.getGUI().commitChanges("test");
+        validationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditEnableValidation.xml");
     }
 
@@ -95,7 +95,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         afterModel.setFastForward(true);
 
         validationModelWrapper.updateModel(afterModel);
-        validationModelWrapper.getGUI().commitChanges("test");
+        validationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditFastForwardValidation.xml");
     }
 
@@ -104,7 +104,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
         validationModelWrapper.setToggle(true);
-        validationModelWrapper.getGUI().commitChanges("test");
+        validationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterToggleValidation.xml");
     }
 
@@ -117,7 +117,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         validator.setClazz("RulesValidator");
 
         validationModelWrapper.addValidator(validator);
-        validationModelWrapper.getGUI().commitChanges("test");
+        validationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddValidator.xml");
     }
 
@@ -130,7 +130,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         validator.setClazz("RulesValidator");
 
         validationModelWrapper.addValidator(validator);
-        validationModelWrapper.getGUI().commitChanges("test");
+        validationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddFirstValidator.xml");
     }
 
@@ -138,11 +138,11 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
         Collections.swap(validatorModelList, 1, 2);
 
         validationModelWrapper.setChildrenFromModels(validatorModelList);
-        validationModelWrapper.getGUI().commitChanges("test");
+        validationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterReorderValidators.xml");
     }
 
@@ -150,10 +150,10 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
 
         validationModelWrapper.deleteChild(validatorModelList.get(1));
-        validationModelWrapper.getGUI().commitChanges("test");
+        validationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterDeleteValidator.xml");
     }
 
@@ -161,10 +161,10 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
 
         validationModelWrapper.deleteChild(validatorModelList.get(2));
-        validationModelWrapper.getGUI().commitChanges("test");
+        validationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterDeleteAttachedValidator.xml");
     }
 
@@ -172,12 +172,12 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
 
-        for (ModelWrapper modelWrapper : validatorModelList) {
+        for (ComponentModelWrapper modelWrapper : validatorModelList) {
             validationModelWrapper.deleteChild(modelWrapper);
         }
-        validationModelWrapper.getGUI().commitChanges("test");
+        validationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterDeleteAllValidators.xml");
     }
 
@@ -186,7 +186,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
         Scenario.Validation.Validator oldValidator = (Scenario.Validation.Validator) validatorModelList.get(1).retrieveModel();
 
         Scenario.Validation.Validator newValidator = new Scenario.Validation.Validator();
@@ -196,7 +196,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         newValidator.setClazz("RulesValidator");
 
         validatorModelList.get(1).updateModel(newValidator);
-        validatorModelList.get(1).getGUI().commitChanges("test");
+        validatorModelList.get(1).commit("test");
         myFixture.checkResultByFile("afterEditClassInSingleValidator.xml");
     }
 
@@ -204,7 +204,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
         Scenario.Validation.Validator oldValidator = (Scenario.Validation.Validator) validatorModelList.get(1).retrieveModel();
 
         Scenario.Validation.Validator newValidator = new Scenario.Validation.Validator();
@@ -214,7 +214,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         newValidator.setId("edited");
 
         validatorModelList.get(1).updateModel(newValidator);
-        validatorModelList.get(1).getGUI().commitChanges("test");
+        validatorModelList.get(1).commit("test");
         myFixture.checkResultByFile("afterEditIdInSingleValidator.xml");
     }
 
@@ -222,7 +222,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
         Scenario.Validation.Validator oldValidator = (Scenario.Validation.Validator) validatorModelList.get(2).retrieveModel();
 
         Scenario.Validation.Validator newValidator = new Scenario.Validation.Validator();
@@ -232,7 +232,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         newValidator.setId("edited");
 
         validatorModelList.get(2).updateModel(newValidator);
-        validatorModelList.get(2).getGUI().commitChanges("test");
+        validatorModelList.get(2).commit("test");
         myFixture.checkResultByFile("afterEditIdInSingleAttachedValidator.xml");
     }
 
@@ -240,7 +240,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
         Scenario.Validation.Validator oldValidator = (Scenario.Validation.Validator) validatorModelList.get(1).retrieveModel();
 
         Scenario.Validation.Validator newValidator = new Scenario.Validation.Validator();
@@ -255,7 +255,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         newValidator.getProperty().addAll(oldValidator.getProperty());
 
         validatorModelList.get(1).updateModel(newValidator);
-        validatorModelList.get(1).getGUI().commitChanges("test");
+        validatorModelList.get(1).commit("test");
         myFixture.checkResultByFile("afterEditPropertiesInSingleValidator.xml");
     }
 
@@ -270,7 +270,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         property.setValue("addedValue");
 
         validatorModelWrapper.addProperty(property);
-        validatorModelWrapper.getGUI().commitChanges("test");
+        validatorModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddPropertyToSingleValidator.xml");
     }
 
@@ -281,7 +281,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
         try {
             validationModelWrapper.addValidator(null);
-            validationModelWrapper.getGUI().commitChanges("test");
+            validationModelWrapper.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -291,7 +291,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         ValidationModelWrapper validationModelWrapper2 = setUpEditorAndGetModel();
         try {
             validationModelWrapper2.deleteChild(null);
-            validationModelWrapper2.getGUI().commitChanges("test");
+            validationModelWrapper2.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -301,7 +301,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         ValidationModelWrapper validationModelWrapper3 = setUpEditorAndGetModel();
         try {
             validationModelWrapper3.setChildrenFromModels(null);
-            validationModelWrapper3.getGUI().commitChanges("test");
+            validationModelWrapper3.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -312,7 +312,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         ValidatorModelWrapper validatorModelWrapper4 = (ValidatorModelWrapper) validationModelWrapper4.getChildrenModels().get(1);
         try {
             validatorModelWrapper4.addProperty(null);
-            validatorModelWrapper4.getGUI().commitChanges("test");
+            validatorModelWrapper4.commit("test");
             fail();
         } catch (ScenarioManagerException expected) {
             // OK

@@ -11,8 +11,8 @@ import com.intellij.ui.components.panels.Wrapper;
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.pc4idea.api.editor.color.ColorAdjustable;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
-import org.perfcake.pc4idea.impl.editor.gui.PerfCakeEditorGUI;
-import org.perfcake.pc4idea.impl.editor.gui.ScenarioGUI;
+import org.perfcake.pc4idea.impl.editor.gui.ScenarioEditorGui;
+import org.perfcake.pc4idea.impl.editor.gui.ScenarioGui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,8 +42,8 @@ public class ColorComponents {
                 //all scenario editors are wrapped by Intellij
                 if (e.getName().equals("Designer") && e.getComponent() instanceof Wrapper) {
                     JComponent targetComponent = ((Wrapper) e.getComponent()).getTargetComponent();
-                    if (targetComponent instanceof PerfCakeEditorGUI) {
-                        ScenarioGUI scenarioPanel = ((PerfCakeEditorGUI) targetComponent).getScenarioGUI();
+                    if (targetComponent instanceof ScenarioEditorGui) {
+                        ScenarioGui scenarioPanel = ((ScenarioEditorGui) targetComponent).getPreferredFocusedComponent();
                         updateColorAdjustableTree(new Component[]{scenarioPanel});
                     }
                 }

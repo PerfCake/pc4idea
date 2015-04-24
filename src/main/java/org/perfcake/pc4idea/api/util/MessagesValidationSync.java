@@ -3,16 +3,19 @@ package org.perfcake.pc4idea.api.util;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.swing.DependenciesPanel;
 import org.perfcake.pc4idea.impl.editor.editor.component.MessagesEditor;
 import org.perfcake.pc4idea.impl.editor.editor.component.ValidationEditor;
-import org.perfcake.pc4idea.impl.editor.gui.component.MessagesGUI;
-import org.perfcake.pc4idea.impl.editor.gui.component.ValidationGUI;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.MessagesModelWrapper;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.ValidationModelWrapper;
+import org.perfcake.pc4idea.impl.editor.gui.component.MessagesGui;
+import org.perfcake.pc4idea.impl.editor.gui.component.ValidationGui;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.MessagesModelWrapper;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.ValidationModelWrapper;
 
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
@@ -31,8 +34,18 @@ public class MessagesValidationSync {
 
     private Boolean isEditorMode;
 
-    public MessagesValidationSync() {
+    public MessagesValidationSync(@Nullable DependenciesPanel dependenciesPanel) {
         isEditorMode = null;
+        this.dependenciesPanel = dependenciesPanel;
+        if (dependenciesPanel != null){
+            this.dependenciesPanel.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    super.componentResized(e);
+                    MessagesValidationSync.this.repaintDependencies();
+                }
+            });
+        }
     }
 
     /**
@@ -46,21 +59,17 @@ public class MessagesValidationSync {
         isEditorMode = Boolean.FALSE;
         messagesModelWrapper = null;
         validationModelWrapper = null;
-        dependenciesPanel = null;
     }
 
     /**
      *
      * @param messagesModelWrapper
      * @param validationModelWrapper
-     * @param dependenciesPanel
      */
     public void setEditorMode(@NotNull MessagesModelWrapper messagesModelWrapper,
-                              @NotNull ValidationModelWrapper validationModelWrapper,
-                              @NotNull DependenciesPanel dependenciesPanel) {
+                              @NotNull ValidationModelWrapper validationModelWrapper) {
         this.messagesModelWrapper = messagesModelWrapper;
         this.validationModelWrapper = validationModelWrapper;
-        this.dependenciesPanel = dependenciesPanel;
         isEditorMode = Boolean.TRUE;
         messagesEditor = null;
         validationEditor = null;
@@ -203,14 +212,14 @@ public class MessagesValidationSync {
 
                 if (messagesModelWrapper.retrieveModel() != null && validationModelWrapper.retrieveModel() != null) {
                     for (Scenario.Messages.Message message : ((Scenario.Messages) messagesModelWrapper.retrieveModel()).getMessage()) {
-                        MessagesGUI messagesGUI = (MessagesGUI) messagesModelWrapper.getGUI();
+                        MessagesGui messagesGUI = (MessagesGui) messagesModelWrapper.getGui();
                         Point messagePoint = messagesGUI.getMessageAnchorPoint(message);
                         for (Scenario.Messages.Message.ValidatorRef ref : message.getValidatorRef()) {
                             Scenario.Validation validation = (Scenario.Validation) validationModelWrapper.retrieveModel();
                             Point validatorPoint = new Point(0,0);
                             for (Scenario.Validation.Validator validator : validation.getValidator()){
                                 if (validator.getId().equals(ref.getId())){
-                                    ValidationGUI validationGUI = (ValidationGUI) validationModelWrapper.getGUI();
+                                    ValidationGui validationGUI = (ValidationGui) validationModelWrapper.getGui();
                                     validatorPoint = validationGUI.getValidatorAnchorPoint(validator);
                                 }
                             }

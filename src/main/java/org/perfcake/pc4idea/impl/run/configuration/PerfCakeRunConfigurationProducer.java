@@ -8,6 +8,7 @@ import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import org.perfcake.pc4idea.api.util.PerfCakeModuleUtil;
+import org.perfcake.pc4idea.api.util.PerfCakeScenarioUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,7 +37,7 @@ public class PerfCakeRunConfigurationProducer extends RunConfigurationProducer<P
         if (module == null) {
             return false;
         }
-        if (PerfCakeModuleUtil.isPerfCakeScenarioFile(module, file)) {
+        if (PerfCakeScenarioUtil.isPerfCakeScenario(file)) {
             if (!pcRunConfig.isInitialized()) {
                 pcRunConfig.setup(module, file);
                 pcRunConfig.setName(file.getName());

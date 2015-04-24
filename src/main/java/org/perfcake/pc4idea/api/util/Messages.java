@@ -11,6 +11,8 @@ public class Messages {
     private static final ResourceBundle labelBundle = ResourceBundle.getBundle("strings/labelStrings");
     private static final ResourceBundle dialogBundle = ResourceBundle.getBundle("strings/dialogStrings");
     private static final ResourceBundle titleBundle = ResourceBundle.getBundle("strings/titleStrings");
+    private static final ResourceBundle exceptionBundle = ResourceBundle.getBundle("strings/exceptionStrings");
+    private static final ResourceBundle scenarioBundle = ResourceBundle.getBundle("strings/scenarioStrings");
 
 
     public static class Command {
@@ -27,10 +29,12 @@ public class Messages {
 
     public static class Label {
         public static final String SCENARIO_INVALID = labelBundle.getString("SCENARIO_INVALID");
+        public static final String SCENARIO_INVALID_HINT = labelBundle.getString("SCENARIO_INVALID_HINT");
     }
 
     public static class Log {
-        public static final String UNSUPPORTED_MODULE = logBundle.getString("UNSUPPORTED_MODULE");
+        public static final String[] UNSUPPORTED_MODULE = logBundle.getString("UNSUPPORTED_MODULE").split("@");
+        public static final String INCORRECT_TABLE_MODEL = logBundle.getString("INCORRECT_TABLE_MODEL");
     }
 
     public static class Dialog {
@@ -39,5 +43,31 @@ public class Messages {
 
     public static class Title {
         public static final String UNSUPPORTED_MODULE = titleBundle.getString("UNSUPPORTED_MODULE");
+    }
+
+    public static class Exception {
+        public static final String[] NULL_MODULE = exceptionBundle.getString("NULL_MODULE").split("@");
+        public static final String ADD_NULL_VAL_REF = exceptionBundle.getString("ADD_NULL_VAL_REF");
+        public static final String[] VAL_ID_NOT_EXISTS = exceptionBundle.getString("VAL_ID_NOT_EXISTS").split("@");
+        public static final String ADD_NULL_MSG = exceptionBundle.getString("ADD_NULL_MESSAGE");
+        public static final String ADD_NULL_DESTIN = exceptionBundle.getString("ADD_NULL_DESTIN");
+        public static final String ADD_NULL_REPORTER = exceptionBundle.getString("ADD_NULL_REPORTER");
+    }
+
+    public static class Scenario {
+        public static final String GENERATOR = scenarioBundle.getString("GENERATOR");
+        public static final String SENDER = scenarioBundle.getString("SENDER");
+        public static final String MESSAGES = scenarioBundle.getString("MESSAGES");
+        public static final String MESSAGE = scenarioBundle.getString("MESSAGE");
+        public static final String VALIDATION = scenarioBundle.getString("VALIDATION");
+        public static final String VALIDATOR = scenarioBundle.getString("VALIDATOR");
+        public static final String REPORTING = scenarioBundle.getString("REPORTING");
+        public static final String REPORTER = scenarioBundle.getString("REPORTER");
+        public static final String DESTINATION = scenarioBundle.getString("DESTINATION");
+        public static final String PROPERTIES = scenarioBundle.getString("PROPERTIES");
+        public static final String PROPERTY = scenarioBundle.getString("PROPERTY");
+        public static final String PERIOD = scenarioBundle.getString("PERIOD");
+        public static final String HEADER = scenarioBundle.getString("HEADER");
+        public static final String SCENARIO = scenarioBundle.getString("SCENARIO");
     }
 }

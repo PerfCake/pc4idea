@@ -1,6 +1,7 @@
 package org.perfcake.pc4idea;
 
 import com.intellij.openapi.application.PathManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorProvider;
 import com.intellij.openapi.fileEditor.ex.FileEditorProviderManager;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -8,12 +9,12 @@ import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import org.perfcake.model.Header;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
-import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditor;
-import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditorProvider;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.MessageModelWrapper;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.MessagesModelWrapper;
+import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditor;
+import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditorProvider;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.MessageModelWrapper;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.MessagesModelWrapper;
 
 import java.io.File;
 import java.util.Collections;
@@ -31,20 +32,22 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
 
     private MessagesModelWrapper setUpEditorAndGetModel() {
         VirtualFile file = myFixture.getFile().getVirtualFile();
+        FileEditorManager.getInstance(getProject()).setSelectedEditor(file,"PerfCakeEditor");
         FileEditorProvider[] possibleProviders = FileEditorProviderManager.getInstance().getProviders(getProject(), file);
-        PerfCakeEditorProvider pcProvider = null;
-        for (int i = 0; i < possibleProviders.length; i++) {
-            if (possibleProviders[i].getEditorTypeId().equals("PerfCakeEditor")) {
-                pcProvider = (PerfCakeEditorProvider) possibleProviders[i];
+        ScenarioEditorProvider pcProvider = null;
+
+        for (FileEditorProvider possibleProvider : possibleProviders) {
+            if (possibleProvider.getEditorTypeId().equals("PerfCakeEditor")) {
+                pcProvider = (ScenarioEditorProvider) possibleProvider;
             }
         }
         if (pcProvider == null) {
             throw new AssertionError("Error setting up editor - cant find PerfCakeEditorProvider instance");
         }
         assertTrue(pcProvider.accept(getProject(), file));
-        PerfCakeEditor editor = (PerfCakeEditor) pcProvider.createEditor(getProject(), file);
+        ScenarioEditor editor = (ScenarioEditor) pcProvider.createEditor(getProject(), file);
 
-        return (MessagesModelWrapper) editor.getComponent().getScenarioGUI().getComponentModel(3);
+        return (MessagesModelWrapper) editor.getModel().getScenarioComponents()[2];
     }
 
     //messages
@@ -62,7 +65,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         afterModel.getMessage().addAll(messageList);
 
         messagesModelWrapper.updateModel(afterModel);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messagesModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditMessages.xml");
     }
 
@@ -83,7 +86,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         message.getProperty().add(property);
 
         messagesModelWrapper.addMessage(message);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messagesModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddMessage.xml");
     }
 
@@ -104,7 +107,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         message.getProperty().add(property);
 
         messagesModelWrapper.addMessage(message);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messagesModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddFirstMessage.xml");
     }
 
@@ -112,11 +115,11 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
         Collections.swap(messageModelList, 1, 2);
 
         messagesModelWrapper.setChildrenFromModels(messageModelList);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messagesModelWrapper.commit("test");
         myFixture.checkResultByFile("afterReorderMessages.xml");
     }
 
@@ -124,10 +127,10 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
 
         messagesModelWrapper.deleteChild(messageModelList.get(3));
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messagesModelWrapper.commit("test");
         myFixture.checkResultByFile("afterDeleteMessage.xml");
     }
 
@@ -135,12 +138,12 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
 
-        for (ModelWrapper modelWrapper : messageModelList) {
+        for (ComponentModelWrapper modelWrapper : messageModelList) {
             messagesModelWrapper.deleteChild(modelWrapper);
         }
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messagesModelWrapper.commit("test");
         myFixture.checkResultByFile("afterDeleteAllMessages.xml");
     }
 
@@ -149,12 +152,12 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
         Scenario.Messages.Message message = (Scenario.Messages.Message) messageModelList.get(0).retrieveModel();
         message.setUri("edited");
 
         messageModelList.get(0).updateModel(message);
-        messageModelList.get(0).getGUI().commitChanges("test");
+        messageModelList.get(0).commit("test");
         myFixture.checkResultByFile("afterEditURIInSingleMessage.xml");
     }
 
@@ -162,12 +165,12 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
         Scenario.Messages.Message message = (Scenario.Messages.Message) messageModelList.get(1).retrieveModel();
         message.setContent("edited");
 
         messageModelList.get(1).updateModel(message);
-        messageModelList.get(1).getGUI().commitChanges("test");
+        messageModelList.get(1).commit("test");
         myFixture.checkResultByFile("afterEditContentInSingleMessage.xml");
     }
 
@@ -175,12 +178,12 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
         Scenario.Messages.Message message = (Scenario.Messages.Message) messageModelList.get(1).retrieveModel();
         message.setMultiplicity("100");
 
         messageModelList.get(1).updateModel(message);
-        messageModelList.get(1).getGUI().commitChanges("test");
+        messageModelList.get(1).commit("test");
         myFixture.checkResultByFile("afterEditMultiplicityInSingleMessage.xml");
     }
 
@@ -188,7 +191,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
         Scenario.Messages.Message oldMessage = (Scenario.Messages.Message) messageModelList.get(4).retrieveModel();
 
         Scenario.Messages.Message newMessage = new Scenario.Messages.Message();
@@ -206,7 +209,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         newMessage.getHeader().addAll(oldMessage.getHeader());
 
         messageModelList.get(4).updateModel(newMessage);
-        messageModelList.get(4).getGUI().commitChanges("test");
+        messageModelList.get(4).commit("test");
         myFixture.checkResultByFile("afterEditHeadersInSingleMessage.xml");
     }
 
@@ -214,7 +217,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
         Scenario.Messages.Message oldMessage = (Scenario.Messages.Message) messageModelList.get(3).retrieveModel();
 
         Scenario.Messages.Message newMessage = new Scenario.Messages.Message();
@@ -232,7 +235,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         newMessage.getProperty().addAll(oldMessage.getProperty());
 
         messageModelList.get(3).updateModel(newMessage);
-        messageModelList.get(3).getGUI().commitChanges("test");
+        messageModelList.get(3).commit("test");
         myFixture.checkResultByFile("afterEditPropertiesInSingleMessage.xml");
     }
 
@@ -240,7 +243,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTestAttachValidator.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
         Scenario.Messages.Message oldMessage = (Scenario.Messages.Message) messageModelList.get(3).retrieveModel();
 
         Scenario.Messages.Message newMessage = new Scenario.Messages.Message();
@@ -259,7 +262,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         newMessage.getValidatorRef().add(ref1);
 
         messageModelList.get(3).updateModel(newMessage);
-        messageModelList.get(3).getGUI().commitChanges("test");
+        messageModelList.get(3).commit("test");
         myFixture.checkResultByFile("afterEditAttachedValidatorsInSingleMessage.xml");
     }
 
@@ -274,7 +277,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         header.setValue("addedValue");
 
         messageModelWrapper.addHeader(header);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messagesModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddHeaderToSingleMessage.xml");
     }
 
@@ -289,7 +292,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         property.setValue("addedValue");
 
         messageModelWrapper.addProperty(property);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messagesModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddPropertyToSingleMessage.xml");
     }
 
@@ -303,7 +306,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         ref.setId("2");
 
         messageModelWrapper.attachValidator(ref);
-        messagesModelWrapper.getGUI().commitChanges("test");
+        messagesModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAttachValidatorToSingleMessage.xml");
     }
 
@@ -314,7 +317,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
         try {
             messagesModelWrapper.addMessage(null);
-            messagesModelWrapper.getGUI().commitChanges("test");
+            messagesModelWrapper.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -324,7 +327,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         MessagesModelWrapper messagesModelWrapper2 = setUpEditorAndGetModel();
         try {
             messagesModelWrapper2.deleteChild(null);
-            messagesModelWrapper2.getGUI().commitChanges("test");
+            messagesModelWrapper2.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -334,7 +337,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         MessagesModelWrapper messagesModelWrapper3 = setUpEditorAndGetModel();
         try {
             messagesModelWrapper3.setChildrenFromModels(null);
-            messagesModelWrapper3.getGUI().commitChanges("test");
+            messagesModelWrapper3.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -345,7 +348,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         MessageModelWrapper messageModelWrapper4 = (MessageModelWrapper) messagesModelWrapper4.getChildrenModels().get(1);
         try {
             messageModelWrapper4.addHeader(null);
-            messagesModelWrapper4.getGUI().commitChanges("test");
+            messagesModelWrapper4.commit("test");
             fail();
         } catch (ScenarioManagerException expected) {
             // OK
@@ -356,7 +359,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         MessageModelWrapper messageModelWrapper5 = (MessageModelWrapper) messagesModelWrapper5.getChildrenModels().get(1);
         try {
             messageModelWrapper5.addProperty(null);
-            messagesModelWrapper5.getGUI().commitChanges("test");
+            messagesModelWrapper5.commit("test");
             fail();
         } catch (ScenarioManagerException expected) {
             // OK
@@ -367,7 +370,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         MessageModelWrapper messageModelWrapper6 = (MessageModelWrapper) messagesModelWrapper6.getChildrenModels().get(1);
         try {
             messageModelWrapper6.attachValidator(null);
-            messagesModelWrapper6.getGUI().commitChanges("test");
+            messagesModelWrapper6.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -380,7 +383,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         ref.setId("7");
         try {
             messageModelWrapper7.attachValidator(ref);
-            messagesModelWrapper7.getGUI().commitChanges("test");
+            messagesModelWrapper7.commit("test");
             fail();
         } catch (IllegalArgumentException expected) {
             // OK

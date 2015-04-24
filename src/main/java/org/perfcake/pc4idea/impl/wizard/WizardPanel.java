@@ -9,6 +9,7 @@ import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.component.AbstractEditor;
+import org.perfcake.pc4idea.api.util.Messages;
 import org.perfcake.pc4idea.api.util.MessagesValidationSync;
 import org.perfcake.pc4idea.impl.editor.editor.component.*;
 
@@ -40,7 +41,7 @@ class WizardPanel extends JPanel {
     WizardPanel(String defaultURI, @NotNull Module module) {
         this.module = module;
         this.defaultURI = defaultURI;
-        sync = new MessagesValidationSync();
+        sync = new MessagesValidationSync(null);
         initComponents();
         this.setPreferredSize(new Dimension(480, 240));
     }
@@ -61,8 +62,10 @@ class WizardPanel extends JPanel {
         panelEditors.add(editors.get(0));
 
         ListModel<String> model = new AbstractListModel<String>() {
-            private final String[] steps = new String[]{"Scenario", "Generator", "Sender", "Messages",
-                    "Reporting", "Validation", "Properties"};
+            private final String[] steps = new String[]{Messages.Scenario.SCENARIO,
+                    Messages.Scenario.GENERATOR, Messages.Scenario.SENDER,
+                    Messages.Scenario.MESSAGES, Messages.Scenario.REPORTING,
+                    Messages.Scenario.VALIDATION, Messages.Scenario.PROPERTIES};
 
             @Override
             public int getSize() {

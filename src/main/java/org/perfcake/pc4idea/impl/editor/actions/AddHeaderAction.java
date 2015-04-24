@@ -3,8 +3,9 @@ package org.perfcake.pc4idea.impl.editor.actions;
 import com.intellij.icons.AllIcons;
 import org.perfcake.model.Header;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
+import org.perfcake.pc4idea.api.util.Messages;
 import org.perfcake.pc4idea.impl.editor.editor.component.HeaderEditor;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.MessageModelWrapper;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.MessageModelWrapper;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -14,12 +15,10 @@ import java.awt.event.ActionEvent;
  */
 public class AddHeaderAction extends AbstractAction {
     private MessageModelWrapper target;
-    private String actionName;
 
-    public AddHeaderAction(MessageModelWrapper target, String actionName){
-        super(actionName, AllIcons.General.Add);
+    public AddHeaderAction(MessageModelWrapper target){
+        super(Messages.Command.ADD + " " + Messages.Scenario.HEADER, AllIcons.General.Add);
         this.target = target;
-        this.actionName = actionName;
     }
 
     @Override
@@ -30,8 +29,8 @@ public class AddHeaderAction extends AbstractAction {
         if (dialog.getExitCode() == 0){
             Header header = editor.getHeader();
             target.addHeader(header);
-            target.getGUI().commitChanges(actionName);
-            target.getGUI().updateGUI();
+            target.commit(Messages.Command.ADD + " " + Messages.Scenario.HEADER);
+            target.updateGui();
         }
     }
 }

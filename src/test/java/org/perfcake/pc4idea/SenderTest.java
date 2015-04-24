@@ -7,11 +7,11 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
-import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditor;
-import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditorProvider;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.SenderModelWrapper;
+import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditor;
+import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditorProvider;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.SenderModelWrapper;
 
 import java.io.File;
 import java.util.Collections;
@@ -30,19 +30,19 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
     private SenderModelWrapper setUpEditorAndGetModel() {
         VirtualFile file = myFixture.getFile().getVirtualFile();
         FileEditorProvider[] possibleProviders = FileEditorProviderManager.getInstance().getProviders(getProject(), file);
-        PerfCakeEditorProvider pcProvider = null;
-        for (int i = 0; i < possibleProviders.length; i++) {
-            if (possibleProviders[i].getEditorTypeId().equals("PerfCakeEditor")) {
-                pcProvider = (PerfCakeEditorProvider) possibleProviders[i];
+        ScenarioEditorProvider pcProvider = null;
+        for (FileEditorProvider possibleProvider : possibleProviders) {
+            if (possibleProvider.getEditorTypeId().equals("PerfCakeEditor")) {
+                pcProvider = (ScenarioEditorProvider) possibleProvider;
             }
         }
         if (pcProvider == null) {
             throw new AssertionError("Error setting up editor - cant find PerfCakeEditorProvider instance");
         }
         assertTrue(pcProvider.accept(getProject(), file));
-        PerfCakeEditor editor = (PerfCakeEditor) pcProvider.createEditor(getProject(), file);
+        ScenarioEditor editor = (ScenarioEditor) pcProvider.createEditor(getProject(), file);
 
-        return (SenderModelWrapper) editor.getComponent().getScenarioGUI().getComponentModel(1);
+        return (SenderModelWrapper) editor.getModel().getScenarioComponents()[1];
     }
 
     public void testEditClass() {
@@ -56,7 +56,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         afterModel.setClazz("WebSocketSender");
 
         senderModelWrapper.updateModel(afterModel);
-        senderModelWrapper.getGUI().commitChanges("test");
+        senderModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditClass.xml");
     }
 
@@ -76,7 +76,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         afterModel.getProperty().addAll(propertyList);
 
         senderModelWrapper.updateModel(afterModel);
-        senderModelWrapper.getGUI().commitChanges("test");
+        senderModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditProperties.xml");
     }
 
@@ -89,7 +89,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         property.setValue("v");
 
         senderModelWrapper.addProperty(property);
-        senderModelWrapper.getGUI().commitChanges("test");
+        senderModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddProperty.xml");
     }
 
@@ -97,11 +97,11 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeSenderTest.xml");
         SenderModelWrapper senderModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> propertyModelList = senderModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> propertyModelList = senderModelWrapper.getChildrenModels();
         Collections.swap(propertyModelList, 1, 2);
 
         senderModelWrapper.setChildrenFromModels(propertyModelList);
-        senderModelWrapper.getGUI().commitChanges("test");
+        senderModelWrapper.commit("test");
         myFixture.checkResultByFile("afterReorderProperties.xml");
     }
 
@@ -109,10 +109,10 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeSenderTest.xml");
         SenderModelWrapper senderModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> propertyModelList = senderModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> propertyModelList = senderModelWrapper.getChildrenModels();
 
         senderModelWrapper.deleteChild(propertyModelList.get(1));
-        senderModelWrapper.getGUI().commitChanges("test");
+        senderModelWrapper.commit("test");
         myFixture.checkResultByFile("afterDeleteProperty.xml");
     }
 
@@ -120,12 +120,12 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeSenderTest.xml");
         SenderModelWrapper senderModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> propertyModelList = senderModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> propertyModelList = senderModelWrapper.getChildrenModels();
         Property property = (Property) propertyModelList.get(0).retrieveModel();
         property.setName("newName");
 
         propertyModelList.get(0).updateModel(property);
-        propertyModelList.get(0).getGUI().commitChanges("test");
+        propertyModelList.get(0).commit("test");
         myFixture.checkResultByFile("afterEditNameInSingleProperty.xml");
     }
 
@@ -133,12 +133,12 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeSenderTest.xml");
         SenderModelWrapper senderModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> propertyModelList = senderModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> propertyModelList = senderModelWrapper.getChildrenModels();
         Property property = (Property) propertyModelList.get(0).retrieveModel();
         property.setValue("newValue");
 
         propertyModelList.get(0).updateModel(property);
-        propertyModelList.get(0).getGUI().commitChanges("test");
+        propertyModelList.get(0).commit("test");
         myFixture.checkResultByFile("afterEditValueInSingleProperty.xml");
     }
 
@@ -148,7 +148,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         SenderModelWrapper senderModelWrapper = setUpEditorAndGetModel();
         try {
             senderModelWrapper.updateModel(null);
-            senderModelWrapper.getGUI().commitChanges("test");
+            senderModelWrapper.commit("test");
             fail();
         } catch (ScenarioManagerException expected) {
             // OK
@@ -158,7 +158,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         SenderModelWrapper senderModelWrapper2 = setUpEditorAndGetModel();
         try {
             senderModelWrapper2.addProperty(null);
-            senderModelWrapper2.getGUI().commitChanges("test");
+            senderModelWrapper2.commit("test");
             fail();
         } catch (ScenarioManagerException expected) {
             // OK
@@ -168,7 +168,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         SenderModelWrapper senderModelWrapper3 = setUpEditorAndGetModel();
         try {
             senderModelWrapper3.deleteChild(null);
-            senderModelWrapper3.getGUI().commitChanges("test");
+            senderModelWrapper3.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -178,7 +178,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         SenderModelWrapper senderModelWrapper4 = setUpEditorAndGetModel();
         try {
             senderModelWrapper4.setChildrenFromModels(null);
-            senderModelWrapper4.getGUI().commitChanges("test");
+            senderModelWrapper4.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK

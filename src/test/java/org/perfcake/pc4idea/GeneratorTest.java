@@ -8,9 +8,9 @@ import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
-import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditor;
-import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditorProvider;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.GeneratorModelWrapper;
+import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditor;
+import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditorProvider;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.GeneratorModelWrapper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,20 +28,21 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
 
     private GeneratorModelWrapper setUpEditorAndGetModel() {
         VirtualFile file = myFixture.getFile().getVirtualFile();
+        myFixture.openFileInEditor(file);
         FileEditorProvider[] possibleProviders = FileEditorProviderManager.getInstance().getProviders(getProject(),file);
-        PerfCakeEditorProvider pcProvider = null;
-        for (int i=0;i<possibleProviders.length;i++){
-            if (possibleProviders[i].getEditorTypeId().equals("PerfCakeEditor")){
-                pcProvider = (PerfCakeEditorProvider) possibleProviders[i];
+        ScenarioEditorProvider pcProvider = null;
+        for (FileEditorProvider possibleProvider : possibleProviders) {
+            if (possibleProvider.getEditorTypeId().equals("PerfCakeEditor")) {
+                pcProvider = (ScenarioEditorProvider) possibleProvider;
             }
         }
         if (pcProvider == null){
             throw new AssertionError("Error setting up editor - cant find PerfCakeEditorProvider instance");
         }
         assertTrue(pcProvider.accept(getProject(), file));
-        PerfCakeEditor editor = (PerfCakeEditor) pcProvider.createEditor(getProject(),file);
+        ScenarioEditor editor = (ScenarioEditor) pcProvider.createEditor(getProject(),file);
 
-        return (GeneratorModelWrapper) editor.getComponent().getScenarioGUI().getComponentModel(0);
+        return (GeneratorModelWrapper) editor.getModel().getScenarioComponents()[0];
     }
 
     public void testEditClass(){
@@ -57,7 +58,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         afterModel.setClazz("RampUpDownGenerator");
 
         generatorModelWrapper.updateModel(afterModel);
-        generatorModelWrapper.getGUI().commitChanges("test");
+        generatorModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditClass.xml");
     }
 
@@ -74,7 +75,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         afterModel.setThreads("100");
 
         generatorModelWrapper.updateModel(afterModel);
-        generatorModelWrapper.getGUI().commitChanges("test");
+        generatorModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditThreads.xml");
     }
 
@@ -94,7 +95,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         afterModel.setRun(run);
 
         generatorModelWrapper.updateModel(afterModel);
-        generatorModelWrapper.getGUI().commitChanges("test");
+        generatorModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditRun.xml");
     }
 
@@ -113,7 +114,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         afterModel.setRun(run);
 
         generatorModelWrapper.updateModel(afterModel);
-        generatorModelWrapper.getGUI().commitChanges("test");
+        generatorModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditRunType.xml");
     }
 
@@ -132,7 +133,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         afterModel.setRun(run);
 
         generatorModelWrapper.updateModel(afterModel);
-        generatorModelWrapper.getGUI().commitChanges("test");
+        generatorModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditRunValue.xml");
     }
 
@@ -162,7 +163,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         afterModel.getProperty().addAll(propertyList);
 
         generatorModelWrapper.updateModel(afterModel);
-        generatorModelWrapper.getGUI().commitChanges("test");
+        generatorModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditProperties.xml");
     }
 
@@ -175,7 +176,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         property.setValue("p4");
 
         generatorModelWrapper.addProperty(property);
-        generatorModelWrapper.getGUI().commitChanges("test");
+        generatorModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddProperty.xml");
     }
 
@@ -185,7 +186,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         GeneratorModelWrapper generatorModelWrapper = setUpEditorAndGetModel();
         try {
             generatorModelWrapper.updateModel(null);
-            generatorModelWrapper.getGUI().commitChanges("test");
+            generatorModelWrapper.commit("test");
             fail();
         } catch (ScenarioManagerException expected) {
             // OK
@@ -202,7 +203,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         afterModel.setRun(null);
         try {
             generatorModelWrapper2.updateModel(afterModel);
-            generatorModelWrapper2.getGUI().commitChanges("test");
+            generatorModelWrapper2.commit("test");
             fail();
         } catch (ScenarioManagerException expected) {
             // OK
@@ -212,7 +213,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         GeneratorModelWrapper generatorModelWrapper3 = setUpEditorAndGetModel();
         try {
             generatorModelWrapper3.addProperty(null);
-            generatorModelWrapper3.getGUI().commitChanges("test");
+            generatorModelWrapper3.commit("test");
             fail();
         } catch (ScenarioManagerException expected) {
             // OK

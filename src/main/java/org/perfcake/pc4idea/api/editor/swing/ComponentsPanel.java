@@ -2,9 +2,9 @@ package org.perfcake.pc4idea.api.editor.swing;
 
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.awt.WrapLayout;
-import org.perfcake.pc4idea.api.editor.gui.component.AbstractComponentGUI;
-import org.perfcake.pc4idea.api.editor.modelwrapper.HasGUIChildren;
-import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
+import org.perfcake.pc4idea.api.editor.gui.component.ComponentGui;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.HasGUIChildren;
 import org.perfcake.pc4idea.impl.editor.actions.ReorderAction;
 
 import javax.swing.*;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class ComponentsPanel extends JPanel {
     private HasGUIChildren parent;
-    private List<ModelWrapper> componentList;
+    private List<ComponentModelWrapper> componentList;
 
     private int widestComponentWidth = 0;
 
@@ -37,9 +37,9 @@ public class ComponentsPanel extends JPanel {
             @Override
             public int mousePressedActionPerformed(MouseEvent e) {
                 int pressedComponent = -1;
-                if (e.getComponent() instanceof AbstractComponentGUI) {
+                if (e.getComponent() instanceof ComponentGui) {
                     for (int i = 0; i < componentList.size(); i++) {
-                        if (e.getComponent().equals(componentList.get(i).getGUI())) {
+                        if (e.getComponent().equals(componentList.get(i).getGui())) {
                             pressedComponent = i;
                         }
                     }
@@ -50,9 +50,9 @@ public class ComponentsPanel extends JPanel {
             @Override
             public int mouseEnteredActionPerformed(MouseEvent e) {
                 int enteredComponent = -1;
-                if (e.getComponent() instanceof AbstractComponentGUI) {
+                if (e.getComponent() instanceof ComponentGui) {
                     for (int i = 0; i < componentList.size(); i++) {
-                        if (e.getComponent().equals(componentList.get(i).getGUI())) {
+                        if (e.getComponent().equals(componentList.get(i).getGui())) {
                             enteredComponent = i;
                         }
                     }
@@ -80,8 +80,8 @@ public class ComponentsPanel extends JPanel {
                         }
                     }
                 }
-                ReorderAction action = (ReorderAction) parent.getGUI().getActionMap().get(ActionType.REORDER);
-                action.preActionPerformed(componentList);
+                ReorderAction action = (ReorderAction) parent.getGui().getActionMap().get(ActionType.REORDER);
+                action.actionPerformed(componentList);
             }
         });
     }
@@ -92,9 +92,9 @@ public class ComponentsPanel extends JPanel {
         repaint();
         widestComponentWidth = 0;
 
-        for (ModelWrapper modelWrapper : parent.getChildrenModels()){
+        for (ComponentModelWrapper modelWrapper : parent.getChildrenModels()){
             componentList.add(modelWrapper);
-            AbstractComponentGUI gui = modelWrapper.getGUI();
+            JPanel gui = modelWrapper.getGui();
             this.add(gui);
             if (gui.getPreferredSize().width > widestComponentWidth) {
                 widestComponentWidth = gui.getPreferredSize().width;
@@ -105,11 +105,11 @@ public class ComponentsPanel extends JPanel {
 
     public Point getComponentAnchorPoint(Object object, boolean bottomEdge){
         Point anchorPoint = new Point(0,0);
-        for (ModelWrapper component : componentList){
+        for (ComponentModelWrapper component : componentList){
             if (component.retrieveModel().equals(object)){
-                anchorPoint = component.getGUI().getLocation();
+                anchorPoint = component.getGui().getLocation();
                 int heightOffset = (bottomEdge) ? 37 : 4;
-                anchorPoint.setLocation(anchorPoint.getX()+this.getX()+4+component.getGUI().getWidth()/2,anchorPoint.getY()+this.getY()+heightOffset);
+                anchorPoint.setLocation(anchorPoint.getX()+this.getX()+4+component.getGui().getWidth()/2,anchorPoint.getY()+this.getY()+heightOffset);
             }
         }
         return anchorPoint;
@@ -124,11 +124,11 @@ public class ComponentsPanel extends JPanel {
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(parent.getGUI().getWidth() - 20, super.getPreferredSize().height);
+        return new Dimension(parent.getGui().getWidth() - 20, super.getPreferredSize().height);
     }
 
     @Override
     public Dimension getMaximumSize() {
-        return new Dimension(parent.getGUI().getWidth() - 20, super.getPreferredSize().height);
+        return new Dimension(parent.getGui().getWidth() - 20, super.getPreferredSize().height);
     }
 }

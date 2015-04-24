@@ -1,7 +1,8 @@
 package org.perfcake.pc4idea.impl.editor.actions;
 
-import org.perfcake.pc4idea.api.editor.modelwrapper.HasGUIChildren;
-import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.HasGUIChildren;
+import org.perfcake.pc4idea.api.util.Messages;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -12,25 +13,23 @@ import java.util.List;
  */
 public class ReorderAction extends AbstractAction {
     private HasGUIChildren target;
-    private String actionName;
-    List<ModelWrapper> childrenModels;
+    String childName;
 
-    public ReorderAction(HasGUIChildren target, String actionName) {
-        super(actionName);
+    public ReorderAction(HasGUIChildren target, String childName) {
+        super(Messages.Command.REORDER + " " + childName + "s in " +target.getName());
         this.target = target;
-        this.actionName = actionName;
+        this.childName = childName;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        target.setChildrenFromModels(childrenModels);
-        target.getGUI().updateGUI();
-        target.getGUI().commitChanges(actionName);
-
+        // not used
     }
 
-    public void preActionPerformed(List<ModelWrapper> childrenModels){
-        this.childrenModels = childrenModels;
-        actionPerformed(null);
+    public void actionPerformed(List<ComponentModelWrapper> childrenModels){
+        target.setChildrenFromModels(childrenModels);
+        target.setChildrenFromModels(childrenModels);
+        target.commit(Messages.Command.REORDER + " " + childName + "s in " +target.getName());
+        target.updateGui();
     }
 }

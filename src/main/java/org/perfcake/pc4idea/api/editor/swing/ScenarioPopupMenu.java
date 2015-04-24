@@ -1,6 +1,8 @@
 package org.perfcake.pc4idea.api.editor.swing;
 
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
+import org.perfcake.pc4idea.impl.editor.actions.RedoAction;
+import org.perfcake.pc4idea.impl.editor.actions.UndoAction;
 
 import javax.swing.*;
 import java.awt.event.InputEvent;
@@ -14,16 +16,18 @@ import java.awt.event.KeyEvent;
 public class ScenarioPopupMenu extends JPopupMenu {
 
     public ScenarioPopupMenu(ActionMap actionMap){
-        Action undoAction = actionMap.get(ActionType.UNDO);
+        UndoAction undoAction = (UndoAction) actionMap.get(ActionType.UNDO);
         if (undoAction != null) {
+            undoAction.update();
             JMenuItem undoItem = new JMenuItem();
             undoItem.setAction(undoAction);
             undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
             add(undoItem);
         }
 
-        Action redoAction = actionMap.get(ActionType.REDO);
+        RedoAction redoAction = (RedoAction) actionMap.get(ActionType.REDO);
         if (redoAction != null) {
+            redoAction.update();
             JMenuItem redoItem = new JMenuItem();
             redoItem.setAction(redoAction);
             redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK + InputEvent.SHIFT_MASK));

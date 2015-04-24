@@ -7,13 +7,13 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
-import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditor;
-import org.perfcake.pc4idea.impl.editor.editor.PerfCakeEditorProvider;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.DestinationModelWrapper;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.ReporterModelWrapper;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.ReportingModelWrapper;
+import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditor;
+import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditorProvider;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.DestinationModelWrapper;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.ReporterModelWrapper;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.ReportingModelWrapper;
 
 import java.io.File;
 import java.util.Collections;
@@ -34,10 +34,10 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         VirtualFile file = myFixture.getFile().getVirtualFile();
         FileEditorProvider[] possibleProviders = FileEditorProviderManager.
                 getInstance().getProviders(getProject(), file);
-        PerfCakeEditorProvider pcProvider = null;
-        for (int i = 0; i < possibleProviders.length; i++) {
-            if (possibleProviders[i].getEditorTypeId().equals("PerfCakeEditor")) {
-                pcProvider = (PerfCakeEditorProvider) possibleProviders[i];
+        ScenarioEditorProvider pcProvider = null;
+        for (FileEditorProvider possibleProvider : possibleProviders) {
+            if (possibleProvider.getEditorTypeId().equals("PerfCakeEditor")) {
+                pcProvider = (ScenarioEditorProvider) possibleProvider;
             }
         }
         if (pcProvider == null) {
@@ -45,11 +45,10 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
                     "cant find PerfCakeEditorProvider instance");
         }
         assertTrue(pcProvider.accept(getProject(), file));
-        PerfCakeEditor editor =
-                (PerfCakeEditor) pcProvider.createEditor(getProject(), file);
+        ScenarioEditor editor =
+                (ScenarioEditor) pcProvider.createEditor(getProject(), file);
 
-        return (ReportingModelWrapper)
-                editor.getComponent().getScenarioGUI().getComponentModel(5);
+        return (ReportingModelWrapper) editor.getModel().getScenarioComponents()[4];
     }
 
     //reporting
@@ -70,7 +69,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         afterModel.getReporter().addAll(reporterList);
 
         reportingModelWrapper.updateModel(afterModel);
-        reportingModelWrapper.getGUI().commitChanges("test");
+        reportingModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditReporters.xml");
     }
 
@@ -91,7 +90,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         afterModel.getProperty().addAll(propertyList);
 
         reportingModelWrapper.updateModel(afterModel);
-        reportingModelWrapper.getGUI().commitChanges("test");
+        reportingModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEditProperties.xml");
     }
 
@@ -104,7 +103,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         property.setValue("addedV");
 
         reportingModelWrapper.addProperty(property);
-        reportingModelWrapper.getGUI().commitChanges("test");
+        reportingModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddProperty.xml");
     }
 
@@ -117,7 +116,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         reporter.setEnabled(false);
 
         reportingModelWrapper.addReporter(reporter);
-        reportingModelWrapper.getGUI().commitChanges("test");
+        reportingModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddReporter.xml");
     }
 
@@ -130,7 +129,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         reporter.setEnabled(false);
 
         reportingModelWrapper.addReporter(reporter);
-        reportingModelWrapper.getGUI().commitChanges("test");
+        reportingModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddFirstReporter.xml");
     }
 
@@ -138,11 +137,11 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
         Collections.swap(reporterModelList, 2, 3);
 
         reportingModelWrapper.setChildrenFromModels(reporterModelList);
-        reportingModelWrapper.getGUI().commitChanges("test");
+        reportingModelWrapper.commit("test");
         myFixture.checkResultByFile("afterReorderReporters.xml");
     }
 
@@ -150,10 +149,10 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
 
         reportingModelWrapper.deleteChild(reporterModelList.get(2));
-        reportingModelWrapper.getGUI().commitChanges("test");
+        reportingModelWrapper.commit("test");
         myFixture.checkResultByFile("afterDeleteReporter.xml");
     }
 
@@ -161,12 +160,12 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
 
-        for (ModelWrapper modelWrapper : reporterModelList) {
+        for (ComponentModelWrapper modelWrapper : reporterModelList) {
             reportingModelWrapper.deleteChild(modelWrapper);
         }
-        reportingModelWrapper.getGUI().commitChanges("test");
+        reportingModelWrapper.commit("test");
         myFixture.checkResultByFile("afterDeleteAllReporters.xml");
     }
 
@@ -175,7 +174,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
         Scenario.Reporting.Reporter oldReporter =
                 (Scenario.Reporting.Reporter) reporterModelList.get(0).retrieveModel();
 
@@ -187,7 +186,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         newReporter.setClazz("WarmUpReporter");
 
         reporterModelList.get(0).updateModel(newReporter);
-        reporterModelList.get(0).getGUI().commitChanges("test");
+        reporterModelList.get(0).commit("test");
         myFixture.checkResultByFile("afterEditClassInSingleReporter.xml");
     }
 
@@ -195,7 +194,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
         Scenario.Reporting.Reporter oldReporter =
                 (Scenario.Reporting.Reporter) reporterModelList.get(0).retrieveModel();
 
@@ -207,7 +206,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         newReporter.setEnabled(false);
 
         reporterModelList.get(0).updateModel(newReporter);
-        reporterModelList.get(0).getGUI().commitChanges("test");
+        reporterModelList.get(0).commit("test");
         myFixture.checkResultByFile("afterEditEnabledInSingleReporter.xml");
     }
 
@@ -215,7 +214,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
         Scenario.Reporting.Reporter oldReporter =
                 (Scenario.Reporting.Reporter) reporterModelList.get(0).retrieveModel();
 
@@ -235,7 +234,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         newReporter.getDestination().addAll(oldReporter.getDestination());
 
         reporterModelList.get(0).updateModel(newReporter);
-        reporterModelList.get(0).getGUI().commitChanges("test");
+        reporterModelList.get(0).commit("test");
         myFixture.checkResultByFile("afterEditDestinationsInSingleReporter.xml");
     }
 
@@ -243,7 +242,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
         Scenario.Reporting.Reporter oldReporter =
                 (Scenario.Reporting.Reporter) reporterModelList.get(0).retrieveModel();
 
@@ -260,7 +259,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         newReporter.getProperty().addAll(oldReporter.getProperty());
 
         reporterModelList.get(0).updateModel(newReporter);
-        reporterModelList.get(0).getGUI().commitChanges("test");
+        reporterModelList.get(0).commit("test");
         myFixture.checkResultByFile("afterEditPropertiesInSingleReporter.xml");
     }
 
@@ -282,7 +281,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         destination.getPeriod().add(period);
 
         reporterModelWrapper.addDestination(destination);
-        reporterModelWrapper.getGUI().commitChanges("test");
+        reporterModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddDestinationToSingleReporter.xml");
     }
 
@@ -298,7 +297,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         property.setValue("addedValue");
 
         reporterModelWrapper.addProperty(property);
-        reporterModelWrapper.getGUI().commitChanges("test");
+        reporterModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddPropertyToSingleReporter.xml");
     }
 
@@ -309,10 +308,10 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         ReporterModelWrapper reporterModelWrapper =
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(0);
 
-        List<ModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
 
         reporterModelWrapper.deleteChild(destinationModelList.get(1));
-        reporterModelWrapper.getGUI().commitChanges("test");
+        reporterModelWrapper.commit("test");
         myFixture.checkResultByFile("afterDeleteDestinationFromSingleReporter.xml");
     }
 
@@ -323,11 +322,11 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         ReporterModelWrapper reporterModelWrapper =
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(0);
 
-        List<ModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
         Collections.swap(destinationModelList,1,2);
 
         reporterModelWrapper.setChildrenFromModels(destinationModelList);
-        reporterModelWrapper.getGUI().commitChanges("test");
+        reporterModelWrapper.commit("test");
         myFixture.checkResultByFile("afterReorderDestinationsInSingleReporter.xml");
     }
 
@@ -339,7 +338,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(3);
 
         reporterModelWrapper.setToggle(true);
-        reporterModelWrapper.getGUI().commitChanges("test");
+        reporterModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEnableSingleReporter.xml");
     }
 
@@ -351,7 +350,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(2);
 
         reporterModelWrapper.setToggle(false);
-        reporterModelWrapper.getGUI().commitChanges("test");
+        reporterModelWrapper.commit("test");
         myFixture.checkResultByFile("afterDisableSingleReporter.xml");
     }
 
@@ -362,7 +361,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
 
         ReporterModelWrapper reporterModelWrapper =
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(0);
-        List<ModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
 
         Scenario.Reporting.Reporter.Destination oldDestination =
                 (Scenario.Reporting.Reporter.Destination)
@@ -377,7 +376,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         newDestination.setClazz("CsvDestination");
 
         destinationModelList.get(0).updateModel(newDestination);
-        destinationModelList.get(0).getGUI().commitChanges("test");
+        destinationModelList.get(0).commit("test");
         myFixture.checkResultByFile("afterEditClassInSingleDestination.xml");
     }
 
@@ -387,7 +386,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
 
         ReporterModelWrapper reporterModelWrapper =
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(0);
-        List<ModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
 
         Scenario.Reporting.Reporter.Destination oldDestination =
                 (Scenario.Reporting.Reporter.Destination)
@@ -402,7 +401,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         newDestination.setEnabled(false);
 
         destinationModelList.get(0).updateModel(newDestination);
-        destinationModelList.get(0).getGUI().commitChanges("test");
+        destinationModelList.get(0).commit("test");
         myFixture.checkResultByFile("afterEditEnabledInSingleDestination.xml");
     }
 
@@ -412,7 +411,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
 
         ReporterModelWrapper reporterModelWrapper =
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(0);
-        List<ModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
 
         Scenario.Reporting.Reporter.Destination oldDestination =
                 (Scenario.Reporting.Reporter.Destination)
@@ -434,7 +433,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         newDestination.getPeriod().addAll(oldDestination.getPeriod());
 
         destinationModelList.get(0).updateModel(newDestination);
-        destinationModelList.get(0).getGUI().commitChanges("test");
+        destinationModelList.get(0).commit("test");
         myFixture.checkResultByFile("afterEditPeriodsInSingleDestination.xml");
     }
 
@@ -444,7 +443,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
 
         ReporterModelWrapper reporterModelWrapper =
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(0);
-        List<ModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
+        List<ComponentModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
 
         Scenario.Reporting.Reporter.Destination oldDestination =
                 (Scenario.Reporting.Reporter.Destination)
@@ -464,7 +463,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         newDestination.getProperty().addAll(oldDestination.getProperty());
 
         destinationModelList.get(0).updateModel(newDestination);
-        destinationModelList.get(0).getGUI().commitChanges("test");
+        destinationModelList.get(0).commit("test");
         myFixture.checkResultByFile("afterEditPropertiesInSingleDestination.xml");
     }
 
@@ -483,7 +482,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         period.setValue("value");
 
         destinationModelWrapper.addPeriod(period);
-        destinationModelWrapper.getGUI().commitChanges("test");
+        destinationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddPeriodToSingleDestination.xml");
     }
 
@@ -501,7 +500,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         property.setValue("newV");
 
         destinationModelWrapper.addProperty(property);
-        destinationModelWrapper.getGUI().commitChanges("test");
+        destinationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterAddPropertyToSingleDestination.xml");
     }
 
@@ -515,7 +514,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
                 (DestinationModelWrapper) reporterModelWrapper.getChildrenModels().get(3);
 
         destinationModelWrapper.setToggle(true);
-        destinationModelWrapper.getGUI().commitChanges("test");
+        destinationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterEnableSingleDestination.xml");
     }
 
@@ -529,7 +528,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
                 (DestinationModelWrapper) reporterModelWrapper.getChildrenModels().get(0);
 
         destinationModelWrapper.setToggle(false);
-        destinationModelWrapper.getGUI().commitChanges("test");
+        destinationModelWrapper.commit("test");
         myFixture.checkResultByFile("afterDisableSingleDestination.xml");
     }
 
@@ -539,7 +538,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
         try {
             reportingModelWrapper.addProperty(null);
-            reportingModelWrapper.getGUI().commitChanges("test");
+            reportingModelWrapper.commit("test");
             fail();
         } catch (ScenarioManagerException expected) {
             // OK
@@ -549,7 +548,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         ReportingModelWrapper reportingModelWrapper2 = setUpEditorAndGetModel();
         try {
             reportingModelWrapper2.addReporter(null);
-            reportingModelWrapper2.getGUI().commitChanges("test");
+            reportingModelWrapper2.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -559,7 +558,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         ReportingModelWrapper reportingModelWrapper3 = setUpEditorAndGetModel();
         try {
             reportingModelWrapper3.deleteChild(null);
-            reportingModelWrapper3.getGUI().commitChanges("test");
+            reportingModelWrapper3.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -569,7 +568,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         ReportingModelWrapper reportingModelWrapper4 = setUpEditorAndGetModel();
         try {
             reportingModelWrapper4.setChildrenFromModels(null);
-            reportingModelWrapper4.getGUI().commitChanges("test");
+            reportingModelWrapper4.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -581,7 +580,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
                 (ReporterModelWrapper) reportingModelWrapper5.getChildrenModels().get(0);
         try {
             reporterModelWrapper5.addProperty(null);
-            reporterModelWrapper5.getGUI().commitChanges("test");
+            reporterModelWrapper5.commit("test");
             fail();
         } catch (ScenarioManagerException expected) {
             // OK
@@ -593,7 +592,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
                 (ReporterModelWrapper) reportingModelWrapper6.getChildrenModels().get(0);
         try {
             reporterModelWrapper6.addDestination(null);
-            reporterModelWrapper6.getGUI().commitChanges("test");
+            reporterModelWrapper6.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -605,7 +604,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
                 (ReporterModelWrapper) reportingModelWrapper7.getChildrenModels().get(0);
         try {
             reporterModelWrapper7.deleteChild(null);
-            reporterModelWrapper7.getGUI().commitChanges("test");
+            reporterModelWrapper7.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -617,7 +616,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
                 (ReporterModelWrapper) reportingModelWrapper8.getChildrenModels().get(0);
         try {
             reporterModelWrapper8.setChildrenFromModels(null);
-            reporterModelWrapper8.getGUI().commitChanges("test");
+            reporterModelWrapper8.commit("test");
             fail();
         } catch (NullPointerException expected) {
             // OK
@@ -631,7 +630,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
                 (DestinationModelWrapper) reporterModelWrapper9.getChildrenModels().get(0);
         try {
             destinationModelWrapper9.addProperty(null);
-            destinationModelWrapper9.getGUI().commitChanges("test");
+            destinationModelWrapper9.commit("test");
             fail();
         } catch (ScenarioManagerException expected) {
             // OK
@@ -645,7 +644,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
                 (DestinationModelWrapper) reporterModelWrapper10.getChildrenModels().get(0);
         try {
             destinationModelWrapper10.addPeriod(null);
-            destinationModelWrapper10.getGUI().commitChanges("test");
+            destinationModelWrapper10.commit("test");
             fail();
         } catch (ScenarioManagerException expected) {
             // OK
