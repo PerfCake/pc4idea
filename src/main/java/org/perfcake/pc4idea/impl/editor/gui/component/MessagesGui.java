@@ -3,7 +3,7 @@ package org.perfcake.pc4idea.impl.editor.gui.component;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
-import org.perfcake.pc4idea.api.editor.gui.component.ComponentGui;
+import org.perfcake.pc4idea.api.editor.gui.ComponentGui;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.editor.swing.ComponentsPanel;
 import org.perfcake.pc4idea.api.util.Messages;
@@ -87,8 +87,7 @@ public class MessagesGui extends ComponentGui {/*TODO attach validator*/
     @Override
     public Object openEditorDialogAndGetResult() {
         MessagesEditor editor = new MessagesEditor(modelWrapper.getSync());
-        Scenario.Messages model = (Scenario.Messages) modelWrapper.retrieveModel();
-        editor.setMessages((model == null) ? new Scenario.Messages() : model);
+        editor.setMessages((Scenario.Messages) modelWrapper.retrieveModel());
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {

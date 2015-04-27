@@ -3,7 +3,7 @@ package org.perfcake.pc4idea.impl.editor.gui.component;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
-import org.perfcake.pc4idea.api.editor.gui.component.ComponentGui;
+import org.perfcake.pc4idea.api.editor.gui.ComponentGui;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.editor.swing.ComponentsPanel;
 import org.perfcake.pc4idea.api.editor.swing.JEnabledCircle;
@@ -107,8 +107,7 @@ public class ValidationGui extends ComponentGui {
     public Object openEditorDialogAndGetResult() {
         ValidationEditor editor =
                 new ValidationEditor(modelWrapper.getContext().getModule(), modelWrapper.getSync());
-        Scenario.Validation model = (Scenario.Validation) modelWrapper.retrieveModel();
-        editor.setValidation((model == null) ? new Scenario.Validation() : model);
+        editor.setValidation((Scenario.Validation) modelWrapper.retrieveModel());
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {
@@ -120,7 +119,7 @@ public class ValidationGui extends ComponentGui {
     @Override
     public void updateGui() {
         Scenario.Validation validation = (Scenario.Validation) modelWrapper.retrieveModel();
-        if (validation == null){
+        if (validation.getValidator().isEmpty()){
             enabledCircle.setVisible(false);
         } else {
             enabledCircle.setVisible(true);

@@ -2,7 +2,8 @@ package org.perfcake.pc4idea.api.editor.swing;
 
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.awt.WrapLayout;
-import org.perfcake.pc4idea.api.editor.gui.component.ComponentGui;
+import org.perfcake.pc4idea.api.editor.gui.ComponentGui;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.HasGUIChildren;
 import org.perfcake.pc4idea.impl.editor.actions.ReorderAction;
@@ -19,7 +20,7 @@ import java.util.List;
  */
 public class ComponentsPanel extends JPanel {
     private HasGUIChildren parent;
-    private List<ComponentModelWrapper> componentList;
+    private List<AccessibleModel> componentList;
 
     private int widestComponentWidth = 0;
 
@@ -92,7 +93,7 @@ public class ComponentsPanel extends JPanel {
         repaint();
         widestComponentWidth = 0;
 
-        for (ComponentModelWrapper modelWrapper : parent.getChildrenModels()){
+        for (AccessibleModel modelWrapper : parent.getChildrenModels()){
             componentList.add(modelWrapper);
             JPanel gui = modelWrapper.getGui();
             this.add(gui);
@@ -103,13 +104,14 @@ public class ComponentsPanel extends JPanel {
         revalidate();
     }
 
-    public Point getComponentAnchorPoint(Object object, boolean bottomEdge){
-        Point anchorPoint = new Point(0,0);
-        for (ComponentModelWrapper component : componentList){
-            if (component.retrieveModel().equals(object)){
+    public Point getComponentAnchorPoint(Object object, boolean bottomEdge) {
+        Point anchorPoint = new Point(0, 0);
+        for (ComponentModelWrapper component : componentList) {
+            if (((AccessibleModel) component).retrieveModel().equals(object)) {
                 anchorPoint = component.getGui().getLocation();
                 int heightOffset = (bottomEdge) ? 37 : 4;
-                anchorPoint.setLocation(anchorPoint.getX()+this.getX()+4+component.getGui().getWidth()/2,anchorPoint.getY()+this.getY()+heightOffset);
+                anchorPoint.setLocation(anchorPoint.getX() + this.getX() + 4 + component.getGui().getWidth() / 2,
+                        anchorPoint.getY() + this.getY() + heightOffset);
             }
         }
         return anchorPoint;

@@ -42,7 +42,7 @@ public class ScenarioEditorProvider implements FileEditorProvider, DumbAware {
     public FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {
         LOG.assertTrue(accept(project, file));
 
-        return new ScenarioEditor(project, file, PerfCakeScenarioUtil.getScenarioManager(project,file));
+        return new ScenarioEditor(project, file);
     }
 
     @Override

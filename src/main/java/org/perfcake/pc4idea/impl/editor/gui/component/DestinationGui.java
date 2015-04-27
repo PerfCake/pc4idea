@@ -3,7 +3,7 @@ package org.perfcake.pc4idea.impl.editor.gui.component;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
-import org.perfcake.pc4idea.api.editor.gui.component.ComponentGui;
+import org.perfcake.pc4idea.api.editor.gui.ComponentGui;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.editor.swing.JEnabledCircle;
 import org.perfcake.pc4idea.impl.editor.actions.*;
@@ -24,7 +24,6 @@ import java.awt.event.MouseEvent;
  */
 public class DestinationGui extends ComponentGui {
     private DestinationModelWrapper modelWrapper;
-    private ReporterModelWrapper parentModelWrapper;
 
     private JLabel destinationAttr;
     private JEnabledCircle enabledCircle;
@@ -34,12 +33,11 @@ public class DestinationGui extends ComponentGui {
     public DestinationGui(DestinationModelWrapper modelWrapper, ReporterModelWrapper parentModelWrapper) {
         super(modelWrapper.getContext());
         this.modelWrapper = modelWrapper;
-        this.parentModelWrapper = parentModelWrapper;
-        initComponents();
+        initComponents(parentModelWrapper);
         updateColors();
     }
 
-    private void initComponents() {
+    private void initComponents(ReporterModelWrapper parentModelWrapper) {
         destinationAttr = new JLabel("-");
         destinationAttr.setFont(new Font(destinationAttr.getFont().getName(), 0, 15));
 
@@ -71,7 +69,7 @@ public class DestinationGui extends ComponentGui {
             }
 
             @Override
-            public void mouseEntered(MouseEvent e) {
+            public void mouseEntered(MouseEvent e)  {
                 ((JPanel) e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
             }
 

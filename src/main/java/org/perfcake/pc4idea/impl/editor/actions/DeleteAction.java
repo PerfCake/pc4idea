@@ -1,7 +1,7 @@
 package org.perfcake.pc4idea.impl.editor.actions;
 
 import com.intellij.icons.AllIcons;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.HasGUIChildren;
 import org.perfcake.pc4idea.api.util.Messages;
 
@@ -13,9 +13,9 @@ import java.awt.event.ActionEvent;
  */
 public class DeleteAction extends AbstractAction {
     private HasGUIChildren target;
-    private ComponentModelWrapper childToDel;
+    private AccessibleModel childToDel;
 
-    public DeleteAction(HasGUIChildren target, ComponentModelWrapper childToDel){
+    public DeleteAction(HasGUIChildren target, AccessibleModel childToDel){
         super(Messages.Command.DEL + " " + childToDel.getName() +" in " + target.getName(), AllIcons.Actions.Delete);
         this.target = target;
         this.childToDel = childToDel;

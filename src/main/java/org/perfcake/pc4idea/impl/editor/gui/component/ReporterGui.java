@@ -3,7 +3,7 @@ package org.perfcake.pc4idea.impl.editor.gui.component;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
-import org.perfcake.pc4idea.api.editor.gui.component.ComponentGui;
+import org.perfcake.pc4idea.api.editor.gui.ComponentGui;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.editor.swing.ComponentsPanel;
 import org.perfcake.pc4idea.api.editor.swing.JEnabledCircle;
@@ -26,7 +26,6 @@ import java.awt.event.MouseEvent;
  */
 public class ReporterGui extends ComponentGui {
     private ReporterModelWrapper modelWrapper;
-    private ReportingModelWrapper parentModelWrapper;
 
     private JLabel labelReporterClass;
     private JEnabledCircle enabledCircle;
@@ -38,12 +37,11 @@ public class ReporterGui extends ComponentGui {
     public ReporterGui(ReporterModelWrapper modelWrapper, ReportingModelWrapper parentModelWrapper) {
         super(modelWrapper.getContext());
         this.modelWrapper = modelWrapper;
-        this.parentModelWrapper = parentModelWrapper;
-        initComponents();
+        initComponents(parentModelWrapper);
         updateColors();
     }
 
-    private void initComponents() {
+    private void initComponents(ReportingModelWrapper parentModelWrapper) {
         labelReporterClass = new JLabel("---");
         labelReporterClass.setFont(new Font(labelReporterClass.getFont().getName(), 0, 15));
 
@@ -157,21 +155,24 @@ public class ReporterGui extends ComponentGui {
     @Override
     public Dimension getMinimumSize() {
         int panelMinWidth = panelDestinations.getMinimumSize().width;
-        int width = (panelMinWidth + 20 > labelReporterClassWidth + 30 + 20) ? panelMinWidth + 20 : labelReporterClassWidth + 30 + 20;
+        int width = (panelMinWidth + 20 > labelReporterClassWidth + 30 + 20) ?
+                panelMinWidth + 20 : labelReporterClassWidth + 30 + 20;
         return new Dimension(width, panelDestinations.getMinimumSize().height + 50);
     }
 
     @Override
     public Dimension getPreferredSize() {
         int panelMinWidth = panelDestinations.getMinimumSize().width;
-        int width = (panelMinWidth + 20 > labelReporterClassWidth + 30 + 20) ? panelMinWidth + 20 : labelReporterClassWidth + 30 + 20;
+        int width = (panelMinWidth + 20 > labelReporterClassWidth + 30 + 20) ?
+                panelMinWidth + 20 : labelReporterClassWidth + 30 + 20;
         return new Dimension(width, panelDestinations.getMinimumSize().height + 50);
     }
 
     @Override
     public Dimension getMaximumSize() {
         int panelMinWidth = panelDestinations.getMinimumSize().width;
-        int width = (panelMinWidth + 20 > labelReporterClassWidth + 30 + 20) ? panelMinWidth + 20 : labelReporterClassWidth + 30 + 20;
+        int width = (panelMinWidth + 20 > labelReporterClassWidth + 30 + 20) ?
+                panelMinWidth + 20 : labelReporterClassWidth + 30 + 20;
         return new Dimension(width, panelDestinations.getMinimumSize().height + 50);
     }
 }

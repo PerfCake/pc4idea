@@ -2,7 +2,7 @@ package org.perfcake.pc4idea.impl.editor.modelwrapper.component;
 
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.HasGUIChildren;
 import org.perfcake.pc4idea.api.util.Messages;
 import org.perfcake.pc4idea.api.util.MessagesValidationSync;
@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Created by Stanislav Kaleta on 3/18/15.
  */
-public class MessagesModelWrapper implements ComponentModelWrapper, HasGUIChildren {
+public class MessagesModelWrapper implements AccessibleModel, HasGUIChildren {
     private Scenario.Messages messagesModel;
 
     private MessagesGui messagesGui;
@@ -30,6 +30,10 @@ public class MessagesModelWrapper implements ComponentModelWrapper, HasGUIChildr
         this.context = context;
         this.sync = sync;
         messagesGui = new MessagesGui(this);
+    }
+
+    public MessagesValidationSync getSync(){
+        return sync;
     }
 
     @Override
@@ -60,26 +64,32 @@ public class MessagesModelWrapper implements ComponentModelWrapper, HasGUIChildr
 
     @Override
     public void updateModel(Object componentModel) {
-        messagesModel = (componentModel != null) ? (Scenario.Messages) componentModel : new Scenario.Messages();
+        Scenario.Messages tempModel = (Scenario.Messages) componentModel;
+        if (messagesModel == null){
+            messagesModel = tempModel;
+        } else {
+            messagesModel.getMessage().clear();
+            messagesModel.getMessage().addAll(tempModel.getMessage());
+        }
     }
 
     @Override
     public Object retrieveModel() {
-        return (messagesModel.getMessage().isEmpty()) ? null : messagesModel;
+        return messagesModel;
     }
 
     public void addMessage(Scenario.Messages.Message message){
         if (message == null) {
-            throw new NullPointerException(Messages.Exception.ADD_NULL_MSG);
+            throw new NullPointerException(Messages.Exception.ADD_NULL_MESSAGE);
         }
         messagesModel.getMessage().add(message);
     }
 
     @Override
-    public List<ComponentModelWrapper> getChildrenModels() {
-        List<ComponentModelWrapper> childrenModelList = new ArrayList<>();
+    public List<AccessibleModel> getChildrenModels() {
+        List<AccessibleModel> childrenModelList = new ArrayList<>();
         for (Scenario.Messages.Message message : messagesModel.getMessage()){
-            ComponentModelWrapper messageModelWrapper = new MessageModelWrapper(this);
+            AccessibleModel messageModelWrapper = new MessageModelWrapper(this);
             messageModelWrapper.updateModel(message);
             messageModelWrapper.updateGui();
             childrenModelList.add(messageModelWrapper);
@@ -88,20 +98,16 @@ public class MessagesModelWrapper implements ComponentModelWrapper, HasGUIChildr
     }
 
     @Override
-    public void setChildrenFromModels(List<ComponentModelWrapper> childrenModels) {
+    public void setChildrenFromModels(List<AccessibleModel> childrenModels) {
         messagesModel.getMessage().clear();
-        for (ComponentModelWrapper childModel : childrenModels){
+        for (AccessibleModel childModel : childrenModels){
             messagesModel.getMessage().add((Scenario.Messages.Message) childModel.retrieveModel());
         }
     }
 
     @Override
-    public void deleteChild(ComponentModelWrapper childModelWrapper) {
+    public void deleteChild(AccessibleModel childModelWrapper) {
         Scenario.Messages.Message messageToDel = (Scenario.Messages.Message) childModelWrapper.retrieveModel();
         messagesModel.getMessage().remove(messageToDel);
-    }
-
-    public MessagesValidationSync getSync(){
-        return sync;
     }
 }

@@ -4,9 +4,10 @@ import org.perfcake.model.Header;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.CanAddProperty;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.util.Messages;
+import org.perfcake.pc4idea.api.util.MessagesValidationSync;
 import org.perfcake.pc4idea.impl.editor.actions.CommitAction;
 import org.perfcake.pc4idea.impl.editor.gui.component.MessageGui;
 
@@ -16,18 +17,23 @@ import java.awt.event.ActionEvent;
 /**
  * Created by Stanislav Kaleta on 3/27/15.
  */
-public class MessageModelWrapper implements ComponentModelWrapper, CanAddProperty {
+public class MessageModelWrapper implements AccessibleModel, CanAddProperty {
     private Scenario.Messages.Message messageModel;
-    private MessagesModelWrapper parent;
 
     private MessageGui messageGui;
 
     private ContextProvider context;
 
+    private MessagesValidationSync sync;
+
     public MessageModelWrapper(MessagesModelWrapper parent) {
-        this.parent = parent;
         context = parent.getContext();
+        sync = parent.getSync();
         messageGui = new MessageGui(this, parent);
+    }
+
+    public MessagesValidationSync getSync(){
+        return sync;
     }
 
     @Override
@@ -89,10 +95,10 @@ public class MessageModelWrapper implements ComponentModelWrapper, CanAddPropert
 
     public void attachValidator(Scenario.Messages.Message.ValidatorRef ref){
         if (ref == null) {
-            throw new NullPointerException(Messages.Exception.ADD_NULL_VAL_REF);
+            throw new NullPointerException(Messages.Exception.ADD_NULL_VALIDATOR_REF);
         }
-        if (!parent.getSync().getValidatorIds().contains(ref.getId())) {
-            String[] eMsg = Messages.Exception.VAL_ID_NOT_EXISTS;
+        if (!sync.getValidatorIds().contains(ref.getId())) {
+            String[] eMsg = Messages.Exception.INVALID_VALIDATOR_ID;
             throw new IllegalArgumentException(eMsg[0] + ref.getId() + eMsg[1]);
         }
         messageModel.getValidatorRef().add(ref);

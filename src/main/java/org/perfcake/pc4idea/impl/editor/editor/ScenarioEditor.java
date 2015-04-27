@@ -15,10 +15,12 @@ import com.intellij.testFramework.LightVirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
+import org.perfcake.pc4idea.api.editor.editor.ScenarioVirtualFileListener;
 import org.perfcake.pc4idea.api.manager.ScenarioManager;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
 import org.perfcake.pc4idea.api.util.Messages;
 import org.perfcake.pc4idea.api.util.PerfCakeModuleUtil;
+import org.perfcake.pc4idea.api.util.PerfCakeScenarioUtil;
 import org.perfcake.pc4idea.impl.editor.gui.ScenarioEditorGui;
 import org.perfcake.pc4idea.impl.editor.modelwrapper.ScenarioModelWrapper;
 
@@ -36,21 +38,22 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
 
     private Project project;
     private VirtualFile file;
+    private ScenarioVirtualFileListener svfListener;
+    private long modificationStamp = 0l;
     private Module module;
     private ScenarioManager manager;
 
     private final ScenarioEditorGui editorGui;
     private final ScenarioModelWrapper modelWrapper;
 
-    public ScenarioEditor(@NotNull Project project, @NotNull VirtualFile file, @NotNull ScenarioManager manager) {
+    public ScenarioEditor(@NotNull Project project, @NotNull VirtualFile file) {
         this.project = project;
-        this.manager = manager;
         this.file = file instanceof LightVirtualFile ? ((LightVirtualFile) file).getOriginalFile() : file;
         module = ModuleUtil.findModuleForFile(this.file, project);
         if (module != null) {
             NotificationsConfiguration.getNotificationsConfiguration()
                     .register(PERFCAKE_NOTIFICATION_ID, NotificationDisplayType.BALLOON);
-            if (PerfCakeModuleUtil.isPerfCakeModule(module)) {
+            if (!PerfCakeModuleUtil.isPerfCakeModule(module)) {
                 String[] logMsg = Messages.Log.UNSUPPORTED_MODULE;
                 LOG.info(logMsg[0] + file.getName() + logMsg[1]);
                 Notifications.Bus.notify(new Notification(PERFCAKE_NOTIFICATION_ID,
@@ -63,6 +66,10 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
             throw new IllegalArgumentException(eMsg[0] + file + eMsg[1] + project);
         }
 
+        svfListener = new ScenarioVirtualFileListener(this);
+        this.file.getFileSystem().addVirtualFileListener(svfListener);
+
+        manager = PerfCakeScenarioUtil.getScenarioManager(project, file);
         modelWrapper = new ScenarioModelWrapper(this);
         editorGui = new ScenarioEditorGui(modelWrapper.getScenarioGui());
         setUpEditor();
@@ -79,10 +86,6 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
         }
     }
 
-    public ScenarioModelWrapper getModel(){/*TODO mozno model do contextu*/
-        return modelWrapper;
-    }
-
     @Override
     public void dispose() {/*TODO maybe just here*/
         /*TODO dont forget to save doc*/
@@ -93,6 +96,7 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
 //
 //        xmlEditor.dispose();
 //        EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
+        file.getFileSystem().removeVirtualFileListener(svfListener);
     }
 
     @NotNull
@@ -124,18 +128,46 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
     }
 
     @Override
-    public void selectNotify() { /*TODO load len ked nastala zmena*/
+    public void selectNotify() {
         Document document = FileDocumentManager.getInstance().getDocument(file);
-        FileDocumentManager.getInstance().saveDocument(document);
-        setUpEditor();
-        /*TODO for testing purpose*/System.out.println("selectNotify");
+        if (document != null){
+            if (modificationStamp != document.getModificationStamp()){
+                FileDocumentManager.getInstance().saveDocument(document);
+                setUpEditor();
+            }
+        }
+        modelWrapper.repaintDependencies();
     }
 
     @Override
     public void deselectNotify() {
         Document document = FileDocumentManager.getInstance().getDocument(file);
-        FileDocumentManager.getInstance().saveDocument(document);
-        /*TODO for testing purpose*/System.out.println("deselectNotify");
+        if (document != null){
+            if (modificationStamp != document.getModificationStamp()){
+                FileDocumentManager.getInstance().saveDocument(document);
+                modificationStamp = document.getModificationStamp();
+            }
+        }
+    }
+
+    @Override
+    public VirtualFile getVirtualFile() {
+        return file;
+    }
+
+    @Override
+    public ScenarioModelWrapper getModel(){
+        return modelWrapper;
+    }
+
+    @Override
+    public Module getModule() {
+        return module;
+    }
+
+    @Override
+    public Project getProject() {
+        return project;
     }
 
     @Override
@@ -156,11 +188,11 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
 
     @Override
     public void addPropertyChangeListener(@NotNull PropertyChangeListener listener) {
-        /*TODO*/
+        // not used
     }
     @Override
     public void removePropertyChangeListener(@NotNull PropertyChangeListener listener) {
-        /*TODO*/
+        // not used
     }
 
     @Nullable
@@ -194,20 +226,5 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
     @Override
     public <T> void putUserData(@NotNull Key<T> tKey, @Nullable T t) {
         // not used
-    }
-
-    @Override
-    public VirtualFile getVirtualFile() {
-        return file;
-    }
-
-    @Override
-    public Module getModule() {
-        return module;
-    }
-
-    @Override
-    public Project getProject() {
-        return project;
     }
 }

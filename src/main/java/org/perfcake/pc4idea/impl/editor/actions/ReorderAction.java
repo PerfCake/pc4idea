@@ -1,6 +1,6 @@
 package org.perfcake.pc4idea.impl.editor.actions;
 
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.HasGUIChildren;
 import org.perfcake.pc4idea.api.util.Messages;
 
@@ -16,7 +16,7 @@ public class ReorderAction extends AbstractAction {
     String childName;
 
     public ReorderAction(HasGUIChildren target, String childName) {
-        super(Messages.Command.REORDER + " " + childName + "s in " +target.getName());
+        super(Messages.Command.REORDER + " " + childName + " in " + target.getName());
         this.target = target;
         this.childName = childName;
     }
@@ -26,10 +26,9 @@ public class ReorderAction extends AbstractAction {
         // not used
     }
 
-    public void actionPerformed(List<ComponentModelWrapper> childrenModels){
+    public void actionPerformed(List<AccessibleModel> childrenModels){
         target.setChildrenFromModels(childrenModels);
-        target.setChildrenFromModels(childrenModels);
-        target.commit(Messages.Command.REORDER + " " + childName + "s in " +target.getName());
+        target.commit(Messages.Command.REORDER + " " + childName + " in " + target.getName());
         target.updateGui();
     }
 }

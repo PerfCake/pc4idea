@@ -195,7 +195,7 @@ public class EditorTablePanel extends JPanel {
 
     public void setTableModel(AbstractTableModel model) {
         if (!(model instanceof EditorTableModel)) {
-            LOG.error(Messages.Log.INCORRECT_TABLE_MODEL);
+            LOG.error(Messages.Log.INVALID_TABLE_MODEL);
         }
         table.setModel(model);
         table.getColumnModel().getColumn(0).setCellRenderer(defaultTableCellRenderer);

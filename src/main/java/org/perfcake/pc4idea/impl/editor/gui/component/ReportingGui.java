@@ -3,7 +3,7 @@ package org.perfcake.pc4idea.impl.editor.gui.component;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
-import org.perfcake.pc4idea.api.editor.gui.component.ComponentGui;
+import org.perfcake.pc4idea.api.editor.gui.ComponentGui;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.editor.swing.ComponentsPanel;
 import org.perfcake.pc4idea.api.util.Messages;
@@ -85,8 +85,7 @@ public class ReportingGui extends ComponentGui {
     @Override
     public Object openEditorDialogAndGetResult() {
         ReportingEditor editor = new ReportingEditor(modelWrapper.getContext().getModule());
-        Scenario.Reporting model = (Scenario.Reporting) modelWrapper.retrieveModel();
-        editor.setReporting((model == null) ? new Scenario.Reporting() : model);
+        editor.setReporting((Scenario.Reporting) modelWrapper.retrieveModel());
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {
@@ -98,7 +97,7 @@ public class ReportingGui extends ComponentGui {
     @Override
     public void updateGui() {
         Scenario.Reporting reporting = (Scenario.Reporting) modelWrapper.retrieveModel();
-        if (reporting == null) {
+        if (reporting.getReporter().isEmpty()) {
             this.getActionMap().get(ActionType.ADDP).setEnabled(false);
         } else {
             this.getActionMap().get(ActionType.ADDP).setEnabled(true);
@@ -117,7 +116,8 @@ public class ReportingGui extends ComponentGui {
     @Override
     public Dimension getMinimumSize() {
         int panelMinWidth = panelReporters.getMinimumSize().width;
-        int width = (panelMinWidth + 20 > labelReportingWidth + 30) ? panelMinWidth + 20 : labelReportingWidth + 30;
+        int width = (panelMinWidth + 20 > labelReportingWidth + 30) ?
+                panelMinWidth + 20 : labelReportingWidth + 30;
         return new Dimension(width, panelReporters.getMinimumSize().height + 50);
     }
 }

@@ -2,7 +2,7 @@ package org.perfcake.pc4idea.impl.editor.modelwrapper.component;
 
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.HasGUIChildren;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.Togglable;
 import org.perfcake.pc4idea.api.util.Messages;
@@ -18,18 +18,23 @@ import java.util.List;
 /**
  * Created by Stanislav Kaleta on 3/18/15.
  */
-public class ValidationModelWrapper implements ComponentModelWrapper, HasGUIChildren, Togglable {
+public class ValidationModelWrapper implements AccessibleModel, HasGUIChildren, Togglable {
     private Scenario.Validation validationModel;
 
     private ValidationGui validationGui;
 
     private ContextProvider context;
+
     private MessagesValidationSync sync;
 
     public ValidationModelWrapper(ContextProvider context, MessagesValidationSync sync) {
         this.context = context;
         this.sync = sync;
         validationGui = new ValidationGui(this);
+    }
+
+    public MessagesValidationSync getSync(){
+        return sync;
     }
 
     @Override
@@ -59,27 +64,36 @@ public class ValidationModelWrapper implements ComponentModelWrapper, HasGUIChil
 
     @Override
     public void updateModel(Object componentModel) {
-        validationModel = (componentModel != null) ? (Scenario.Validation) componentModel : new Scenario.Validation();
+        Scenario.Validation tempModel = (Scenario.Validation) componentModel;
+        if (validationModel == null){
+            validationModel = tempModel;
+        } else {
+            validationModel.setEnabled(tempModel.isEnabled());
+            validationModel.setFastForward(tempModel.isFastForward());
+            validationModel.getValidator().clear();
+            validationModel.getValidator().addAll(tempModel.getValidator());
+        }
+
         sync.syncValidatorRef();
     }
 
     @Override
     public Object retrieveModel() {
-        return (validationModel.getValidator().isEmpty()) ? null : validationModel;
+        return validationModel;
     }
 
     public void addValidator(Scenario.Validation.Validator validator){
         if (validator == null) {
-            throw new NullPointerException("validator to add is null");
+            throw new NullPointerException(Messages.Exception.ADD_NULL_VALIDATOR);
         }
         validationModel.getValidator().add(validator);
     }
 
     @Override
-    public List<ComponentModelWrapper> getChildrenModels() {
-        List<ComponentModelWrapper> childrenModelList = new ArrayList<>();
+    public List<AccessibleModel> getChildrenModels() {
+        List<AccessibleModel> childrenModelList = new ArrayList<>();
         for (Scenario.Validation.Validator validator : validationModel.getValidator()){
-            ComponentModelWrapper validatorModelWrapper = new ValidatorModelWrapper(this);
+            AccessibleModel validatorModelWrapper = new ValidatorModelWrapper(this);
             validatorModelWrapper.updateModel(validator);
             validatorModelWrapper.updateGui();
             childrenModelList.add(validatorModelWrapper);
@@ -88,15 +102,15 @@ public class ValidationModelWrapper implements ComponentModelWrapper, HasGUIChil
     }
 
     @Override
-    public void setChildrenFromModels(List<ComponentModelWrapper> childrenModels) {
+    public void setChildrenFromModels(List<AccessibleModel> childrenModels) {
         validationModel.getValidator().clear();
-        for (ComponentModelWrapper childModel : childrenModels){
+        for (AccessibleModel childModel : childrenModels){
             validationModel.getValidator().add((Scenario.Validation.Validator) childModel.retrieveModel());
         }
     }
 
     @Override
-    public void deleteChild(ComponentModelWrapper childModelWrapper) {
+    public void deleteChild(AccessibleModel childModelWrapper) {
         Scenario.Validation.Validator validatorToDel = (Scenario.Validation.Validator) childModelWrapper.retrieveModel();
         validationModel.getValidator().remove(validatorToDel);
         sync.syncValidatorRef();
@@ -105,9 +119,5 @@ public class ValidationModelWrapper implements ComponentModelWrapper, HasGUIChil
     @Override
     public void setToggle(boolean toggle) {
         validationModel.setEnabled(toggle);
-    }
-
-    public MessagesValidationSync getSync(){
-        return sync;
     }
 }

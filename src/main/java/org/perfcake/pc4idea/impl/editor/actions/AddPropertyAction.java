@@ -31,7 +31,6 @@ public class AddPropertyAction extends AbstractAction {
             target.addProperty(property);
             target.commit(Messages.Command.ADD + " " + Messages.Scenario.PROPERTY);
             target.updateGui();
-
         }
     }
 }

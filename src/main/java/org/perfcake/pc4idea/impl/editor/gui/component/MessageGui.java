@@ -3,7 +3,7 @@ package org.perfcake.pc4idea.impl.editor.gui.component;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
-import org.perfcake.pc4idea.api.editor.gui.component.ComponentGui;
+import org.perfcake.pc4idea.api.editor.gui.ComponentGui;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.impl.editor.actions.*;
 import org.perfcake.pc4idea.impl.editor.editor.component.MessageEditor;
@@ -23,7 +23,6 @@ import java.awt.event.MouseEvent;
  */
 public class MessageGui extends ComponentGui {
     private MessageModelWrapper modelWrapper;
-    private MessagesModelWrapper parentModelWrapper;
 
     private JLabel messageAttr;
 
@@ -32,12 +31,11 @@ public class MessageGui extends ComponentGui {
     public MessageGui(MessageModelWrapper modelWrapper, MessagesModelWrapper parentModelWrapper) {
         super(modelWrapper.getContext());
         this.modelWrapper = modelWrapper;
-        this.parentModelWrapper = parentModelWrapper;
-        initComponents();
+        initComponents(parentModelWrapper);
         updateColors();
     }
 
-    private void initComponents() {
+    private void initComponents(MessagesModelWrapper parentModelWrapper) {
         messageAttr = new JLabel("-");
         messageAttr.setFont(new Font(messageAttr.getFont().getName(), 0, 15));
 
@@ -56,15 +54,15 @@ public class MessageGui extends ComponentGui {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
+                ((JPanel) e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
             }
             @Override
             public void mouseEntered(MouseEvent e) {
-                ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
+                ((JPanel) e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
             }
             @Override
             public void mouseReleased(MouseEvent e){
-                ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
+                ((JPanel) e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
             }
         });
 
@@ -93,7 +91,7 @@ public class MessageGui extends ComponentGui {
 
     @Override
     public Object openEditorDialogAndGetResult() {
-        MessageEditor editor = new MessageEditor(parentModelWrapper.getSync());
+        MessageEditor editor = new MessageEditor(modelWrapper.getSync());
         editor.setMessage((Scenario.Messages.Message) modelWrapper.retrieveModel());
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
@@ -127,8 +125,8 @@ public class MessageGui extends ComponentGui {
                 messageSize.width = 40;
             }
         }
-        parentModelWrapper.getSync().syncValidatorRef();
-        parentModelWrapper.getSync().repaintDependencies();
+        modelWrapper.getSync().syncValidatorRef();
+        modelWrapper.getSync().repaintDependencies();
     }
 
     @Override

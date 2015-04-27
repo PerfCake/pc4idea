@@ -3,17 +3,19 @@ package org.perfcake.pc4idea.impl.editor.modelwrapper.component;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.CanAddProperty;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.util.Messages;
+import org.perfcake.pc4idea.impl.editor.actions.CommitAction;
 import org.perfcake.pc4idea.impl.editor.gui.component.GeneratorGui;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * Created by Stanislav Kaleta on 3/16/15.
  */
-public class GeneratorModelWrapper implements ComponentModelWrapper, CanAddProperty {
+public class GeneratorModelWrapper implements AccessibleModel, CanAddProperty {
     private Scenario.Generator generatorModel;
 
     private GeneratorGui generatorGui;
@@ -37,7 +39,7 @@ public class GeneratorModelWrapper implements ComponentModelWrapper, CanAddPrope
 
     @Override
     public void commit(String message) {
-        /*TODO*/
+        new CommitAction(context).actionPerformed(new ActionEvent(this,1,message));
     }
 
     @Override
@@ -52,7 +54,16 @@ public class GeneratorModelWrapper implements ComponentModelWrapper, CanAddPrope
 
     @Override
     public void updateModel(Object componentModel) {
-        generatorModel = (Scenario.Generator) componentModel;
+        Scenario.Generator tempModel = (Scenario.Generator) componentModel;
+        if (generatorModel == null){
+            generatorModel = tempModel;
+        } else {
+            generatorModel.setRun(tempModel.getRun());
+            generatorModel.setThreads(tempModel.getThreads());
+            generatorModel.setClazz(tempModel.getClazz());
+            generatorModel.getProperty().clear();
+            generatorModel.getProperty().addAll(tempModel.getProperty());
+        }
     }
 
     @Override

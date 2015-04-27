@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.ui.JBSplitter;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.treeStructure.Tree;
+import org.perfcake.pc4idea.api.util.Messages;
 import org.perfcake.pc4idea.api.util.PerfCakeReflectUtil;
 
 import javax.swing.*;
@@ -47,30 +48,30 @@ public class ScenarioEditorGui extends JPanel {
         PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(null);
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) additiveComponentsTree.getModel().getRoot();
 
-        DefaultMutableTreeNode messages = new DefaultMutableTreeNode("Messages");
-        messages.add(new DefaultMutableTreeNode("Message"));
+        DefaultMutableTreeNode messages = new DefaultMutableTreeNode(Messages.Scenario.MESSAGES);
+        messages.add(new DefaultMutableTreeNode(Messages.Scenario.MESSAGE));
         root.add(messages);
 
-        DefaultMutableTreeNode validators = new DefaultMutableTreeNode("Validators");
+        DefaultMutableTreeNode validators = new DefaultMutableTreeNode(Messages.Scenario.VALIDATOR + "s");
         for (String clazz : reflectUtil.findComponentClassNames(PerfCakeReflectUtil.VALIDATOR)) {
             validators.add(new DefaultMutableTreeNode(clazz));
         }
         root.add(validators);
 
-        DefaultMutableTreeNode reporters = new DefaultMutableTreeNode("Reporters");
+        DefaultMutableTreeNode reporters = new DefaultMutableTreeNode(Messages.Scenario.REPORTER + "s");
         for (String clazz : reflectUtil.findComponentClassNames(PerfCakeReflectUtil.REPORTER)) {
             reporters.add(new DefaultMutableTreeNode(clazz));
         }
         root.add(reporters);
 
-        DefaultMutableTreeNode destinations = new DefaultMutableTreeNode("Destinations");
+        DefaultMutableTreeNode destinations = new DefaultMutableTreeNode(Messages.Scenario.DESTINATION + "s");
         for (String clazz : reflectUtil.findComponentClassNames(PerfCakeReflectUtil.DESTINATION)) {
             destinations.add(new DefaultMutableTreeNode(clazz));
         }
         root.add(destinations);
 
-        DefaultMutableTreeNode properties = new DefaultMutableTreeNode("Properties");
-        properties.add(new DefaultMutableTreeNode("Property"));
+        DefaultMutableTreeNode properties = new DefaultMutableTreeNode(Messages.Scenario.PROPERTIES);
+        properties.add(new DefaultMutableTreeNode(Messages.Scenario.PROPERTY));
         root.add(properties);
 
         DefaultMutableTreeNode connections = new DefaultMutableTreeNode("Connections");

@@ -3,7 +3,7 @@ package org.perfcake.pc4idea.impl.editor.gui.component;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
-import org.perfcake.pc4idea.api.editor.gui.component.ComponentGui;
+import org.perfcake.pc4idea.api.editor.gui.ComponentGui;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.util.MessagesValidationSync;
 import org.perfcake.pc4idea.impl.editor.actions.AddPropertyAction;
@@ -26,7 +26,6 @@ import java.awt.event.MouseEvent;
  */
 public class ValidatorGui extends ComponentGui {
     private ValidatorModelWrapper modelWrapper;
-    private ValidationModelWrapper parentModelWrapper;
 
     private JLabel validatorAttr;
 
@@ -35,12 +34,11 @@ public class ValidatorGui extends ComponentGui {
     public ValidatorGui(ValidatorModelWrapper modelWrapper, ValidationModelWrapper parentModelWrapper) {
         super(modelWrapper.getContext());
         this.modelWrapper = modelWrapper;
-        this.parentModelWrapper = parentModelWrapper;
-        initComponents();
+        initComponents(parentModelWrapper);
         updateColors();
     }
 
-    private void initComponents() {
+    private void initComponents(ValidationModelWrapper parentModelWrapper) {
         validatorAttr = new JLabel("-");
         validatorAttr.setFont(new Font(validatorAttr.getFont().getName(), 0, 15));
 
@@ -59,15 +57,15 @@ public class ValidatorGui extends ComponentGui {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
+                ((JPanel) e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
             }
             @Override
             public void mouseEntered(MouseEvent e) {
-                ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
+                ((JPanel) e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
             }
             @Override
             public void mouseReleased(MouseEvent e){
-                ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
+                ((JPanel) e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
             }
         });
 
@@ -88,7 +86,7 @@ public class ValidatorGui extends ComponentGui {
 
     @Override
     public Object openEditorDialogAndGetResult() {
-        MessagesValidationSync sync = parentModelWrapper.getSync();
+        MessagesValidationSync sync = modelWrapper.getSync();
         ValidatorEditor editor = new ValidatorEditor(modelWrapper.getContext().getModule(), sync);
         editor.setValidator((Scenario.Validation.Validator) modelWrapper.retrieveModel());
         EditorDialog dialog = new EditorDialog(editor);
@@ -113,7 +111,7 @@ public class ValidatorGui extends ComponentGui {
         }
         validatorAttr.setText("("+id+") "+validator.getClazz());
         validatorSize.width = fontMetrics.stringWidth(validatorAttr.getText()) + 30;
-        parentModelWrapper.getSync().repaintDependencies();
+        modelWrapper.getSync().repaintDependencies();
     }
 
     @Override

@@ -1,21 +1,40 @@
 package org.perfcake.pc4idea.api.editor.modelwrapper.component;
 
-import org.perfcake.pc4idea.api.editor.modelwrapper.Model;
+import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
+
+import javax.swing.*;
 
 /**
- * Created by Stanislav Kaleta on 3/16/15. TODO documentation
+ * Created by Stanislav Kaleta on 4/24/15.
  */
-public interface ComponentModelWrapper extends Model {
-
+public interface ComponentModelWrapper {
     /**
      *
-     * @param componentModel
+     * @return
      */
-    public void updateModel(Object componentModel);
+    public ContextProvider getContext();
 
     /**
      *
      * @return
      */
-    public Object retrieveModel();
+    public String getName();
+
+    /**
+     *
+     * @return
+     */
+    public JPanel getGui();
+
+    /**
+     *
+     */
+    public void updateGui();
+
+    /**
+     * Performs commit action. This will cause that competent manager will load the model from the editor todo
+     * and will invoke update scenario file action. This methods should be called right after
+     * action which modifies scenario.
+     */
+    public void commit(String message);
 }

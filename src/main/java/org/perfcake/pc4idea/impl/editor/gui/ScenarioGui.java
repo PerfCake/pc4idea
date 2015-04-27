@@ -1,12 +1,10 @@
 package org.perfcake.pc4idea.impl.editor.gui;
 
-import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.color.ColorAdjustable;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.editor.swing.DependenciesPanel;
 import org.perfcake.pc4idea.api.util.Messages;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.ScenarioModelWrapper;
 import org.perfcake.pc4idea.todo.settings.ColorComponents;
 
 import javax.swing.*;
@@ -20,14 +18,11 @@ import java.awt.event.ComponentEvent;
  * Date: 6.3.2015
  */
 public class ScenarioGui extends JLayeredPane implements ColorAdjustable {
-    private ScenarioModelWrapper scenarioModelWrapper;
-
     private JPanel layerBackground;
     private JPanel layerScenario;
     private DependenciesPanel layerDependencies;
 
-    public ScenarioGui(ScenarioModelWrapper scenarioModelWrapper) {
-        this.scenarioModelWrapper = scenarioModelWrapper;
+    public ScenarioGui() {
         initComponents();
         updateColors();
     }
@@ -43,7 +38,6 @@ public class ScenarioGui extends JLayeredPane implements ColorAdjustable {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
-
                 layerBackground.setBounds(0, 0, ScenarioGui.this.getSize().width, ScenarioGui.this.getSize().height);
                 layerScenario.setBounds(0, 0, ScenarioGui.this.getSize().width, ScenarioGui.this.getSize().height);
                 layerDependencies.setBounds(0, 0, ScenarioGui.this.getSize().width, ScenarioGui.this.getSize().height);
@@ -52,12 +46,15 @@ public class ScenarioGui extends JLayeredPane implements ColorAdjustable {
 
         JLabel labelError = new JLabel(Messages.Label.SCENARIO_INVALID,SwingConstants.CENTER);
         labelError.setFont(new Font(labelError.getFont().getName(),labelError.getFont().getStyle(),15));
+
         JLabel labelHint = new JLabel(Messages.Label.SCENARIO_INVALID_HINT,SwingConstants.CENTER);
         labelHint.setFont(new Font(labelHint.getFont().getName(),labelHint.getFont().getStyle(),15));
+
         SpringLayout layerBackgroundLayout = new SpringLayout();
         layerBackground.setLayout(layerBackgroundLayout);
         layerBackground.add(labelError);
         layerBackground.add(labelHint);
+
         layerBackgroundLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, labelError,
                 0,
                 SpringLayout.HORIZONTAL_CENTER, layerBackground);
@@ -72,15 +69,11 @@ public class ScenarioGui extends JLayeredPane implements ColorAdjustable {
                 SpringLayout.SOUTH,labelError);
     }
 
-    public void updateGui(){
-        Scenario scenarioModel = scenarioModelWrapper.getScenarioModel();
-
-        if (scenarioModel != null){
+    public void updateGui(ComponentModelWrapper[] modelWrappers) {
+        if (modelWrappers != null) {
             layerScenario.removeAll();
             layerScenario.revalidate();
             layerScenario.repaint();
-
-            ComponentModelWrapper[] modelWrappers = scenarioModelWrapper.getScenarioComponents();
 
             GroupLayout scenarioLayout = new GroupLayout(layerScenario);
             layerScenario.setLayout(scenarioLayout);
@@ -115,7 +108,6 @@ public class ScenarioGui extends JLayeredPane implements ColorAdjustable {
             layerDependencies.setVisible(false);
             layerScenario.setVisible(false);
         }
-
     }
 
     public DependenciesPanel getLayerDependencies(){

@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.api.editor.gui.component;
+package org.perfcake.pc4idea.api.editor.gui;
 
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorAdjustable;

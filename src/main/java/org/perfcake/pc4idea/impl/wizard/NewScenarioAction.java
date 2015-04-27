@@ -23,6 +23,9 @@ public class NewScenarioAction extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
         VirtualFile file = e.getData(DataKeys.VIRTUAL_FILE);
+        if (file == null){
+            return;
+        }
         String dirURI = (file.isDirectory()) ? file.getUrl() : file.getParent().getUrl();
 
         Module module = e.getData(DataKeys.MODULE);
@@ -37,7 +40,12 @@ public class NewScenarioAction extends AnAction {
             Scenario model = wizard.getScenarioModel();
 
             /*TODO switch scenario type*/
-            new XMLScenarioManager(scenarioDirectory, e.getProject()).createScenario(name, model);
+            if (e.getProject() != null){
+                new XMLScenarioManager(null, e.getProject()).createScenario(scenarioDirectory, name, model);
+            } else {
+                /*TODO log shit*/
+            }
+
         }
     }
 

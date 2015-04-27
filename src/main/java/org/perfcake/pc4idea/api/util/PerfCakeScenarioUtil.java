@@ -40,7 +40,7 @@ public class PerfCakeScenarioUtil {
             return new XMLScenarioManager(file, project);
         }
         if (isDSLScenario(file)){
-            return new DSLScenarioManager(file,project);
+            return new DSLScenarioManager(file, project);
         }
         throw new UnsupportedOperationException("unexpected error - scenario type can't be find!");
     }

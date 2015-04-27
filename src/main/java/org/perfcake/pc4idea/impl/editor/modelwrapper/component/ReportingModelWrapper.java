@@ -3,8 +3,8 @@ package org.perfcake.pc4idea.impl.editor.modelwrapper.component;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.CanAddProperty;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.HasGUIChildren;
 import org.perfcake.pc4idea.api.util.Messages;
 import org.perfcake.pc4idea.impl.editor.actions.CommitAction;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Created by Stanislav Kaleta on 3/18/15.
  */
-public class ReportingModelWrapper implements ComponentModelWrapper, CanAddProperty, HasGUIChildren {
+public class ReportingModelWrapper implements AccessibleModel, CanAddProperty, HasGUIChildren {
     private Scenario.Reporting reportingModel;
 
     private ReportingGui reportingGui;
@@ -57,12 +57,20 @@ public class ReportingModelWrapper implements ComponentModelWrapper, CanAddPrope
 
     @Override
     public void updateModel(Object componentModel) {
-        reportingModel = (componentModel != null) ? (Scenario.Reporting) componentModel : new Scenario.Reporting();
+        Scenario.Reporting tempModel = (Scenario.Reporting) componentModel;
+        if (reportingModel == null){
+            reportingModel = tempModel;
+        } else {
+            reportingModel.getProperty().clear();
+            reportingModel.getProperty().addAll(tempModel.getProperty());
+            reportingModel.getReporter().clear();
+            reportingModel.getReporter().addAll(tempModel.getReporter());
+        }
     }
 
     @Override
     public Object retrieveModel() {
-        return (reportingModel.getReporter().isEmpty()) ? null : reportingModel;
+        return reportingModel;
     }
 
     public void addReporter(Scenario.Reporting.Reporter reporter) {
@@ -78,10 +86,10 @@ public class ReportingModelWrapper implements ComponentModelWrapper, CanAddPrope
     }
 
     @Override
-    public List<ComponentModelWrapper> getChildrenModels() {
-        List<ComponentModelWrapper> childrenModelList = new ArrayList<>();
+    public List<AccessibleModel> getChildrenModels() {
+        List<AccessibleModel> childrenModelList = new ArrayList<>();
         for (Scenario.Reporting.Reporter reporter : reportingModel.getReporter()) {
-            ComponentModelWrapper reporterModelWrapper = new ReporterModelWrapper(this);
+            AccessibleModel reporterModelWrapper = new ReporterModelWrapper(this);
             reporterModelWrapper.updateModel(reporter);
             reporterModelWrapper.updateGui();
             childrenModelList.add(reporterModelWrapper);
@@ -90,15 +98,15 @@ public class ReportingModelWrapper implements ComponentModelWrapper, CanAddPrope
     }
 
     @Override
-    public void setChildrenFromModels(List<ComponentModelWrapper> childrenModels) {
+    public void setChildrenFromModels(List<AccessibleModel> childrenModels) {
         reportingModel.getReporter().clear();
-        for (ComponentModelWrapper childModel : childrenModels) {
+        for (AccessibleModel childModel : childrenModels) {
             reportingModel.getReporter().add((Scenario.Reporting.Reporter) childModel.retrieveModel());
         }
     }
 
     @Override
-    public void deleteChild(ComponentModelWrapper childModelWrapper) {
+    public void deleteChild(AccessibleModel childModelWrapper) {
         Scenario.Reporting.Reporter reporterToDel =
                 (Scenario.Reporting.Reporter) childModelWrapper.retrieveModel();
         reportingModel.getReporter().remove(reporterToDel);

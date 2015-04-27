@@ -3,13 +3,14 @@ package org.perfcake.pc4idea.impl.editor.gui.component;
 import org.perfcake.model.Property;
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
-import org.perfcake.pc4idea.api.editor.gui.component.ComponentGui;
+import org.perfcake.pc4idea.api.editor.gui.ComponentGui;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.HasGUIChildren;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.impl.editor.actions.DeleteAction;
 import org.perfcake.pc4idea.impl.editor.actions.EditAction;
 import org.perfcake.pc4idea.impl.editor.editor.component.PropertyEditor;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.PropertyModelWrapper;
 import org.perfcake.pc4idea.todo.settings.ColorComponents;
 
 import javax.swing.*;
@@ -23,22 +24,20 @@ import java.awt.event.MouseEvent;
  * Created by Stanislav Kaleta on 3/7/15.
  */
 public class PropertyGui extends ComponentGui {
-    private ComponentModelWrapper modelWrapper;
-    private ComponentModelWrapper parentModelWrapper;
+    private PropertyModelWrapper modelWrapper;
 
     private JLabel propertyAttr;
 
     private Dimension propertySize = new Dimension(40, 40);
 
-    public PropertyGui(ComponentModelWrapper modelWrapper, ComponentModelWrapper parentModelWrapper) {
+    public PropertyGui(PropertyModelWrapper modelWrapper, ComponentModelWrapper parentModelWrapper) {
         super(modelWrapper.getContext());
         this.modelWrapper = modelWrapper;
-        this.parentModelWrapper = parentModelWrapper;
-        initComponents();
+        initComponents(parentModelWrapper);
         updateColors();
     }
 
-    private void initComponents() {
+    private void initComponents(ComponentModelWrapper parentModelWrapper) {
         propertyAttr = new JLabel("-");
         propertyAttr.setFont(new Font(propertyAttr.getFont().getName(), 0, 15));
 
@@ -57,18 +56,17 @@ public class PropertyGui extends ComponentGui {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
+                ((JPanel) e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
             }
             @Override
             public void mouseEntered(MouseEvent e) {
-                ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
+                ((JPanel) e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
             }
             @Override
             public void mouseReleased(MouseEvent e){
-                ((JPanel)e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
+                ((JPanel) e.getComponent().getAccessibleContext().getAccessibleParent()).dispatchEvent(e);
             }
         });
-
 
         getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper));
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.SHIFT_MASK), ActionType.EDIT);

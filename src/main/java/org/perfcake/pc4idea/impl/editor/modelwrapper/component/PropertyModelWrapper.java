@@ -2,7 +2,7 @@ package org.perfcake.pc4idea.impl.editor.modelwrapper.component;
 
 import org.perfcake.model.Property;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.util.Messages;
 import org.perfcake.pc4idea.impl.editor.actions.CommitAction;
 import org.perfcake.pc4idea.impl.editor.gui.component.PropertyGui;
@@ -13,14 +13,14 @@ import java.awt.event.ActionEvent;
 /**
  * Created by Stanislav Kaleta on 3/17/15.
  */
-public class PropertyModelWrapper implements ComponentModelWrapper {
+public class PropertyModelWrapper implements AccessibleModel {
     private Property propertyModel;
 
     private PropertyGui propertyGui;
 
     private ContextProvider context;
 
-    public PropertyModelWrapper(ComponentModelWrapper parent) {
+    public PropertyModelWrapper(AccessibleModel parent) {
         context = parent.getContext();
         propertyGui = new PropertyGui(this, parent);
     }

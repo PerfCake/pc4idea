@@ -3,8 +3,8 @@ package org.perfcake.pc4idea.impl.editor.modelwrapper.component;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.CanAddProperty;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.util.Messages;
 import org.perfcake.pc4idea.api.util.MessagesValidationSync;
 import org.perfcake.pc4idea.impl.editor.actions.CommitAction;
@@ -16,18 +16,23 @@ import java.awt.event.ActionEvent;
 /**
  * Created by Stanislav Kaleta on 3/31/15.
  */
-public class ValidatorModelWrapper implements ComponentModelWrapper, CanAddProperty {
+public class ValidatorModelWrapper implements AccessibleModel, CanAddProperty {
     private Scenario.Validation.Validator validatorModel;
 
     private ValidatorGui validatorGui;
-    private MessagesValidationSync sync;
 
     private ContextProvider context;
 
+    private MessagesValidationSync sync;
+
     public ValidatorModelWrapper(ValidationModelWrapper parent) {
         context = parent.getContext();
-        validatorGui = new ValidatorGui(this, parent);
         sync = parent.getSync();
+        validatorGui = new ValidatorGui(this, parent);
+    }
+
+    public MessagesValidationSync getSync(){
+        return sync;
     }
 
     @Override

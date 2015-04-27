@@ -3,8 +3,8 @@ package org.perfcake.pc4idea.impl.editor.modelwrapper.component;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.CanAddProperty;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.HasGUIChildren;
 import org.perfcake.pc4idea.api.util.Messages;
 import org.perfcake.pc4idea.impl.editor.actions.CommitAction;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Created by Stanislav Kaleta on 3/18/15.
  */
-public class PropertiesModelWrapper implements ComponentModelWrapper, HasGUIChildren, CanAddProperty {
+public class PropertiesModelWrapper implements AccessibleModel, HasGUIChildren, CanAddProperty {
     private Scenario.Properties propertiesModel;
 
     private PropertiesGui propertiesGui;
@@ -55,16 +55,20 @@ public class PropertiesModelWrapper implements ComponentModelWrapper, HasGUIChil
         propertiesGui.updateGui();
     }
 
-
-
     @Override
     public void updateModel(Object componentModel) {
-        propertiesModel = (componentModel != null) ? (Scenario.Properties) componentModel : new Scenario.Properties();
+        Scenario.Properties tempModel = (Scenario.Properties) componentModel;
+        if (propertiesModel == null){
+            propertiesModel = tempModel;
+        } else {
+            propertiesModel.getProperty().clear();
+            propertiesModel.getProperty().addAll(tempModel.getProperty());
+        }
     }
 
     @Override
     public Object retrieveModel() {
-        return (propertiesModel.getProperty().isEmpty()) ? null : propertiesModel;
+        return propertiesModel;
     }
 
     @Override
@@ -73,10 +77,10 @@ public class PropertiesModelWrapper implements ComponentModelWrapper, HasGUIChil
     }
 
     @Override
-    public List<ComponentModelWrapper> getChildrenModels() {
-        List<ComponentModelWrapper> childrenModelList = new ArrayList<>();
+    public List<AccessibleModel> getChildrenModels() {
+        List<AccessibleModel> childrenModelList = new ArrayList<>();
         for (Property property : propertiesModel.getProperty()){
-            ComponentModelWrapper propertyModelWrapper = new PropertyModelWrapper(this);
+            AccessibleModel propertyModelWrapper = new PropertyModelWrapper(this);
             propertyModelWrapper.updateModel(property);
             propertyModelWrapper.updateGui();
             childrenModelList.add(propertyModelWrapper);
@@ -85,15 +89,15 @@ public class PropertiesModelWrapper implements ComponentModelWrapper, HasGUIChil
     }
 
     @Override
-    public void setChildrenFromModels(List<ComponentModelWrapper> childrenModels) {
+    public void setChildrenFromModels(List<AccessibleModel> childrenModels) {
         propertiesModel.getProperty().clear();
-        for (ComponentModelWrapper childModel : childrenModels){
+        for (AccessibleModel childModel : childrenModels){
             propertiesModel.getProperty().add((Property) childModel.retrieveModel());
         }
     }
 
     @Override
-    public void deleteChild(ComponentModelWrapper childModelWrapper) {
+    public void deleteChild(AccessibleModel childModelWrapper) {
         Property propertyToDel = (Property) childModelWrapper.retrieveModel();
         propertiesModel.getProperty().remove(propertyToDel);
     }

@@ -3,7 +3,7 @@ package org.perfcake.pc4idea.impl.editor.gui.component;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
-import org.perfcake.pc4idea.api.editor.gui.component.ComponentGui;
+import org.perfcake.pc4idea.api.editor.gui.ComponentGui;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.editor.swing.ComponentsPanel;
 import org.perfcake.pc4idea.api.util.Messages;
@@ -82,8 +82,7 @@ public class PropertiesGui extends ComponentGui {
     @Override
     public Object openEditorDialogAndGetResult() {
         PropertiesEditor editor = new PropertiesEditor();
-        Scenario.Properties model = (Scenario.Properties) modelWrapper.retrieveModel();
-        editor.setObjProperties((model == null) ? new Scenario.Properties() : model);
+        editor.setObjProperties((Scenario.Properties) modelWrapper.retrieveModel());
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
         if (dialog.getExitCode() == 0) {

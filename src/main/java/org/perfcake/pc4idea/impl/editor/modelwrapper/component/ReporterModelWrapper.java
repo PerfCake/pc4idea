@@ -3,8 +3,8 @@ package org.perfcake.pc4idea.impl.editor.modelwrapper.component;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.CanAddProperty;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.HasGUIChildren;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.Togglable;
 import org.perfcake.pc4idea.api.util.Messages;
@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Created by Stanislav Kaleta on 4/18/15.
  */
-public class ReporterModelWrapper implements ComponentModelWrapper, CanAddProperty, HasGUIChildren, Togglable {
+public class ReporterModelWrapper implements AccessibleModel, CanAddProperty, HasGUIChildren, Togglable {
     private Scenario.Reporting.Reporter reporterModel;
 
     private ReporterGui reporterGui;
@@ -78,7 +78,7 @@ public class ReporterModelWrapper implements ComponentModelWrapper, CanAddProper
 
     public void addDestination(Scenario.Reporting.Reporter.Destination destination) {
         if (destination == null) {
-            throw new NullPointerException(Messages.Exception.ADD_NULL_DESTIN);
+            throw new NullPointerException(Messages.Exception.ADD_NULL_DESTINATION);
         }
         reporterModel.getDestination().add(destination);
     }
@@ -89,10 +89,10 @@ public class ReporterModelWrapper implements ComponentModelWrapper, CanAddProper
     }
 
     @Override
-    public List<ComponentModelWrapper> getChildrenModels() {
-        List<ComponentModelWrapper> childrenModelList = new ArrayList<>();
+    public List<AccessibleModel> getChildrenModels() {
+        List<AccessibleModel> childrenModelList = new ArrayList<>();
         for (Scenario.Reporting.Reporter.Destination destination : reporterModel.getDestination()) {
-            ComponentModelWrapper destinationModelWrapper = new DestinationModelWrapper(this);
+            AccessibleModel destinationModelWrapper = new DestinationModelWrapper(this);
             destinationModelWrapper.updateModel(destination);
             destinationModelWrapper.updateGui();
             childrenModelList.add(destinationModelWrapper);
@@ -101,15 +101,15 @@ public class ReporterModelWrapper implements ComponentModelWrapper, CanAddProper
     }
 
     @Override
-    public void setChildrenFromModels(List<ComponentModelWrapper> childrenModels) {
+    public void setChildrenFromModels(List<AccessibleModel> childrenModels) {
         reporterModel.getDestination().clear();
-        for (ComponentModelWrapper childModel : childrenModels) {
+        for (AccessibleModel childModel : childrenModels) {
             reporterModel.getDestination().add((Scenario.Reporting.Reporter.Destination) childModel.retrieveModel());
         }
     }
 
     @Override
-    public void deleteChild(ComponentModelWrapper childModelWrapper) {
+    public void deleteChild(AccessibleModel childModelWrapper) {
         Scenario.Reporting.Reporter.Destination destinationToDel =
                 (Scenario.Reporting.Reporter.Destination) childModelWrapper.retrieveModel();
         reporterModel.getDestination().remove(destinationToDel);

@@ -1,12 +1,8 @@
 package org.perfcake.pc4idea.impl.editor.actions;
 
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
-import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
 import org.perfcake.pc4idea.api.manager.ScenarioManager;
 import org.perfcake.pc4idea.api.util.PerfCakeScenarioUtil;
-import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditor;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -26,19 +22,8 @@ public class CommitAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        FileEditorManager editorManager = FileEditorManager.getInstance(contextProvider.getProject());
-
-        /*TODO*/
-
-        FileEditor selectedEditor = editorManager.getSelectedEditor(contextProvider.getVirtualFile());
-        if (selectedEditor != null){
-            if (selectedEditor instanceof ScenarioEditor){
-                Scenario model = ((ScenarioEditor) selectedEditor).getModel().getScenarioModel();
-                if (PerfCakeScenarioUtil.isPerfCakeScenario(contextProvider.getVirtualFile())){
-                    ScenarioManager manager = PerfCakeScenarioUtil.getScenarioManager(contextProvider.getProject(), contextProvider.getVirtualFile());
-                    manager.updateScenario(model,e.getActionCommand());
-                }
-            }
-        }
+        ScenarioManager manager = PerfCakeScenarioUtil.getScenarioManager(
+                contextProvider.getProject(), contextProvider.getVirtualFile());
+        manager.updateScenario(contextProvider.getModel().getScenarioModel(), e.getActionCommand());
     }
 }

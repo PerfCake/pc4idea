@@ -25,6 +25,7 @@ public class Messages {
         public static final String ATTACH = commandBundle.getString("ATTACH");
         public static final String UP = commandBundle.getString("UP");
         public static final String DOWN = commandBundle.getString("DOWN");
+        public static final String CREATE = commandBundle.getString("CREATE");
     }
 
     public static class Label {
@@ -34,24 +35,33 @@ public class Messages {
 
     public static class Log {
         public static final String[] UNSUPPORTED_MODULE = logBundle.getString("UNSUPPORTED_MODULE").split("@");
-        public static final String INCORRECT_TABLE_MODEL = logBundle.getString("INCORRECT_TABLE_MODEL");
+        public static final String INVALID_TABLE_MODEL = logBundle.getString("INVALID_TABLE_MODEL");
+        public static final String[] NOT_DIR_FILE = logBundle.getString("NOT_DIR_FILE").split("@");
+
     }
 
     public static class Dialog {
         public static final String UNSUPPORTED_MODULE = dialogBundle.getString("UNSUPPORTED_MODULE");
+        public static final String[] FILE_EXISTS = dialogBundle.getString("FILE_EXISTS").split("@");
     }
 
     public static class Title {
         public static final String UNSUPPORTED_MODULE = titleBundle.getString("UNSUPPORTED_MODULE");
+        public static final String FILE_EXISTS = titleBundle.getString("FILE_EXISTS");
+
     }
 
     public static class Exception {
         public static final String[] NULL_MODULE = exceptionBundle.getString("NULL_MODULE").split("@");
-        public static final String ADD_NULL_VAL_REF = exceptionBundle.getString("ADD_NULL_VAL_REF");
-        public static final String[] VAL_ID_NOT_EXISTS = exceptionBundle.getString("VAL_ID_NOT_EXISTS").split("@");
-        public static final String ADD_NULL_MSG = exceptionBundle.getString("ADD_NULL_MESSAGE");
-        public static final String ADD_NULL_DESTIN = exceptionBundle.getString("ADD_NULL_DESTIN");
+        public static final String ADD_NULL_VALIDATOR_REF = exceptionBundle.getString("ADD_NULL_VALIDATOR_REF");
+        public static final String[] INVALID_VALIDATOR_ID = exceptionBundle.getString("INVALID_VALIDATOR_ID").split("@");
+        public static final String ADD_NULL_MESSAGE = exceptionBundle.getString("ADD_NULL_MESSAGE");
+        public static final String ADD_NULL_DESTINATION = exceptionBundle.getString("ADD_NULL_DESTINATION");
         public static final String ADD_NULL_REPORTER = exceptionBundle.getString("ADD_NULL_REPORTER");
+        public static final String ADD_NULL_VALIDATOR = exceptionBundle.getString("ADD_NULL_VALIDATOR");
+        public static final String[] UNABLE_TO_CREATE_SCENARIO = exceptionBundle.getString("UNABLE_TO_CREATE_SCENARIO").split("@");
+        public static final String NULL_DOCUMENT = exceptionBundle.getString("NULL_DOCUMENT");
+        public static final String UNSUPPORTED_OPERATION = exceptionBundle.getString("UNSUPPORTED_OPERATION");
     }
 
     public static class Scenario {

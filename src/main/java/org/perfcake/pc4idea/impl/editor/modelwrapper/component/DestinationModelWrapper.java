@@ -3,18 +3,20 @@ package org.perfcake.pc4idea.impl.editor.modelwrapper.component;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.CanAddProperty;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.Togglable;
 import org.perfcake.pc4idea.api.util.Messages;
+import org.perfcake.pc4idea.impl.editor.actions.CommitAction;
 import org.perfcake.pc4idea.impl.editor.gui.component.DestinationGui;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * Created by Stanislav Kaleta on 4/18/15.
  */
-public class DestinationModelWrapper implements ComponentModelWrapper, CanAddProperty, Togglable {
+public class DestinationModelWrapper implements AccessibleModel, CanAddProperty, Togglable {
     private Scenario.Reporting.Reporter.Destination destinationModel;
 
     private DestinationGui destinationGui;
@@ -38,7 +40,7 @@ public class DestinationModelWrapper implements ComponentModelWrapper, CanAddPro
 
     @Override
     public void commit(String message) {
-        /*TODO*/
+        new CommitAction(context).actionPerformed(new ActionEvent(this,1,message));
     }
 
     @Override
