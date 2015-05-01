@@ -38,9 +38,16 @@ public class ScenarioGui extends JLayeredPane implements ColorAdjustable {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
-                layerBackground.setBounds(0, 0, ScenarioGui.this.getSize().width, ScenarioGui.this.getSize().height);
-                layerScenario.setBounds(0, 0, ScenarioGui.this.getSize().width, ScenarioGui.this.getSize().height);
-                layerDependencies.setBounds(0, 0, ScenarioGui.this.getSize().width, ScenarioGui.this.getSize().height);
+                layerBackground.setBounds(0, 0,
+                        ScenarioGui.this.getSize().width, ScenarioGui.this.getSize().height);
+                if (layerScenario.isVisible()){
+                    layerScenario.setBounds(0, 0,
+                            ScenarioGui.this.getSize().width, ScenarioGui.this.getSize().height);
+                }
+                if (layerDependencies.isVisible()) {
+                    layerDependencies.setBounds(0, 0,
+                            ScenarioGui.this.getSize().width, ScenarioGui.this.getSize().height);
+                }
             }
         });
 

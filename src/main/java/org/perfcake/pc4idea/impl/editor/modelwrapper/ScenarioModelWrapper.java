@@ -39,22 +39,19 @@ public class ScenarioModelWrapper {
     }
 
     public Scenario getScenarioModel() {
-        Scenario tempModel = scenarioModel;
-        if (tempModel.getMessages().getMessage().isEmpty()){
-            tempModel.setMessages(null);
-        }
-        if (tempModel.getValidation().getValidator().isEmpty()){
-            tempModel.setValidation(null);
-        }
-        if (tempModel.getReporting().getReporter().isEmpty()){
-            tempModel.setReporting(null);
-        }
-//        if (tempModel.getProperties().getProperty().isEmpty()){
-//            tempModel.setProperties(null);
-//        }
-        if (tempModel.getProperties() == null){
-            System.out.println("FFFFFFFU");/*TODO*/
-        }
+        Scenario tempModel = new Scenario();
+
+        tempModel.setGenerator(scenarioModel.getGenerator());
+        tempModel.setSender(scenarioModel.getSender());
+        tempModel.setMessages((scenarioModel.getMessages().getMessage().isEmpty()) ?
+                null : scenarioModel.getMessages());
+        tempModel.setValidation((scenarioModel.getValidation().getValidator().isEmpty()) ?
+                null : scenarioModel.getValidation());
+        tempModel.setReporting((scenarioModel.getReporting().getReporter().isEmpty()) ?
+                null : scenarioModel.getReporting());
+        tempModel.setProperties((scenarioModel.getProperties().getProperty().isEmpty()) ?
+                null : scenarioModel.getProperties());
+
         return tempModel;
     }
 
@@ -71,22 +68,29 @@ public class ScenarioModelWrapper {
         ValidationModelWrapper validationModelWrapper = new ValidationModelWrapper(context, syncMV);
         syncMV.setEditorMode(messagesModelWrapper, validationModelWrapper);
 
-
-        messagesModelWrapper.updateModel((scenarioModel.getMessages() == null) ?
-                new Scenario.Messages() : scenarioModel.getMessages());
-        validationModelWrapper.updateModel((scenarioModel.getValidation() == null) ?
-                new Scenario.Validation() : scenarioModel.getValidation());
+        if ((scenarioModel.getMessages() == null)){
+            scenarioModel.setMessages(new Scenario.Messages());
+        }
+        messagesModelWrapper.updateModel(scenarioModel.getMessages());
+        if (scenarioModel.getValidation() == null){
+            scenarioModel.setValidation(new Scenario.Validation());
+        }
+        validationModelWrapper.updateModel(scenarioModel.getValidation());
         messagesModelWrapper.updateGui();
         validationModelWrapper.updateGui();
 
         ReportingModelWrapper reportingModelWrapper = new ReportingModelWrapper(context);
-        reportingModelWrapper.updateModel((scenarioModel.getReporting() == null) ?
-                new Scenario.Reporting() : scenarioModel.getReporting());
+        if (scenarioModel.getReporting() == null){
+            scenarioModel.setReporting(new Scenario.Reporting());
+        }
+        reportingModelWrapper.updateModel(scenarioModel.getReporting());
         reportingModelWrapper.updateGui();
 
         PropertiesModelWrapper propertiesModelWrapper = new PropertiesModelWrapper(context);
-        propertiesModelWrapper.updateModel((scenarioModel.getProperties() == null) ?
-                new Scenario.Properties() : scenarioModel.getProperties());
+        if (scenarioModel.getProperties() == null){
+            scenarioModel.setProperties(new Scenario.Properties());
+        }
+        propertiesModelWrapper.updateModel(scenarioModel.getProperties());
         propertiesModelWrapper.updateGui();
 
         return new ComponentModelWrapper[]{generatorModelWrapper, senderModelWrapper,

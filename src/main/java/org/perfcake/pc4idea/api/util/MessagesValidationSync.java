@@ -201,8 +201,8 @@ public class MessagesValidationSync {
      *
      */
     public void repaintDependencies(){
-        if (!isEditorMode) {
-            LOG.error("dependency lines isn't allowed in wizard mode!");
+        if (isEditorMode == null || !isEditorMode) {
+            LOG.warn("dependency lines isn't allowed!");
             return;
         }
         ApplicationManager.getApplication().invokeLater(new Runnable() {

@@ -36,12 +36,12 @@ public class NewScenarioAction extends AnAction {
         if (wizardDialog.getExitCode() == 0) {
             VirtualFile scenarioDirectory = wizard.getScenarioDirectory();
             String name = wizard.getScenarioName();
-            name = (name.contains(".xml")) ? name : name + ".xml";
+            name = (name.contains(".xml")) ? name : name + ".xml";/*TODO remove this*/
             Scenario model = wizard.getScenarioModel();
 
             /*TODO switch scenario type*/
             if (e.getProject() != null){
-                new XMLScenarioManager(null, e.getProject()).createScenario(scenarioDirectory, name, model);
+                new XMLScenarioManager(e.getProject()).createScenario(scenarioDirectory, name, model);
             } else {
                 /*TODO log shit*/
             }

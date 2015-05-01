@@ -11,7 +11,6 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.manager.ScenarioManager;
@@ -40,8 +39,13 @@ public class XMLScenarioManager implements ScenarioManager {
     private VirtualFile file;
     private Project project;
 
-    public XMLScenarioManager(@Nullable VirtualFile file, @NotNull Project project){
+    public XMLScenarioManager(@NotNull VirtualFile file, @NotNull Project project){
         this.file = file;
+        this.project = project;
+    }
+
+    public XMLScenarioManager(@NotNull Project project){
+        this.file = null ;
         this.project = project;
     }
 
@@ -93,6 +97,12 @@ public class XMLScenarioManager implements ScenarioManager {
 
     @Override
     public Scenario retrieveScenario() throws ScenarioManagerException {
+        if (file == null){
+            String msg = Messages.Exception.NULL_VIRTUAL_FILE;
+            LOG.error(msg);
+            throw new ScenarioManagerException(msg);
+        }
+
         Scenario scenarioModel = null;
         try {
             String schemaUri = "/schemas/perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd";
@@ -114,7 +124,13 @@ public class XMLScenarioManager implements ScenarioManager {
     @Override
     public void updateScenario(@NotNull Scenario model,
                                @NotNull String actionCommand) throws ScenarioManagerException {
-        final Document document = FileDocumentManager.getInstance().getDocument(file);
+        if (file == null){
+            String msg = Messages.Exception.NULL_VIRTUAL_FILE;
+            LOG.error(msg);
+            throw new ScenarioManagerException(msg);
+        }
+
+        Document document = FileDocumentManager.getInstance().getDocument(file);
         if (document == null){
             String msg = Messages.Exception.NULL_DOCUMENT;
             LOG.error(msg);

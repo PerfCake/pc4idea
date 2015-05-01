@@ -62,6 +62,7 @@ public class Messages {
         public static final String[] UNABLE_TO_CREATE_SCENARIO = exceptionBundle.getString("UNABLE_TO_CREATE_SCENARIO").split("@");
         public static final String NULL_DOCUMENT = exceptionBundle.getString("NULL_DOCUMENT");
         public static final String UNSUPPORTED_OPERATION = exceptionBundle.getString("UNSUPPORTED_OPERATION");
+        public static final String NULL_VIRTUAL_FILE = exceptionBundle.getString("NULL_VIRTUAL_FILE");
     }
 
     public static class Scenario {

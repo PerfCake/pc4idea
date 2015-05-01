@@ -6,6 +6,7 @@ import com.intellij.notification.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.*;
+import com.intellij.openapi.fileEditor.impl.EditorHistoryManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
@@ -15,7 +16,7 @@ import com.intellij.testFramework.LightVirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.perfcake.pc4idea.api.editor.editor.ContextProvider;
-import org.perfcake.pc4idea.api.editor.editor.ScenarioVirtualFileListener;
+import org.perfcake.pc4idea.api.editor.editor.Updatable;
 import org.perfcake.pc4idea.api.manager.ScenarioManager;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
 import org.perfcake.pc4idea.api.util.Messages;
@@ -32,16 +33,17 @@ import java.beans.PropertyChangeListener;
  * User: Stanislav Kaleta
  * Date: 17.9.2014
  */
-public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO/REDO/externa zmena > upadte gui*/
+public class ScenarioEditor implements FileEditor, ContextProvider, Updatable {
     private static final Logger LOG = Logger.getInstance(ScenarioEditor.class);
     public static final String PERFCAKE_NOTIFICATION_ID = "PerfCake Plugin";
 
     private Project project;
     private VirtualFile file;
-    private ScenarioVirtualFileListener svfListener;
     private long modificationStamp = 0l;
+    private ScenarioDocumentAdapter documentAdapter;
     private Module module;
     private ScenarioManager manager;
+    private boolean updateInProcess;
 
     private final ScenarioEditorGui editorGui;
     private final ScenarioModelWrapper modelWrapper;
@@ -66,18 +68,24 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
             throw new IllegalArgumentException(eMsg[0] + file + eMsg[1] + project);
         }
 
-        svfListener = new ScenarioVirtualFileListener(this);
-        this.file.getFileSystem().addVirtualFileListener(svfListener);
+        documentAdapter = new ScenarioDocumentAdapter(this);
+        Document document = FileDocumentManager.getInstance().getDocument(file);
+        if (document != null){
+            document.addDocumentListener(documentAdapter);
+        }
+        updateInProcess = false;
 
         manager = PerfCakeScenarioUtil.getScenarioManager(project, file);
         modelWrapper = new ScenarioModelWrapper(this);
         editorGui = new ScenarioEditorGui(modelWrapper.getScenarioGui());
-        setUpEditor();
+        update();
     }
 
-    private void setUpEditor(){
+    @Override
+    public void update(){
         try {
             modelWrapper.setScenarioModel(manager.retrieveScenario());
+            /*TODO for testing purpose*/System.out.println("SCENARIO GUI UPDATED");
         } catch (ScenarioManagerException e) {
             /*TODO for testing purpose*/System.out.println(e.getMessage());
             modelWrapper.setScenarioModel(null);
@@ -87,16 +95,27 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
     }
 
     @Override
-    public void dispose() {/*TODO maybe just here*/
-        /*TODO dont forget to save doc*/
+    public boolean needUpdate() {
+        if (updateInProcess){
+            updateInProcess = false;
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void dispose() {
 //        /*TODO threadIntrpted exc.(dispose in porgress?)*/
 //        /*TODO filewatcher?*/
-//        file.getFileSystem().removeVirtualFileListener(scenarioVirtualFileListener);
-//        document.removeDocumentListener(scenarioDocumentListener);
-//
-//        xmlEditor.dispose();
-//        EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
-        file.getFileSystem().removeVirtualFileListener(svfListener);
+
+        deselectNotify();
+
+        EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);
+
+        Document document = FileDocumentManager.getInstance().getDocument(file);
+        if (document != null){
+            document.removeDocumentListener(documentAdapter);
+        }
     }
 
     @NotNull
@@ -133,10 +152,11 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
         if (document != null){
             if (modificationStamp != document.getModificationStamp()){
                 FileDocumentManager.getInstance().saveDocument(document);
-                setUpEditor();
+                update();
             }
         }
         modelWrapper.repaintDependencies();
+        documentAdapter.enable();
     }
 
     @Override
@@ -148,6 +168,7 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
                 modificationStamp = document.getModificationStamp();
             }
         }
+        documentAdapter.disable();
     }
 
     @Override
@@ -157,6 +178,7 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
 
     @Override
     public ScenarioModelWrapper getModel(){
+        updateInProcess = true;
         return modelWrapper;
     }
 
@@ -190,6 +212,7 @@ public class ScenarioEditor implements FileEditor, ContextProvider { /*TODO UNDO
     public void addPropertyChangeListener(@NotNull PropertyChangeListener listener) {
         // not used
     }
+
     @Override
     public void removePropertyChangeListener(@NotNull PropertyChangeListener listener) {
         // not used
