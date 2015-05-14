@@ -11,40 +11,32 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
-import org.perfcake.PerfCakeConst;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.manager.ScenarioManager;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
 import org.perfcake.pc4idea.api.util.Messages;
-import org.xml.sax.SAXException;
+import org.perfcake.pc4idea.api.util.dsl.DslScenarioUtil;
+import org.perfcake.pc4idea.api.util.dsl.ScenarioParserException;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
-import java.io.StringWriter;
 
 /**
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
  * Date: 27.2.2015
  */
-public class XMLScenarioManager implements ScenarioManager {
-    private static final Logger LOG = Logger.getInstance(XMLScenarioManager.class);
+public class DslScenarioManager implements ScenarioManager {
+    private static final Logger LOG = Logger.getInstance(DslScenarioManager.class);
 
     private VirtualFile file;
     private Project project;
 
-    public XMLScenarioManager(@NotNull VirtualFile file, @NotNull Project project){
+    public DslScenarioManager(@NotNull VirtualFile file, @NotNull Project project){
         this.file = file;
         this.project = project;
     }
 
-    public XMLScenarioManager(@NotNull Project project){
+    public DslScenarioManager(@NotNull Project project){
         this.file = null ;
         this.project = project;
     }
@@ -72,14 +64,17 @@ public class XMLScenarioManager implements ScenarioManager {
             }
         }
 
+        name = name + ".dsl";
+
+        final String finalName = name;
         final VirtualFile finalDirectoryFile = directoryFile;
         ApplicationManager.getApplication().runWriteAction(new Runnable() {
             @Override
             public void run() {
                 try {
-                    file = finalDirectoryFile.createChildData(XMLScenarioManager.this, name);
-                    XMLScenarioManager.this.updateScenario(model,
-                            Messages.Command.CREATE + " " +Messages.Scenario.SCENARIO);
+                    file = finalDirectoryFile.createChildData(DslScenarioManager.this, finalName);
+                    DslScenarioManager.this.updateScenario(model,
+                            Messages.Command.CREATE + " " + Messages.Scenario.SCENARIO);
                     Document document = FileDocumentManager.getInstance().getDocument(file);
                     if (document != null) {
                         FileDocumentManager.getInstance().saveDocument(document);
@@ -87,8 +82,8 @@ public class XMLScenarioManager implements ScenarioManager {
                     FileEditorManager.getInstance(project).openFile(file, true);
                 } catch (IOException e) {
                     String[] msg = Messages.Exception.UNABLE_TO_CREATE_SCENARIO;
-                    LOG.error(msg[0] + name + msg[1]);
-                    throw new ScenarioManagerException(msg[0] + name + msg[1]);
+                    LOG.error(msg[0] + finalName + msg[1]);
+                    throw new ScenarioManagerException(msg[0] + finalName + msg[1]);
                 }
             }
         });
@@ -105,19 +100,17 @@ public class XMLScenarioManager implements ScenarioManager {
 
         Scenario scenarioModel = null;
         try {
-            String schemaUri = "/schemas/perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd";
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = schemaFactory.newSchema(this.getClass().getResource(schemaUri));
-
-            JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-            unmarshaller.setSchema(schema);
-            scenarioModel = (Scenario) unmarshaller.unmarshal(file.getInputStream());
-            /*TODO for testing purpose*/System.out.println("TEST LOG: scenario successfully loadedd");
-        } catch (JAXBException | SAXException | IOException e) {
-            LOG.error(e.getMessage());
-            throw new ScenarioManagerException(e);
+            Document document = FileDocumentManager.getInstance().getDocument(file);
+            if (document == null){
+                throw new ScenarioManagerException("document is null!");
+            }
+            scenarioModel = DslScenarioUtil.getModelFrom(document.getText());
+        } catch (ScenarioParserException e){
+            System.out.println(e.getMessage());
+//            LOG.error(e.getMessage());
+//            throw new ScenarioManagerException(e);
         }
+
         return scenarioModel;
     }
 
@@ -144,24 +137,13 @@ public class XMLScenarioManager implements ScenarioManager {
                     @Override
                     public void run() {
                         try {
-                            String schemaUri = "/schemas/perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd";
-                            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-                            Schema schema = schemaFactory.newSchema(XMLScenarioManager.class.getResource(schemaUri));
-
-                            JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
-                            Marshaller marshaller = context.createMarshaller();
-                            marshaller.setSchema(schema);
-                            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-                            StringWriter stringWriter = new StringWriter();
-
-                            marshaller.marshal(model, stringWriter);
-                            if (!stringWriter.toString().trim().isEmpty() && stringWriter.toString() != null) {
+                            String name = file.getName().substring(0,file.getName().length() - 4);
+                            String scenario = DslScenarioUtil.getDslScenarioFrom(model, name);
+                            if (!scenario.trim().isEmpty() && scenario != null) {
                                 /*TODO for testing purpose*/System.out.println("TEST LOG: scenario successfully saved: " + actionCommand);
-                                document.setText(stringWriter.toString());
+                                document.setText(scenario);
                             }
-                            stringWriter.close();
-                        } catch (JAXBException | SAXException | IOException e) {
+                        } catch (Exception e) {
                             LOG.error(e.getMessage());
                             throw new ScenarioManagerException(e);
                         }
@@ -169,6 +151,8 @@ public class XMLScenarioManager implements ScenarioManager {
                 });
             }
         }, actionCommand, null, UndoConfirmationPolicy.DEFAULT, document);
+
+
     }
 
     @Override

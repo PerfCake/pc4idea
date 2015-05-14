@@ -1,5 +1,6 @@
 package org.perfcake.pc4idea.api.util;
 
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.project.Project;
@@ -7,8 +8,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.pc4idea.api.manager.ScenarioManager;
-import org.perfcake.pc4idea.impl.manager.DSLScenarioManager;
-import org.perfcake.pc4idea.impl.manager.XMLScenarioManager;
+import org.perfcake.pc4idea.impl.manager.DslScenarioManager;
+import org.perfcake.pc4idea.impl.manager.XmlScenarioManager;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -37,10 +38,10 @@ public class PerfCakeScenarioUtil {
      */
     public static ScenarioManager getScenarioManager(@NotNull Project project, @NotNull VirtualFile file){
         if (isXMLScenario(file)){
-            return new XMLScenarioManager(file, project);
+            return new XmlScenarioManager(file, project);
         }
         if (isDSLScenario(file)){
-            return new DSLScenarioManager(file, project);
+            return new DslScenarioManager(file, project);
         }
         throw new UnsupportedOperationException("unexpected error - scenario type can't be find!");
     }
@@ -48,8 +49,17 @@ public class PerfCakeScenarioUtil {
 
 
     private static boolean isDSLScenario(@NotNull VirtualFile file){
-        /*TODO dorobit cez groovy script*/
-        return file.getName().contains(".dsl");
+        if (!file.getName().contains(".dsl")){
+            return false;
+        }
+        Document document = FileDocumentManager.getInstance().getDocument(file);
+        if (document == null){
+            return false;
+        }
+        if (document.getText().split("\n")[0].startsWith("scenario ")){
+            return true;
+        }
+        return false;
     }
 
     private static boolean isXMLScenario(@NotNull VirtualFile file){

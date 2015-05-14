@@ -48,7 +48,7 @@ class WizardPanel extends JPanel {
 
     private void initComponents() {
         editors = new HashMap<>();
-        editors.put(0, new URIEditor(defaultURI));
+        editors.put(0, new ScenarioDefinitionEditor(defaultURI));
         editors.put(1, new GeneratorEditor(module));
         editors.put(2, new SenderEditor(module));
         editors.put(3, new MessagesEditor(sync));
@@ -209,11 +209,15 @@ class WizardPanel extends JPanel {
     }
 
     protected String getScenarioName() {
-        return ((URIEditor) editors.get(0)).getScenarioName();
+        return ((ScenarioDefinitionEditor) editors.get(0)).getScenarioName();
+    }
+
+    protected String getScenarioType() {
+        return ((ScenarioDefinitionEditor) editors.get(0)).getScenarioType();
     }
 
     protected VirtualFile getScenarioDirectory() {
-        return ((URIEditor) editors.get(0)).getScenarioDirectory();
+        return ((ScenarioDefinitionEditor) editors.get(0)).getScenarioDirectory();
     }
 
     protected Scenario getScenarioModel() {
