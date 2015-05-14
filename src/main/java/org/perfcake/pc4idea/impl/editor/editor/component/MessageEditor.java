@@ -128,12 +128,12 @@ public class MessageEditor extends AbstractEditor {
                         NotificationType.INFORMATION), null);
             } else {
                 newMessage.setContent(null);
-                Notifications.Bus.notify(new Notification("PerfCake Plugin", "Ambiguous Input",
-                        "URI is set and Content is empty. While PerfCake prioritizes Content and " +
-                                "Content with empty string value is valid, this configuration is ambiguous. " +
-                                "For now, Content will be set to null and URI will be used. " +
-                                "If you want to use Content with empty string value, please remove URI value.",
-                        NotificationType.INFORMATION), null);
+//                Notifications.Bus.notify(new Notification("PerfCake Plugin", "Ambiguous Input",
+//                        "URI is set and Content is empty. While PerfCake prioritizes Content and " +
+//                                "Content with empty string value is valid, this configuration is ambiguous. " +
+//                                "For now, Content will be set to null and URI will be used. " +
+//                                "If you want to use Content with empty string value, please remove URI value.",
+//                        NotificationType.INFORMATION), null);
             }
         } else {
             newMessage.setContent(textFieldContent.getText());

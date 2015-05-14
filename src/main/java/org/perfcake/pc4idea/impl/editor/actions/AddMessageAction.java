@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
 import org.perfcake.pc4idea.api.util.Messages;
+import org.perfcake.pc4idea.api.util.PerfCakeModuleUtil;
 import org.perfcake.pc4idea.impl.editor.editor.component.MessageEditor;
 import org.perfcake.pc4idea.impl.editor.modelwrapper.component.MessagesModelWrapper;
 
@@ -32,6 +33,10 @@ public class AddMessageAction extends AbstractAction {
             target.addMessage(message);
             target.commit(Messages.Command.ADD + " " + Messages.Scenario.MESSAGES);
             target.updateGui();
+
+            if (editor.getMessage().getUri() != null) {
+                PerfCakeModuleUtil.createMessageFile(editor.getMessage().getUri(), target.getContext().getModule());
+            }
         }
     }
 }

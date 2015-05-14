@@ -51,7 +51,7 @@ class WizardPanel extends JPanel {
         editors.put(0, new ScenarioDefinitionEditor(defaultURI));
         editors.put(1, new GeneratorEditor(module));
         editors.put(2, new SenderEditor(module));
-        editors.put(3, new MessagesEditor(sync));
+        editors.put(3, new MessagesEditor(sync, null));
         editors.put(4, new ReportingEditor(module));
         editors.put(5, new ValidationEditor(module, sync));
         editors.put(6, new PropertiesEditor());

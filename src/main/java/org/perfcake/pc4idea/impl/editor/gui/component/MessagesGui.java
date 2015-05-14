@@ -86,7 +86,7 @@ public class MessagesGui extends ComponentGui {/*TODO attach validator*/
 
     @Override
     public Object openEditorDialogAndGetResult() {
-        MessagesEditor editor = new MessagesEditor(modelWrapper.getSync());
+        MessagesEditor editor = new MessagesEditor(modelWrapper.getSync(), modelWrapper.getContext().getModule());
         editor.setMessages((Scenario.Messages) modelWrapper.retrieveModel());
         EditorDialog dialog = new EditorDialog(editor);
         dialog.show();
