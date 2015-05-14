@@ -41,7 +41,7 @@ public class SenderEditor extends AbstractEditor {
                 String className = (String) comboBoxSenderType.getSelectedItem();
                 PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(module);
                 List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.SENDER, className);
-                panelProperties.setStructureProperties(structureProp);
+                panelProperties.setDefinedProperties(structureProp);
             }
         });
 
@@ -68,7 +68,7 @@ public class SenderEditor extends AbstractEditor {
 
         PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(module);
         List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.SENDER, sender.getClazz());
-        panelProperties.setStructureProperties(structureProp);
+        panelProperties.setDefinedProperties(structureProp);
     }
 
     public Scenario.Sender getSender(){

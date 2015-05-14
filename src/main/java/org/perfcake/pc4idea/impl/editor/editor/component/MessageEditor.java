@@ -99,9 +99,6 @@ public class MessageEditor extends AbstractEditor {
         tablePanelHeaders.setTableModel(new HeadersTableModel(message.getHeader()));
         panelAttachedValidators.setValidatorRefs(message.getValidatorRef());
         panelProperties.setListProperties(message.getProperty());
-
-        /*TODO if Message has structure properties*/
-        panelProperties.setStructureProperties(new ArrayList<>());
     }
 
     public Scenario.Messages.Message getMessage(){

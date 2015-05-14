@@ -78,9 +78,6 @@ public class PropertyEditor extends AbstractEditor {
         if (name.trim().isEmpty()) {
             info = new ValidationInfo("Name can't be empty");
         }
-        if (textFieldValue.getText().trim().isEmpty()) {
-            info = new ValidationInfo("Value can't be empty");
-        }
         return info;
     }
 }

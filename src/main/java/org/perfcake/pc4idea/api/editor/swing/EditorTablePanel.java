@@ -12,7 +12,6 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -27,11 +26,14 @@ public class EditorTablePanel extends JPanel {
     private static final Logger LOG = Logger.getInstance(EditorTablePanel.class);
 
     private JTable table;
-    private DefaultTableCellRenderer defaultTableCellRenderer;
 
     public EditorTablePanel(AbstractTableModel model){
         initComponents();
         table.setModel(model);
+        EditorTableCellRenderer cellRenderer = new EditorTableCellRenderer();
+        for (int c=0;c<table.getColumnCount();c++){
+            table.getColumnModel().getColumn(c).setCellRenderer(cellRenderer);
+        }
     }
 
     private void initComponents(){
@@ -57,6 +59,7 @@ public class EditorTablePanel extends JPanel {
                         int selectedRow = table.getSelectedRow();
                         if (selectedRow >= 0) {
                             ((EditorTableModel) table.getModel()).editRow(selectedRow);
+                            return;
                         }
                     }
                     buttonEdit.setEnabled(true);
@@ -70,6 +73,12 @@ public class EditorTablePanel extends JPanel {
                         buttonMoveDown.setEnabled(false);
                     } else {
                         buttonMoveDown.setEnabled(true);
+                    }
+
+                    if (table.getModel() instanceof PropertiesTableModel){
+                        if (!((PropertiesTableModel) table.getModel()).isUserProperty(table.getSelectedRow())){
+                            buttonDelete.setEnabled(false);
+                        }
                     }
                 }
             }
@@ -92,6 +101,8 @@ public class EditorTablePanel extends JPanel {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
                     ((EditorTableModel) table.getModel()).editRow(selectedRow);
+                    buttonEdit.setEnabled(false);
+                    buttonDelete.setEnabled(false);
                 }
             }
         });
@@ -104,6 +115,8 @@ public class EditorTablePanel extends JPanel {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
                     ((EditorTableModel) table.getModel()).deleteRow(selectedRow);
+                    buttonEdit.setEnabled(false);
+                    buttonDelete.setEnabled(false);
                 }
             }
         });
@@ -162,35 +175,6 @@ public class EditorTablePanel extends JPanel {
                         .addComponent(buttonDelete)
                         .addComponent(buttonMoveUp)
                         .addComponent(buttonMoveDown)));
-
-        defaultTableCellRenderer = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-                if (!(table.getModel() instanceof PropertiesTableModel)) {
-                    return c;
-                }
-                PropertiesTableModel model = (PropertiesTableModel) table.getModel();
-                Boolean isValid = model.isPropertyValid(row);
-                if (isValid == null) {
-                    return c;
-                }
-                float bgBrightness = 1f;
-                float fgBrightness = 0.5f;
-                float bgSaturation = 0.1f;
-                float fgSaturation = 0.9f;
-                if (isValid) {
-                    c.setBackground(Color.getHSBColor(140 / 360f, bgSaturation, bgBrightness));
-                    c.setForeground(Color.getHSBColor(140 / 360f, fgSaturation, fgBrightness));
-                } else {
-                    c.setBackground(Color.getHSBColor(0 / 360f, bgSaturation, bgBrightness));
-                    c.setForeground(Color.getHSBColor(0 / 360f, fgSaturation, fgBrightness));
-                }
-
-                return c;
-            }
-        };
     }
 
     public void setTableModel(AbstractTableModel model) {
@@ -198,8 +182,6 @@ public class EditorTablePanel extends JPanel {
             LOG.error(Messages.Log.INVALID_TABLE_MODEL);
         }
         table.setModel(model);
-        table.getColumnModel().getColumn(0).setCellRenderer(defaultTableCellRenderer);
-        table.getColumnModel().getColumn(1).setCellRenderer(defaultTableCellRenderer);
     }
 
     public TableModel getTableModel() {
