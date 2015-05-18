@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 /**
- * Created with IntelliJ IDEA. todo
  * User: Stanislav Kaleta
  * Date: 6.12.2014
  */

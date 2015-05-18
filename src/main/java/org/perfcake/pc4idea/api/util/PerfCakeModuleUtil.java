@@ -7,8 +7,6 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
@@ -17,13 +15,17 @@ import org.perfcake.pc4idea.impl.module.PerfCakeModuleType;
 import java.io.IOException;
 
 /**
- * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
- * Date: 4.12.2014                              TODO documentation
+ * Date: 4.12.2014
  */
 public class PerfCakeModuleUtil {
     private static final Logger LOG = Logger.getInstance(PerfCakeModuleUtil.class);
 
+    /**
+     *  creates file in messages directory
+     * @param uri uri of new file
+     * @param module module
+     */
     public static void createMessageFile(String uri, final Module module) {
         if (module == null) {
             //disabled in wizard and if null
@@ -99,37 +101,8 @@ public class PerfCakeModuleUtil {
         }
     }
 
-    public static VirtualFile findScenario(String scenarioName, String moduleName, Project project) {
-        Module module = ModuleManager.getInstance(project).findModuleByName(moduleName);
-        if (module == null) {
-            return null;
-        }
-
-        VirtualFile scenariosDir = null;
-        if (isPerfCakeModule(module)) {
-            VirtualFile moduleFile = module.getModuleFile();
-            if (moduleFile != null) {
-                for (VirtualFile file : moduleFile.getParent().getChildren()) {
-                    if (file.getName().equals("scenarios")) {
-                        scenariosDir = file;
-                    }
-                }
-            }
-        }
-        if (scenariosDir == null) {
-            return null;
-        }
-
-        for (VirtualFile scenario : scenariosDir.getChildren()) {
-            if (scenario.getName().equals(scenarioName)) {
-                return scenario;
-            }
-        }
-        return null;
-    }
-
     /**
-     * TODO doc.
+     * checks if module type is PerfCakeModule
      *
      * @param module
      * @return

@@ -45,7 +45,6 @@ public class PropertiesTableModel extends AbstractTableModel implements EditorTa
     }
 
     public boolean hasDefinedProperties(){
-        /*TODO or via constructor*/
         return !dataDefinedPropertyList.isEmpty();
     }
 

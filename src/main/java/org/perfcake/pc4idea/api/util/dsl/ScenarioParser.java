@@ -37,7 +37,6 @@ public class ScenarioParser {
         List<String> validatorLines = new ArrayList<>();
         List<String> messageLines = new ArrayList<>();
 
-        /*TODO je povinne aby bol run na druhom(tretom riadku), etc. ???*/
         for (int i = 1;i<lines.length;i++){
             if (i == 1 && !lines[i].contains("run ")){
                 propertiesLine = lines[i];
@@ -86,8 +85,6 @@ public class ScenarioParser {
         model.setMessages(parseMessages(messageLines));
         model.setProperties(parseProperties(propertiesLine));
 
-
-        /*TODO check if model is valid*/
         return model;
     }
 

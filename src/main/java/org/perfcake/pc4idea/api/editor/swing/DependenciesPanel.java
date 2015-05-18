@@ -8,9 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
- * Date: 18.11.2014                  TODO documentation
+ * Date: 18.11.2014
  */
 public class DependenciesPanel extends JPanel {
     private List<DependencyLine> dependencyLines;

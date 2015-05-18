@@ -23,7 +23,7 @@ public class ScenarioDefinitionEditor extends AbstractEditor {
         textFieldDirectoryURI.setText(defaultURI);
     }
 
-    private void initComponents() { /*TODO refactor to ScenarioEditor - add sc.type combobox*/
+    private void initComponents() {
         JLabel labelScenarioName = new JLabel("Scenario Name:");
         JLabel labelScenarioType = new JLabel("File Type:");
         JLabel labelDirectoryURI = new JLabel("Directory URI:");

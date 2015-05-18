@@ -23,18 +23,19 @@ import java.io.IOException;
 public class PerfCakeScenarioUtil {
 
     /**
-     * todo
-     * @param file
-     * @return
+     * checks if file is PerfCake scenario
+     * @param file file to check
+     * @return true if file is PerfCake scenario, false otherwise
      */
     public static boolean isPerfCakeScenario(@NotNull VirtualFile file){
         return isDSLScenario(file) || isXMLScenario(file);
     }
 
     /**
+     *  returns scenario manager for scenario file
      *
-     * @param file
-     * @return
+     * @param file file
+     * @return scenario manager
      */
     public static ScenarioManager getScenarioManager(@NotNull Project project, @NotNull VirtualFile file){
         if (isXMLScenario(file)){
@@ -45,8 +46,6 @@ public class PerfCakeScenarioUtil {
         }
         throw new UnsupportedOperationException("unexpected error - scenario type can't be find!");
     }
-
-
 
     private static boolean isDSLScenario(@NotNull VirtualFile file){
         if (!file.getName().contains(".dsl")){

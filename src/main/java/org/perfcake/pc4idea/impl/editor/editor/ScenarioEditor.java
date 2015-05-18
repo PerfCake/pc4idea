@@ -85,9 +85,7 @@ public class ScenarioEditor implements FileEditor, ContextProvider, Updatable {
     public void update(){
         try {
             modelWrapper.setScenarioModel(manager.retrieveScenario());
-            /*TODO for testing purpose*/System.out.println("SCENARIO GUI UPDATED");
         } catch (ScenarioManagerException e) {
-            /*TODO for testing purpose*/System.out.println(e.getMessage());
             modelWrapper.setScenarioModel(null);
             Notifications.Bus.notify(new Notification(PERFCAKE_NOTIFICATION_ID, Messages.Label.SCENARIO_INVALID,
                     e.getCause().toString(), NotificationType.WARNING), project);
@@ -105,9 +103,6 @@ public class ScenarioEditor implements FileEditor, ContextProvider, Updatable {
 
     @Override
     public void dispose() {
-//        /*TODO threadIntrpted exc.(dispose in porgress?)*/
-//        /*TODO filewatcher?*/
-
         deselectNotify();
 
         EditorHistoryManager.getInstance(project).updateHistoryEntry(file, false);

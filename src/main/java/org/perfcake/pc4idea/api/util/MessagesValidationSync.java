@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Created by Stanislav Kaleta on 3/27/15.           TODO documentation
+ * Created by Stanislav Kaleta on 3/27/15.
  */
 public class MessagesValidationSync {
     private static final Logger LOG = Logger.getInstance(MessagesValidationSync.class);

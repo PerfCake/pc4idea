@@ -9,8 +9,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Stanislav Kaleta                   TODO documentation
+ * User: Stanislav Kaleta
  * Date: 3.3.2015
  */
 public class ScenarioPopupMenu extends JPopupMenu {

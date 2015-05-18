@@ -11,7 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * Created by miron on 21. 11. 2014. + me TODO documentation
+ * Created by miron on 21. 11. 2014.
  */
 public class JEnabledCircle extends JPanel {
     private static final String uiClassID = "EnabledCircleUI";

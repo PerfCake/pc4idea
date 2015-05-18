@@ -10,7 +10,7 @@ import javax.swing.*;
 /**
  * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
- * Date: 3.11.2014                     TODO documentation
+ * Date: 3.11.2014
  */
 public class EditorDialog extends DialogWrapper {
     private AbstractEditor centerPanel;

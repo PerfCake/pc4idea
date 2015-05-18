@@ -18,9 +18,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
- * Date: 11.11.2014                   TODO documentation
+ * Date: 11.11.2014
  */
 public class EditorTablePanel extends JPanel {
     private static final Logger LOG = Logger.getInstance(EditorTablePanel.class);

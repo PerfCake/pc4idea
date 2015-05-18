@@ -85,7 +85,6 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <!--<filtering>true</filtering>--> <!--todo if plugin.xml {values} then filtering true-->
             </resource>
             <resource>
                 <directory>${project.build.directory}/generated-sources</directory>

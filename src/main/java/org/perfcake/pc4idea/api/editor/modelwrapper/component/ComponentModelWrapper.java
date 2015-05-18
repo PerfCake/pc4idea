@@ -9,32 +9,35 @@ import javax.swing.*;
  */
 public interface ComponentModelWrapper {
     /**
+     *  returns context provider
      *
-     * @return
+     * @return context provider
      */
     public ContextProvider getContext();
 
     /**
+     *  returns component name
      *
-     * @return
+     * @return component name
      */
     public String getName();
 
     /**
+     *  returns component gui
      *
-     * @return
+     * @return component gui
      */
     public JPanel getGui();
 
     /**
+     * updates component gui according to component model
      *
      */
     public void updateGui();
 
     /**
-     * Performs commit action. This will cause that competent manager will load the model from the editor todo
-     * and will invoke update scenario file action. This methods should be called right after
-     * action which modifies scenario.
+     * Performs commit action. This will invoke update scenario file action.
+     * This methods should be called right after action which modifies scenario.
      */
     public void commit(String message);
 }

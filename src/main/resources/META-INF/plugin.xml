@@ -5,18 +5,20 @@
     <vendor email="kstanleykale@gmail.com">Stanislav Kaleta</vendor>
 
 
-    <description> <!--TODO add description--> </description>
+    <description>
+        PerfCake plugin for Intellij Idea.<br/>
+        PerfCake is a lightweight performance testing tool and a load generator.<br/>
+        <b>Plugin requires, that Intellij Idea is run on Java at least version 7.</b>
+    </description>
 
 
-    <change-notes> <!--TODO add change notes--> </change-notes>
+    <change-notes>
+        <small>DSL scenarios integration</small>
+        <small>PerfCake plugins support</small>
+        <small>Properties detection</small>
+    </change-notes>
 
   <idea-version since-build="131"/>
-
-  <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends> TODO
-    -->
 
   <extensions defaultExtensionNs="com.intellij">
       <fileEditorProvider implementation="org.perfcake.pc4idea.impl.editor.editor.ScenarioEditorProvider"/>
@@ -29,11 +31,11 @@
   </extensions>
 
   <application-components>
-    <!-- Add your application components here --> <!--TODO register .dsl to .txt-->
+
   </application-components>
 
   <project-components>
-    <!-- Add your project components here -->
+
   </project-components>
 
     <module-components>

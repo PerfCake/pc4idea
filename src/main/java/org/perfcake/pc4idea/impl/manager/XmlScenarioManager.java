@@ -115,7 +115,6 @@ public class XmlScenarioManager implements ScenarioManager {
             Unmarshaller unmarshaller = context.createUnmarshaller();
             unmarshaller.setSchema(schema);
             scenarioModel = (Scenario) unmarshaller.unmarshal(file.getInputStream());
-            /*TODO for testing purpose*/System.out.println("TEST LOG: scenario successfully loadedd");
         } catch (JAXBException | SAXException | IOException e) {
             LOG.warn(e.getMessage());
             throw new ScenarioManagerException(e);
@@ -159,7 +158,6 @@ public class XmlScenarioManager implements ScenarioManager {
 
                             marshaller.marshal(model, stringWriter);
                             if (!stringWriter.toString().trim().isEmpty() && stringWriter.toString() != null) {
-                                /*TODO for testing purpose*/System.out.println("TEST LOG: scenario successfully saved: " + actionCommand);
                                 document.setText(stringWriter.toString());
                             }
                             stringWriter.close();

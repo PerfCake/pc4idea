@@ -83,13 +83,12 @@ public class ScenarioBuilder {
 
             reporting = reporting + reporter;
         }
-        /*TODO reporting properties? + how ""/"enabled"/"disabled" */
+
         return reporting;
     }
 
     private String buildMessages(Scenario.Messages model){
         String messages = "";
-        /*TODO content:"c" / file:"f" / "file" / "text" + ako naraz + send/"" + headers name:"value",name:"value" + validate "v" validate "v"*/
         for (Scenario.Messages.Message messageModel : model.getMessage()){
             String uri = (messageModel.getUri() != null) ? "file:\"" + messageModel.getUri() + "\" " : "";
             String content = (messageModel.getContent() != null) ?
@@ -141,7 +140,7 @@ public class ScenarioBuilder {
 
     private String buildPeriod(String type, String value){
         switch (type){
-            case "time": /*TODO ms,s,m,h,d / .it... or " it..."?*/
+            case "time":
                 return value + ".ms";
             case "iteration":
                 return value + ".iterations";

@@ -6,9 +6,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 
 /**
- * Created with IntelliJ IDEA.
  * User: Stanislav Kaleta
- * Date: 12.11.2014              TODO documentation
+ * Date: 12.11.2014
  */
 public abstract class ComponentDragListener extends MouseInputAdapter {
     private boolean mousePressed;

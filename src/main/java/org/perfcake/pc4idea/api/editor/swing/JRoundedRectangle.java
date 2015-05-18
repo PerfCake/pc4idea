@@ -11,7 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * Created by miron on 15.4.2014. + me       TODO documentation
+ * Created by miron on 15.4.2014.
  */
 public class JRoundedRectangle extends JPanel {
     private static final String uiClassID = "RoundedRectangleUI";

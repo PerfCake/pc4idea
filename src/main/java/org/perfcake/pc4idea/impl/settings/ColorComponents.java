@@ -147,7 +147,7 @@ public class ColorComponents {
      * @return default color
      */
     private static Color getDefaultColor(ColorType colorType) {
-        switch (colorType) { /*TODO mine default coloring*/
+        switch (colorType) {
             case SCENARIO_BACKGROUND:
                 return parseColor("255,255,255"); /*EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground();*/
             case GENERATOR_FOREGROUND:

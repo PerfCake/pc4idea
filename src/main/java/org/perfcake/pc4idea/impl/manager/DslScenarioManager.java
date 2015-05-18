@@ -147,7 +147,6 @@ public class DslScenarioManager implements ScenarioManager {
                             String name = file.getName().substring(0,file.getName().length() - 4);
                             String scenario = DslScenarioUtil.getDslScenarioFrom(model, name);
                             if (scenario != null && !scenario.trim().isEmpty()) {
-                                /*TODO for testing purpose*/System.out.println("TEST LOG: scenario successfully saved: " + actionCommand);
                                 document.setText(scenario);
                             }
                         } catch (Exception e) {

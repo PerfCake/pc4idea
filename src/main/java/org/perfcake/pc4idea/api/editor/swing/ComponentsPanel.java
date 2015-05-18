@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Stanislav Kaleta on 3/7/15.        TODO documentation
+ * Created by Stanislav Kaleta on 3/7/15.
  */
 public class ComponentsPanel extends JPanel {
     private HasGUIChildren parent;

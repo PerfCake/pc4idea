@@ -22,7 +22,7 @@ import java.awt.event.KeyEvent;
 /**
  * Created by Stanislav Kaleta on 3/7/15.
  */
-public class MessagesGui extends ComponentGui {/*TODO attach validator*/
+public class MessagesGui extends ComponentGui {
     private MessagesModelWrapper modelWrapper;
 
     private JLabel labelMessages;

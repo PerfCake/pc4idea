@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by miron on 4.2.2014. + me todo check see super
  * @see super
  */
 public class PerfCakeRunConfiguration extends LocatableConfigurationBase implements RefactoringListenerProvider {
