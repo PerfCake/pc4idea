@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>org.perfcake.pc4idea</id>
     <name>PerfCake Plugin</name>
-    <version>4.0</version>
+    <version>4.1</version>
     <vendor email="kstanleykale@gmail.com">Stanislav Kaleta</vendor>
 
 
