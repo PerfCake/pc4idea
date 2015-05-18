@@ -7,7 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
 import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditor;
 import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditorProvider;
@@ -43,7 +43,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         assertTrue(pcProvider.accept(getProject(), file));
         ScenarioEditor editor = (ScenarioEditor) pcProvider.createEditor(getProject(), file);
 
-        return (ValidationModelWrapper) editor.getModel().getScenarioComponents()[3];
+        return (ValidationModelWrapper) editor.getModel().prepareModelWrappers()[3];
     }
 
     //validation
@@ -138,7 +138,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<AccessibleModel> validatorModelList = validationModelWrapper.getChildrenModels();
         Collections.swap(validatorModelList, 1, 2);
 
         validationModelWrapper.setChildrenFromModels(validatorModelList);
@@ -150,7 +150,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<AccessibleModel> validatorModelList = validationModelWrapper.getChildrenModels();
 
         validationModelWrapper.deleteChild(validatorModelList.get(1));
         validationModelWrapper.commit("test");
@@ -161,7 +161,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<AccessibleModel> validatorModelList = validationModelWrapper.getChildrenModels();
 
         validationModelWrapper.deleteChild(validatorModelList.get(2));
         validationModelWrapper.commit("test");
@@ -172,9 +172,9 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<AccessibleModel> validatorModelList = validationModelWrapper.getChildrenModels();
 
-        for (ComponentModelWrapper modelWrapper : validatorModelList) {
+        for (AccessibleModel modelWrapper : validatorModelList) {
             validationModelWrapper.deleteChild(modelWrapper);
         }
         validationModelWrapper.commit("test");
@@ -186,7 +186,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<AccessibleModel> validatorModelList = validationModelWrapper.getChildrenModels();
         Scenario.Validation.Validator oldValidator = (Scenario.Validation.Validator) validatorModelList.get(1).retrieveModel();
 
         Scenario.Validation.Validator newValidator = new Scenario.Validation.Validator();
@@ -204,7 +204,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<AccessibleModel> validatorModelList = validationModelWrapper.getChildrenModels();
         Scenario.Validation.Validator oldValidator = (Scenario.Validation.Validator) validatorModelList.get(1).retrieveModel();
 
         Scenario.Validation.Validator newValidator = new Scenario.Validation.Validator();
@@ -222,7 +222,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<AccessibleModel> validatorModelList = validationModelWrapper.getChildrenModels();
         Scenario.Validation.Validator oldValidator = (Scenario.Validation.Validator) validatorModelList.get(2).retrieveModel();
 
         Scenario.Validation.Validator newValidator = new Scenario.Validation.Validator();
@@ -240,7 +240,7 @@ public class ValidationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeValidationTest.xml");
         ValidationModelWrapper validationModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> validatorModelList = validationModelWrapper.getChildrenModels();
+        List<AccessibleModel> validatorModelList = validationModelWrapper.getChildrenModels();
         Scenario.Validation.Validator oldValidator = (Scenario.Validation.Validator) validatorModelList.get(1).retrieveModel();
 
         Scenario.Validation.Validator newValidator = new Scenario.Validation.Validator();

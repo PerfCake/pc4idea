@@ -42,7 +42,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
         assertTrue(pcProvider.accept(getProject(), file));
         ScenarioEditor editor = (ScenarioEditor) pcProvider.createEditor(getProject(),file);
 
-        return (GeneratorModelWrapper) editor.getModel().getScenarioComponents()[0];
+        return (GeneratorModelWrapper) editor.getModel().prepareModelWrappers()[0];
     }
 
     public void testEditClass(){
@@ -188,7 +188,7 @@ public class GeneratorTest extends LightCodeInsightFixtureTestCase {
             generatorModelWrapper.updateModel(null);
             generatorModelWrapper.commit("test");
             fail();
-        } catch (ScenarioManagerException expected) {
+        } catch (NullPointerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeGeneratorTest.xml");

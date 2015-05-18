@@ -9,7 +9,7 @@ import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import org.perfcake.model.Header;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
 import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditor;
 import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditorProvider;
@@ -47,7 +47,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         assertTrue(pcProvider.accept(getProject(), file));
         ScenarioEditor editor = (ScenarioEditor) pcProvider.createEditor(getProject(), file);
 
-        return (MessagesModelWrapper) editor.getModel().getScenarioComponents()[2];
+        return (MessagesModelWrapper) editor.getModel().prepareModelWrappers()[2];
     }
 
     //messages
@@ -115,7 +115,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<AccessibleModel> messageModelList = messagesModelWrapper.getChildrenModels();
         Collections.swap(messageModelList, 1, 2);
 
         messagesModelWrapper.setChildrenFromModels(messageModelList);
@@ -127,7 +127,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<AccessibleModel> messageModelList = messagesModelWrapper.getChildrenModels();
 
         messagesModelWrapper.deleteChild(messageModelList.get(3));
         messagesModelWrapper.commit("test");
@@ -138,9 +138,9 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<AccessibleModel> messageModelList = messagesModelWrapper.getChildrenModels();
 
-        for (ComponentModelWrapper modelWrapper : messageModelList) {
+        for (AccessibleModel modelWrapper : messageModelList) {
             messagesModelWrapper.deleteChild(modelWrapper);
         }
         messagesModelWrapper.commit("test");
@@ -152,7 +152,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<AccessibleModel> messageModelList = messagesModelWrapper.getChildrenModels();
         Scenario.Messages.Message message = (Scenario.Messages.Message) messageModelList.get(0).retrieveModel();
         message.setUri("edited");
 
@@ -165,7 +165,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<AccessibleModel> messageModelList = messagesModelWrapper.getChildrenModels();
         Scenario.Messages.Message message = (Scenario.Messages.Message) messageModelList.get(1).retrieveModel();
         message.setContent("edited");
 
@@ -178,7 +178,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<AccessibleModel> messageModelList = messagesModelWrapper.getChildrenModels();
         Scenario.Messages.Message message = (Scenario.Messages.Message) messageModelList.get(1).retrieveModel();
         message.setMultiplicity("100");
 
@@ -191,7 +191,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<AccessibleModel> messageModelList = messagesModelWrapper.getChildrenModels();
         Scenario.Messages.Message oldMessage = (Scenario.Messages.Message) messageModelList.get(4).retrieveModel();
 
         Scenario.Messages.Message newMessage = new Scenario.Messages.Message();
@@ -217,7 +217,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTest.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<AccessibleModel> messageModelList = messagesModelWrapper.getChildrenModels();
         Scenario.Messages.Message oldMessage = (Scenario.Messages.Message) messageModelList.get(3).retrieveModel();
 
         Scenario.Messages.Message newMessage = new Scenario.Messages.Message();
@@ -243,7 +243,7 @@ public class MessagesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeMessagesTestAttachValidator.xml");
         MessagesModelWrapper messagesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> messageModelList = messagesModelWrapper.getChildrenModels();
+        List<AccessibleModel> messageModelList = messagesModelWrapper.getChildrenModels();
         Scenario.Messages.Message oldMessage = (Scenario.Messages.Message) messageModelList.get(3).retrieveModel();
 
         Scenario.Messages.Message newMessage = new Scenario.Messages.Message();

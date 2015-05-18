@@ -8,6 +8,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileTypes.ex.FileTypeChooser;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
@@ -73,6 +74,9 @@ public class DslScenarioManager implements ScenarioManager {
             public void run() {
                 try {
                     file = finalDirectoryFile.createChildData(DslScenarioManager.this, finalName);
+                    if (FileDocumentManager.getInstance().getDocument(file) == null){
+                        FileTypeChooser.associateFileType("*.dsl");
+                    }
                     DslScenarioManager.this.updateScenario(model,
                             Messages.Command.CREATE + " " + Messages.Scenario.SCENARIO);
                     Document document = FileDocumentManager.getInstance().getDocument(file);
@@ -82,7 +86,7 @@ public class DslScenarioManager implements ScenarioManager {
                     FileEditorManager.getInstance(project).openFile(file, true);
                 } catch (IOException e) {
                     String[] msg = Messages.Exception.UNABLE_TO_CREATE_SCENARIO;
-                    LOG.error(msg[0] + finalName + msg[1]);
+                    LOG.warn(msg[0] + finalName + msg[1]);
                     throw new ScenarioManagerException(msg[0] + finalName + msg[1]);
                 }
             }
@@ -102,13 +106,16 @@ public class DslScenarioManager implements ScenarioManager {
         try {
             Document document = FileDocumentManager.getInstance().getDocument(file);
             if (document == null){
-                throw new ScenarioManagerException("document is null!");
+                document = FileDocumentManager.getInstance().getDocument(file);
+                if (document == null){
+                    throw new ScenarioManagerException("document is null!");
+                }
             }
             scenarioModel = DslScenarioUtil.getModelFrom(document.getText());
         } catch (ScenarioParserException e){
             System.out.println(e.getMessage());
-//            LOG.error(e.getMessage());
-//            throw new ScenarioManagerException(e);
+            LOG.warn(e.getMessage());
+            throw new ScenarioManagerException(e);
         }
 
         return scenarioModel;
@@ -139,12 +146,12 @@ public class DslScenarioManager implements ScenarioManager {
                         try {
                             String name = file.getName().substring(0,file.getName().length() - 4);
                             String scenario = DslScenarioUtil.getDslScenarioFrom(model, name);
-                            if (!scenario.trim().isEmpty() && scenario != null) {
+                            if (scenario != null && !scenario.trim().isEmpty()) {
                                 /*TODO for testing purpose*/System.out.println("TEST LOG: scenario successfully saved: " + actionCommand);
                                 document.setText(scenario);
                             }
                         } catch (Exception e) {
-                            LOG.error(e.getMessage());
+                            LOG.warn(e.getMessage());
                             throw new ScenarioManagerException(e);
                         }
                     }

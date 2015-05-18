@@ -90,7 +90,7 @@ public class XmlScenarioManager implements ScenarioManager {
                     FileEditorManager.getInstance(project).openFile(file, true);
                 } catch (IOException e) {
                     String[] msg = Messages.Exception.UNABLE_TO_CREATE_SCENARIO;
-                    LOG.error(msg[0] + finalName + msg[1]);
+                    LOG.warn(msg[0] + finalName + msg[1]);
                     throw new ScenarioManagerException(msg[0] + finalName + msg[1]);
                 }
             }
@@ -117,7 +117,7 @@ public class XmlScenarioManager implements ScenarioManager {
             scenarioModel = (Scenario) unmarshaller.unmarshal(file.getInputStream());
             /*TODO for testing purpose*/System.out.println("TEST LOG: scenario successfully loadedd");
         } catch (JAXBException | SAXException | IOException e) {
-            LOG.error(e.getMessage());
+            LOG.warn(e.getMessage());
             throw new ScenarioManagerException(e);
         }
         return scenarioModel;
@@ -164,7 +164,7 @@ public class XmlScenarioManager implements ScenarioManager {
                             }
                             stringWriter.close();
                         } catch (JAXBException | SAXException | IOException e) {
-                            LOG.error(e.getMessage());
+                            LOG.warn(e.getMessage());
                             throw new ScenarioManagerException(e);
                         }
                     }

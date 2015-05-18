@@ -7,7 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
 import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditor;
 import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditorProvider;
@@ -42,7 +42,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         assertTrue(pcProvider.accept(getProject(), file));
         ScenarioEditor editor = (ScenarioEditor) pcProvider.createEditor(getProject(), file);
 
-        return (SenderModelWrapper) editor.getModel().getScenarioComponents()[1];
+        return (SenderModelWrapper) editor.getModel().prepareModelWrappers()[1];
     }
 
     public void testEditClass() {
@@ -97,7 +97,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeSenderTest.xml");
         SenderModelWrapper senderModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> propertyModelList = senderModelWrapper.getChildrenModels();
+        List<AccessibleModel> propertyModelList = senderModelWrapper.getChildrenModels();
         Collections.swap(propertyModelList, 1, 2);
 
         senderModelWrapper.setChildrenFromModels(propertyModelList);
@@ -109,7 +109,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeSenderTest.xml");
         SenderModelWrapper senderModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> propertyModelList = senderModelWrapper.getChildrenModels();
+        List<AccessibleModel> propertyModelList = senderModelWrapper.getChildrenModels();
 
         senderModelWrapper.deleteChild(propertyModelList.get(1));
         senderModelWrapper.commit("test");
@@ -120,7 +120,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeSenderTest.xml");
         SenderModelWrapper senderModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> propertyModelList = senderModelWrapper.getChildrenModels();
+        List<AccessibleModel> propertyModelList = senderModelWrapper.getChildrenModels();
         Property property = (Property) propertyModelList.get(0).retrieveModel();
         property.setName("newName");
 
@@ -133,7 +133,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeSenderTest.xml");
         SenderModelWrapper senderModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> propertyModelList = senderModelWrapper.getChildrenModels();
+        List<AccessibleModel> propertyModelList = senderModelWrapper.getChildrenModels();
         Property property = (Property) propertyModelList.get(0).retrieveModel();
         property.setValue("newValue");
 
@@ -150,7 +150,7 @@ public class SenderTest extends LightCodeInsightFixtureTestCase {
             senderModelWrapper.updateModel(null);
             senderModelWrapper.commit("test");
             fail();
-        } catch (ScenarioManagerException expected) {
+        } catch (NullPointerException expected) {
             // OK
         }
         myFixture.checkResultByFile("beforeSenderTest.xml");

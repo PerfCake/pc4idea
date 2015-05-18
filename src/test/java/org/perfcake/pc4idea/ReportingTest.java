@@ -7,7 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
 import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditor;
 import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditorProvider;
@@ -48,7 +48,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         ScenarioEditor editor =
                 (ScenarioEditor) pcProvider.createEditor(getProject(), file);
 
-        return (ReportingModelWrapper) editor.getModel().getScenarioComponents()[4];
+        return (ReportingModelWrapper) editor.getModel().prepareModelWrappers()[4];
     }
 
     //reporting
@@ -137,7 +137,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<AccessibleModel> reporterModelList = reportingModelWrapper.getChildrenModels();
         Collections.swap(reporterModelList, 2, 3);
 
         reportingModelWrapper.setChildrenFromModels(reporterModelList);
@@ -149,7 +149,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<AccessibleModel> reporterModelList = reportingModelWrapper.getChildrenModels();
 
         reportingModelWrapper.deleteChild(reporterModelList.get(2));
         reportingModelWrapper.commit("test");
@@ -160,9 +160,9 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<AccessibleModel> reporterModelList = reportingModelWrapper.getChildrenModels();
 
-        for (ComponentModelWrapper modelWrapper : reporterModelList) {
+        for (AccessibleModel modelWrapper : reporterModelList) {
             reportingModelWrapper.deleteChild(modelWrapper);
         }
         reportingModelWrapper.commit("test");
@@ -174,7 +174,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<AccessibleModel> reporterModelList = reportingModelWrapper.getChildrenModels();
         Scenario.Reporting.Reporter oldReporter =
                 (Scenario.Reporting.Reporter) reporterModelList.get(0).retrieveModel();
 
@@ -194,7 +194,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<AccessibleModel> reporterModelList = reportingModelWrapper.getChildrenModels();
         Scenario.Reporting.Reporter oldReporter =
                 (Scenario.Reporting.Reporter) reporterModelList.get(0).retrieveModel();
 
@@ -214,7 +214,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<AccessibleModel> reporterModelList = reportingModelWrapper.getChildrenModels();
         Scenario.Reporting.Reporter oldReporter =
                 (Scenario.Reporting.Reporter) reporterModelList.get(0).retrieveModel();
 
@@ -242,7 +242,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforeReportingTest.xml");
         ReportingModelWrapper reportingModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> reporterModelList = reportingModelWrapper.getChildrenModels();
+        List<AccessibleModel> reporterModelList = reportingModelWrapper.getChildrenModels();
         Scenario.Reporting.Reporter oldReporter =
                 (Scenario.Reporting.Reporter) reporterModelList.get(0).retrieveModel();
 
@@ -308,7 +308,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         ReporterModelWrapper reporterModelWrapper =
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(0);
 
-        List<ComponentModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
+        List<AccessibleModel> destinationModelList = reporterModelWrapper.getChildrenModels();
 
         reporterModelWrapper.deleteChild(destinationModelList.get(1));
         reporterModelWrapper.commit("test");
@@ -322,7 +322,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
         ReporterModelWrapper reporterModelWrapper =
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(0);
 
-        List<ComponentModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
+        List<AccessibleModel> destinationModelList = reporterModelWrapper.getChildrenModels();
         Collections.swap(destinationModelList,1,2);
 
         reporterModelWrapper.setChildrenFromModels(destinationModelList);
@@ -361,7 +361,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
 
         ReporterModelWrapper reporterModelWrapper =
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(0);
-        List<ComponentModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
+        List<AccessibleModel> destinationModelList = reporterModelWrapper.getChildrenModels();
 
         Scenario.Reporting.Reporter.Destination oldDestination =
                 (Scenario.Reporting.Reporter.Destination)
@@ -386,7 +386,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
 
         ReporterModelWrapper reporterModelWrapper =
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(0);
-        List<ComponentModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
+        List<AccessibleModel> destinationModelList = reporterModelWrapper.getChildrenModels();
 
         Scenario.Reporting.Reporter.Destination oldDestination =
                 (Scenario.Reporting.Reporter.Destination)
@@ -411,7 +411,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
 
         ReporterModelWrapper reporterModelWrapper =
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(0);
-        List<ComponentModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
+        List<AccessibleModel> destinationModelList = reporterModelWrapper.getChildrenModels();
 
         Scenario.Reporting.Reporter.Destination oldDestination =
                 (Scenario.Reporting.Reporter.Destination)
@@ -443,7 +443,7 @@ public class ReportingTest extends LightCodeInsightFixtureTestCase {
 
         ReporterModelWrapper reporterModelWrapper =
                 (ReporterModelWrapper) reportingModelWrapper.getChildrenModels().get(0);
-        List<ComponentModelWrapper> destinationModelList = reporterModelWrapper.getChildrenModels();
+        List<AccessibleModel> destinationModelList = reporterModelWrapper.getChildrenModels();
 
         Scenario.Reporting.Reporter.Destination oldDestination =
                 (Scenario.Reporting.Reporter.Destination)

@@ -7,7 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
 import org.perfcake.pc4idea.api.manager.ScenarioManagerException;
 import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditor;
 import org.perfcake.pc4idea.impl.editor.editor.ScenarioEditorProvider;
@@ -42,7 +42,7 @@ public class PropertiesTest extends LightCodeInsightFixtureTestCase {
         assertTrue(pcProvider.accept(getProject(), file));
         ScenarioEditor editor = (ScenarioEditor) pcProvider.createEditor(getProject(), file);
 
-        return (PropertiesModelWrapper) editor.getModel().getScenarioComponents()[5];
+        return (PropertiesModelWrapper) editor.getModel().prepareModelWrappers()[5];
     }
 
     public void testEditProperties() {
@@ -94,7 +94,7 @@ public class PropertiesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforePropertiesTest.xml");
         PropertiesModelWrapper propertiesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> propertyModelList = propertiesModelWrapper.getChildrenModels();
+        List<AccessibleModel> propertyModelList = propertiesModelWrapper.getChildrenModels();
         Collections.swap(propertyModelList, 0, 1);
 
         propertiesModelWrapper.setChildrenFromModels(propertyModelList);
@@ -106,7 +106,7 @@ public class PropertiesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforePropertiesTest.xml");
         PropertiesModelWrapper propertiesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> propertyModelList = propertiesModelWrapper.getChildrenModels();
+        List<AccessibleModel> propertyModelList = propertiesModelWrapper.getChildrenModels();
 
         propertiesModelWrapper.deleteChild(propertyModelList.get(1));
         propertiesModelWrapper.commit("test");
@@ -117,9 +117,9 @@ public class PropertiesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforePropertiesTest.xml");
         PropertiesModelWrapper propertiesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> propertyModelList = propertiesModelWrapper.getChildrenModels();
+        List<AccessibleModel> propertyModelList = propertiesModelWrapper.getChildrenModels();
 
-        for (ComponentModelWrapper modelWrapper : propertyModelList) {
+        for (AccessibleModel modelWrapper : propertyModelList) {
             propertiesModelWrapper.deleteChild(modelWrapper);
         }
         propertiesModelWrapper.commit("test");
@@ -130,7 +130,7 @@ public class PropertiesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforePropertiesTest.xml");
         PropertiesModelWrapper propertiesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> propertyModelList = propertiesModelWrapper.getChildrenModels();
+        List<AccessibleModel> propertyModelList = propertiesModelWrapper.getChildrenModels();
         Property property = (Property) propertyModelList.get(1).retrieveModel();
         property.setName("newName");
 
@@ -143,7 +143,7 @@ public class PropertiesTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("beforePropertiesTest.xml");
         PropertiesModelWrapper propertiesModelWrapper = setUpEditorAndGetModel();
 
-        List<ComponentModelWrapper> propertyModelList = propertiesModelWrapper.getChildrenModels();
+        List<AccessibleModel> propertyModelList = propertiesModelWrapper.getChildrenModels();
         Property property = (Property) propertyModelList.get(1).retrieveModel();
         property.setValue("newValue");
 
