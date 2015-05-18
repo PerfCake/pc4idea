@@ -25,7 +25,7 @@
       <configurationType implementation="org.perfcake.pc4idea.impl.run.configuration.PerfCakeConfigurationType"/>
       <runConfigurationProducer implementation="org.perfcake.pc4idea.impl.run.configuration.PerfCakeRunConfigurationProducer"/>
       <programRunner implementation="org.perfcake.pc4idea.impl.run.execution.PerfCakeProgramRunner"/>
-      <applicationConfigurable instance="org.perfcake.pc4idea.todo.settings.PerfCakeIdeSettings"/>
+      <applicationConfigurable instance="org.perfcake.pc4idea.impl.settings.PerfCakeIdeSettings"/>
   </extensions>
 
   <application-components>
@@ -38,7 +38,7 @@
 
     <module-components>
     <component>
-    <implementation-class>org.perfcake.pc4idea.todo.LoggerInitializer</implementation-class>
+    <implementation-class>org.perfcake.pc4idea.impl.module.LoggerInitializer</implementation-class>
     </component>
     </module-components>
 

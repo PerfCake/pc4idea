@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.todo;
+package org.perfcake.pc4idea.impl.module;
 
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;

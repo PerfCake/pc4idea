@@ -154,7 +154,7 @@ public class PropertiesTableModel extends AbstractTableModel implements EditorTa
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return "Name";
+                return "Property Name";
             case 1:
                 return "Value";
             case 2:

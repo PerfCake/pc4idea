@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.todo.settings;
+package org.perfcake.pc4idea.impl.settings;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

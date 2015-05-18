@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.todo.settings;
+package org.perfcake.pc4idea.impl.settings;
 
 
 import com.intellij.ide.util.PropertiesComponent;

@@ -28,6 +28,7 @@ public class ScenarioParser {
             throw new IllegalArgumentException("Last line does not contain \"end\" string!");
         }
 
+        String propertiesLine = null;
         String runLine = null;
         String generatorLine = null;
         String senderLine = null;
@@ -38,6 +39,9 @@ public class ScenarioParser {
 
         /*TODO je povinne aby bol run na druhom(tretom riadku), etc. ???*/
         for (int i = 1;i<lines.length;i++){
+            if (i == 1 && !lines[i].contains("run ")){
+                propertiesLine = lines[i];
+            }
             if (lines[i].contains("run ") && (i == 1 || i == 2)){
                 runLine = lines[i];
             }
@@ -80,6 +84,7 @@ public class ScenarioParser {
         model.setReporting(parseReporting(reporterLines));
         model.setValidation(parseValidation(validationLine, validatorLines));
         model.setMessages(parseMessages(messageLines));
+        model.setProperties(parseProperties(propertiesLine));
 
 
         /*TODO check if model is valid*/
@@ -195,6 +200,18 @@ public class ScenarioParser {
             messagesModel.getMessage().add(parseMessage(messageLine));
         }
         return messagesModel;
+    }
+
+    private Scenario.Properties parseProperties(String propertiesLine){
+        if (propertiesLine == null){
+            return null;
+        }
+        propertiesLine = removeFirstSpaces(propertiesLine);
+        String[] parts = propertiesLine.split(" ");
+        Scenario.Properties propertiesModel = new Scenario.Properties();
+        propertiesModel.getProperty().addAll(parseProperties(parts));
+
+        return propertiesModel;
     }
 
     private Scenario.Generator parseRunLine(String runLine){

@@ -1,4 +1,4 @@
-package org.perfcake.pc4idea.todo.settings;
+package org.perfcake.pc4idea.impl.settings;
 
 import com.intellij.openapi.diagnostic.Logger;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
@@ -42,8 +42,8 @@ public class ColorSettingForm implements ChangeListener {
     private JButton validatorBackground;
     private JButton destinationForeground;
     private JButton destinationBackground;
-    private JButton resetToDefaultButton;
-    private JButton turnColoringOffButton;
+    private JButton resetToDefaultButton = new JButton();
+    private JButton turnColoringOffButton = new JButton();
 
     private Map<ColorType, JButton> colorButtons;
     private Boolean changed = Boolean.FALSE;
@@ -161,10 +161,14 @@ public class ColorSettingForm implements ChangeListener {
 
     public void setButtonColors(Map<ColorType, Color> colors) {
         Map<ColorType, JButton> butons = getColorButtons();
-        for (Map.Entry<ColorType, JButton> buttonEntry : butons.entrySet()) {
-            System.out.println(buttonEntry.getKey());
-            buttonEntry.getValue().setBackground(colors.get(buttonEntry.getKey()));
-        }
+        try {
+            for (Map.Entry<ColorType, JButton> buttonEntry : butons.entrySet()) {
+                System.out.println(buttonEntry.getKey());
+                buttonEntry.getValue().setBackground(colors.get(buttonEntry.getKey()));
+
+            }
+        } catch (NullPointerException e){}
+
     }
 }
 

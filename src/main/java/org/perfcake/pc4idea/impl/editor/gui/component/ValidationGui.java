@@ -14,7 +14,7 @@ import org.perfcake.pc4idea.impl.editor.actions.ReorderAction;
 import org.perfcake.pc4idea.impl.editor.actions.ToggleAction;
 import org.perfcake.pc4idea.impl.editor.editor.component.ValidationEditor;
 import org.perfcake.pc4idea.impl.editor.modelwrapper.component.ValidationModelWrapper;
-import org.perfcake.pc4idea.todo.settings.ColorComponents;
+import org.perfcake.pc4idea.impl.settings.ColorComponents;
 
 import javax.swing.*;
 import java.awt.*;

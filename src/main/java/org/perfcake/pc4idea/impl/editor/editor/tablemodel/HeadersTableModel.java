@@ -52,7 +52,7 @@ public class HeadersTableModel extends AbstractTableModel implements EditorTable
             case 0:
                 return "Header Name";
             case 1:
-                return "Header Value";
+                return "Value";
             default:
                 return "";
         }

@@ -44,9 +44,9 @@ public class ValidatorsTableModel extends AbstractTableModel implements EditorTa
         Scenario.Validation.Validator validator = validatorList.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                return validator.getId();
-            case 1:
                 return validator.getClazz();
+            case 1:
+                return validator.getId();
             default:
                 return null;
         }
@@ -56,9 +56,9 @@ public class ValidatorsTableModel extends AbstractTableModel implements EditorTa
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return "Validator Id";
-            case 1:
                 return "Validator Type";
+            case 1:
+                return "ID";
             default:
                 return "";
         }

@@ -12,7 +12,7 @@ import org.perfcake.pc4idea.impl.editor.actions.*;
 import org.perfcake.pc4idea.impl.editor.editor.component.ReporterEditor;
 import org.perfcake.pc4idea.impl.editor.modelwrapper.component.ReporterModelWrapper;
 import org.perfcake.pc4idea.impl.editor.modelwrapper.component.ReportingModelWrapper;
-import org.perfcake.pc4idea.todo.settings.ColorComponents;
+import org.perfcake.pc4idea.impl.settings.ColorComponents;
 
 import javax.swing.*;
 import java.awt.*;

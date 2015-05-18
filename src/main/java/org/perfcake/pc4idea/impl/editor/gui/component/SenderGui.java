@@ -12,7 +12,7 @@ import org.perfcake.pc4idea.impl.editor.actions.EditAction;
 import org.perfcake.pc4idea.impl.editor.actions.ReorderAction;
 import org.perfcake.pc4idea.impl.editor.editor.component.SenderEditor;
 import org.perfcake.pc4idea.impl.editor.modelwrapper.component.SenderModelWrapper;
-import org.perfcake.pc4idea.todo.settings.ColorComponents;
+import org.perfcake.pc4idea.impl.settings.ColorComponents;
 
 import javax.swing.*;
 import java.awt.*;

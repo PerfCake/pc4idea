@@ -25,7 +25,7 @@ public class ScenarioDefinitionEditor extends AbstractEditor {
 
     private void initComponents() { /*TODO refactor to ScenarioEditor - add sc.type combobox*/
         JLabel labelScenarioName = new JLabel("Scenario Name:");
-        JLabel labelScenarioType = new JLabel("Directory Type:");
+        JLabel labelScenarioType = new JLabel("File Type:");
         JLabel labelDirectoryURI = new JLabel("Directory URI:");
         textFieldScenarioName = new JTextField();
         comboBoxScenarioType = new ComboBox(new DefaultComboBoxModel<>(new String[]{"XML", "DSL"}));

@@ -30,7 +30,7 @@ import java.util.TreeSet;
  * Date: 28.10.2014
  */
 public class MessageEditor extends AbstractEditor {
-    private JTextField textFieldMessageURI;
+    private JTextField textFieldMessageUri;
     private JTextField textFieldMultiplicity;
     private JTextField textFieldContent;
     private EditorTablePanel tablePanelHeaders;
@@ -43,10 +43,10 @@ public class MessageEditor extends AbstractEditor {
     }
 
     private void initComponents(){
-        JLabel labelMessageURI = new JLabel("URI:");
+        JLabel labelMessageUri = new JLabel("URI:");
         JLabel labelMultiplicity = new JLabel("Multiplicity:");
         JLabel labelMessageContent = new JLabel("Content:");
-        textFieldMessageURI = new JTextField(null);
+        textFieldMessageUri = new JTextField(null);
         textFieldMultiplicity = new JTextField(null);
         textFieldContent = new JTextField(null);
 
@@ -60,8 +60,8 @@ public class MessageEditor extends AbstractEditor {
         this.setLayout(layout);
         layout.setHorizontalGroup(layout.createParallelGroup()
                 .addGroup(layout.createSequentialGroup()
-                        .addComponent(labelMessageURI, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(textFieldMessageURI))
+                        .addComponent(labelMessageUri, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(textFieldMessageUri))
                 .addGroup(layout.createSequentialGroup()
                         .addComponent(labelMultiplicity, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
                         .addComponent(textFieldMultiplicity))
@@ -73,8 +73,8 @@ public class MessageEditor extends AbstractEditor {
                 .addComponent(panelAttachedValidators));
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup()
-                        .addComponent(labelMessageURI, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(textFieldMessageURI, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(labelMessageUri, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(textFieldMessageUri, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
                 .addGap(10)
                 .addGroup(layout.createParallelGroup()
                         .addComponent(labelMultiplicity, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
@@ -93,7 +93,7 @@ public class MessageEditor extends AbstractEditor {
 
 
     public void setMessage(Scenario.Messages.Message message){
-        textFieldMessageURI.setText(message.getUri());
+        textFieldMessageUri.setText(message.getUri());
         textFieldMultiplicity.setText(message.getMultiplicity());
         textFieldContent.setText(message.getContent());
         tablePanelHeaders.setTableModel(new HeadersTableModel(message.getHeader()));
@@ -103,8 +103,8 @@ public class MessageEditor extends AbstractEditor {
 
     public Scenario.Messages.Message getMessage(){
         Scenario.Messages.Message newMessage = new Scenario.Messages.Message();
-        boolean uriIsEmpty = (textFieldMessageURI.getText().isEmpty() || textFieldMessageURI.getText().trim().isEmpty());
-        newMessage.setUri(uriIsEmpty ? null : textFieldMessageURI.getText());
+        boolean uriIsEmpty = (textFieldMessageUri.getText().isEmpty() || textFieldMessageUri.getText().trim().isEmpty());
+        newMessage.setUri(uriIsEmpty ? null : textFieldMessageUri.getText());
 
         boolean multiplicityIsEmpty = (textFieldMultiplicity.getText().isEmpty() || textFieldMultiplicity.getText().trim().isEmpty());
         if (multiplicityIsEmpty){

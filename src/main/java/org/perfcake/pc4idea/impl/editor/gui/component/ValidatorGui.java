@@ -12,7 +12,7 @@ import org.perfcake.pc4idea.impl.editor.actions.EditAction;
 import org.perfcake.pc4idea.impl.editor.editor.component.ValidatorEditor;
 import org.perfcake.pc4idea.impl.editor.modelwrapper.component.ValidationModelWrapper;
 import org.perfcake.pc4idea.impl.editor.modelwrapper.component.ValidatorModelWrapper;
-import org.perfcake.pc4idea.todo.settings.ColorComponents;
+import org.perfcake.pc4idea.impl.settings.ColorComponents;
 
 import javax.swing.*;
 import java.awt.*;

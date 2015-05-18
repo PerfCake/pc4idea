@@ -11,7 +11,7 @@ import org.perfcake.pc4idea.impl.editor.actions.DeleteAction;
 import org.perfcake.pc4idea.impl.editor.actions.EditAction;
 import org.perfcake.pc4idea.impl.editor.editor.component.PropertyEditor;
 import org.perfcake.pc4idea.impl.editor.modelwrapper.component.PropertyModelWrapper;
-import org.perfcake.pc4idea.todo.settings.ColorComponents;
+import org.perfcake.pc4idea.impl.settings.ColorComponents;
 
 import javax.swing.*;
 import java.awt.*;

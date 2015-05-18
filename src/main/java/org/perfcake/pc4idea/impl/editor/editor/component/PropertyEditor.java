@@ -75,7 +75,7 @@ public class PropertyEditor extends AbstractEditor {
     public ValidationInfo areInsertedValuesValid() {
         String name = (String) comboBoxName.getSelectedItem();
         ValidationInfo info = null;
-        if (name.trim().isEmpty()) {
+        if (name == null || name.trim().isEmpty()) {
             info = new ValidationInfo("Name can't be empty");
         }
         return info;

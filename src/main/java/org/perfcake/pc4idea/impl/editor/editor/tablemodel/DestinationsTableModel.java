@@ -41,9 +41,9 @@ public class DestinationsTableModel extends AbstractTableModel implements Editor
         Scenario.Reporting.Reporter.Destination destination = destinationList.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                return destination.isEnabled();
-            case 1:
                 return destination.getClazz();
+            case 1:
+                return destination.isEnabled();
             default:
                 return null;
         }
@@ -53,9 +53,9 @@ public class DestinationsTableModel extends AbstractTableModel implements Editor
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return "Enabled";
-            case 1:
                 return "Destination type";
+            case 1:
+                return "Enabled";
             default:
                 return "";
         }

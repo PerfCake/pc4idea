@@ -9,7 +9,7 @@ import org.perfcake.pc4idea.impl.editor.actions.AddPropertyAction;
 import org.perfcake.pc4idea.impl.editor.actions.EditAction;
 import org.perfcake.pc4idea.impl.editor.editor.component.GeneratorEditor;
 import org.perfcake.pc4idea.impl.editor.modelwrapper.component.GeneratorModelWrapper;
-import org.perfcake.pc4idea.todo.settings.ColorComponents;
+import org.perfcake.pc4idea.impl.settings.ColorComponents;
 
 import javax.swing.*;
 import java.awt.*;

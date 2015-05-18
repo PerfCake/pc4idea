@@ -52,7 +52,7 @@ public class PeriodsTableModel extends AbstractTableModel implements EditorTable
             case 0:
                 return "Period Type";
             case 1:
-                return "Period Value";
+                return "Value";
             default:
                 return "";
         }

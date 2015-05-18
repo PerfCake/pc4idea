@@ -5,7 +5,7 @@ import org.perfcake.pc4idea.api.editor.color.ColorType;
 import org.perfcake.pc4idea.api.editor.modelwrapper.component.ComponentModelWrapper;
 import org.perfcake.pc4idea.api.editor.swing.DependenciesPanel;
 import org.perfcake.pc4idea.api.util.Messages;
-import org.perfcake.pc4idea.todo.settings.ColorComponents;
+import org.perfcake.pc4idea.impl.settings.ColorComponents;
 
 import javax.swing.*;
 import java.awt.*;
