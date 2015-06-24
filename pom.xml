@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.perfcake</groupId>
     <artifactId>pc4idea</artifactId>
-    <version>4.0</version>
+    <version>4.1</version>
 
     <properties>
-        <perfcake.version>4.0</perfcake.version>
-        <intellij.version>14.0.3</intellij.version>
+        <perfcake.version>${project.version}</perfcake.version>
+        <intellij.version>14.1.4</intellij.version>
         <intellijHome>{please set path to intellij home folder}</intellijHome>
     </properties>
 
