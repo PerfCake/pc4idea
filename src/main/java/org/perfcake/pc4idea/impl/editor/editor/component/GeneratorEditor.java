@@ -47,7 +47,7 @@ public class GeneratorEditor extends AbstractEditor {
                 String className = (String) comboBoxGeneratorType.getSelectedItem();
                 PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(module);
                 List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.GENERATOR, className);
-                panelProperties.setStructureProperties(structureProp);
+                panelProperties.setDefinedProperties(structureProp);
             }
         });
 
@@ -104,7 +104,7 @@ public class GeneratorEditor extends AbstractEditor {
 
         PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(module);
         List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.GENERATOR, generator.getClazz());
-        panelProperties.setStructureProperties(structureProp);
+        panelProperties.setDefinedProperties(structureProp);
     }
 
     public Scenario.Generator getGenerator(){

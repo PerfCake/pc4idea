@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenario xmlns="urn:perfcake:scenario:4.0">
+    <generator class="DefaultMessageGenerator" threads="10">
+        <run type="time" value="10"/>
+        <property name="name" value="value"/>
+    </generator>
+    <sender class="PlainSocketSender">
+        <property name="target" value="value"/>
+    </sender>
+    <reporting>
+        <property name="reportingP1" value="v1"/>
+        <property name="reportingP2" value="v2"/>
+        <property name="reportingP3" value="v3"/>
+        <property name="reportingP4" value="v4"/>
+        <reporter class="MemoryUsageReporter" enabled="true">
+            <property name="reporterP1" value="v1"/>
+            <property name="reporterP2" value="v2"/>
+            <property name="reporterP3" value="v3"/>
+            <property name="reporterP4" value="v4"/>
+            <destination class="ConsoleDestination" enabled="true">
+                <period type="ConsolePe" value="v"/>
+                <property name="destinationP1" value="v1"/>
+                <property name="destinationP2" value="v2"/>
+                <property name="destinationP3" value="v3"/>
+            </destination>
+            <destination class="CsvDestination" enabled="true">
+                <period type="CsvPe" value="v"/>
+            </destination>
+            <destination class="Log4jDestination" enabled="true">
+                <period type="Log4jPe" value="v"/>
+            </destination>
+            <destination class="Log4jDestination" enabled="false"/>
+        </reporter>
+        <reporter class="WarmUpReporter" enabled="false"/>
+        <reporter class="ThroughputStatsReporter" enabled="true"/>
+        <reporter class="ThroughputStatsReporter" enabled="false"/>
+    </reporting>
+</scenario>

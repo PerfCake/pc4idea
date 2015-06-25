@@ -48,9 +48,6 @@ public class ReportingEditor extends AbstractEditor {
     public void setReporting(Scenario.Reporting reporting){
         tablePanelReporters.setTableModel(new ReportersTableModel(reporting.getReporter(), module));
         panelProperties.setListProperties(reporting.getProperty());
-
-        /*TODO if Reporting has structure properties*/
-        panelProperties.setStructureProperties(new ArrayList<>());
     }
 
     public Scenario.Reporting getReporting(){

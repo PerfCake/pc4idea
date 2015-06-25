@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.perfcake</groupId>
     <artifactId>pc4idea</artifactId>
-    <version>4.0</version>
+    <version>4.1</version>
 
     <properties>
-        <perfcake.version>4.0</perfcake.version>
-        <intellij.version>14.0.3</intellij.version>
+        <perfcake.version>${project.version}</perfcake.version>
+        <intellij.version>14.1.4</intellij.version>
         <intellijHome>{please set path to intellij home folder}</intellijHome>
     </properties>
 
@@ -62,9 +62,28 @@
             <systemPath>${intellijHome}/lib/junit-4.11.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>intellijSources</groupId>
+            <artifactId>idea_rt</artifactId>
+            <version>4.11</version>
+            <scope>system</scope>
+            <systemPath>${intellijHome}/lib/idea_rt.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>intellijSources</groupId>
+            <artifactId>trove4j</artifactId>
+            <version>4.11</version>
+            <scope>system</scope>
+            <systemPath>${intellijHome}/lib/trove4j.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>org.perfcake</groupId>
             <artifactId>perfcake</artifactId>
             <version>${perfcake.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.19.0-GA</version>
         </dependency>
     </dependencies>
     <build>

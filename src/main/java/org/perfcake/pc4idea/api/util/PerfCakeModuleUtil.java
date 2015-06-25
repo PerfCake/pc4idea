@@ -11,6 +11,7 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 import org.perfcake.pc4idea.impl.module.PerfCakeModuleType;
 
 import java.io.IOException;
@@ -127,7 +128,13 @@ public class PerfCakeModuleUtil {
         return null;
     }
 
-    public static boolean isPerfCakeModule(Module module) {
+    /**
+     * TODO doc.
+     *
+     * @param module
+     * @return
+     */
+    public static boolean isPerfCakeModule(@NotNull Module module) {
         return PerfCakeModuleType.isOfType(module);
     }
 
@@ -136,31 +143,31 @@ public class PerfCakeModuleUtil {
      * returns them as VirtualFiles.
      *
      * @param module for which to find directories
-     * @return array of directories as VirtualFiles , where index 0 is "scenarios" directory,
+     * @return array of directories as VirtualFile, where index 0 is "scenarios" directory,
      * index 1 is "messages" directory and index 2 is "lib" directory
      */
-    public static VirtualFile[] getPerfCakeModuleDirsUri(Module module) {
+    public static VirtualFile[] findPerfCakeModuleDirs(@NotNull Module module) {
         VirtualFile scenariosDir = null;
         VirtualFile messagesDir = null;
         VirtualFile libDir = null;
-        if (module != null) {
-            if (isPerfCakeModule(module)) {
-                VirtualFile moduleFile = module.getModuleFile();
-                if (moduleFile != null) {
-                    for (VirtualFile file : moduleFile.getParent().getChildren()) {
-                        if (file.getName().equals("scenarios")) {
-                            scenariosDir = file;
-                        }
-                        if (file.getName().equals("messages")) {
-                            messagesDir = file;
-                        }
-                        if (file.getName().equals("lib")) {
-                            libDir = file;
-                        }
+
+        if (isPerfCakeModule(module)) {
+            VirtualFile moduleFile = module.getModuleFile();
+            if (moduleFile != null) {
+                for (VirtualFile file : moduleFile.getParent().getChildren()) {
+                    if (file.getName().equals("scenarios")) {
+                        scenariosDir = file;
+                    }
+                    if (file.getName().equals("messages")) {
+                        messagesDir = file;
+                    }
+                    if (file.getName().equals("lib")) {
+                        libDir = file;
                     }
                 }
             }
         }
+
         if (scenariosDir == null) {
             LOG.error("unable to find \"sceanrios\" directory in module root directory");
         }

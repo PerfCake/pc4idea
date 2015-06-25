@@ -41,9 +41,9 @@ public class ReportersTableModel extends AbstractTableModel implements EditorTab
         Scenario.Reporting.Reporter reporter = reporterList.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                return reporter.isEnabled();
-            case 1:
                 return reporter.getClazz();
+            case 1:
+                return reporter.isEnabled();
             default:
                 return null;
         }
@@ -53,9 +53,9 @@ public class ReportersTableModel extends AbstractTableModel implements EditorTab
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return "Enabled";
-            case 1:
                 return "Reporter type";
+            case 1:
+                return "Enabled";
             default:
                 return "";
         }

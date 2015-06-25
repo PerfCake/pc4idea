@@ -51,7 +51,7 @@ public class ValidatorEditor extends AbstractEditor {
                 String className = (String) comboBoxType.getSelectedItem();
                 PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(module);
                 List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.VALIDATOR, className);
-                panelProperties.setStructureProperties(structureProp);
+                panelProperties.setDefinedProperties(structureProp);
             }
         });
 
@@ -88,7 +88,7 @@ public class ValidatorEditor extends AbstractEditor {
 
         PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(module);
         List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.VALIDATOR, validator.getClazz());
-        panelProperties.setStructureProperties(structureProp);
+        panelProperties.setDefinedProperties(structureProp);
 
         idBefore = validator.getId();
 

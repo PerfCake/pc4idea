@@ -1,5 +1,6 @@
 package org.perfcake.pc4idea.impl.editor.editor.component;
 
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.component.AbstractEditor;
@@ -18,17 +19,17 @@ import java.util.ArrayList;
 public class MessagesEditor extends AbstractEditor {
     private EditorTablePanel tablePanelMessages;
 
-    //private Module module;
     private MessagesValidationSync sync;
+    private Module module;
 
-    public MessagesEditor(/*Module module, */MessagesValidationSync sync) {
-        //this.module = module;
+    public MessagesEditor(MessagesValidationSync sync, Module module) {
         this.sync = sync;
+        this.module = module;
         initComponents();
     }
 
     private void initComponents(){
-        tablePanelMessages = new EditorTablePanel(new MessagesTableModel(new ArrayList<>(), sync));
+        tablePanelMessages = new EditorTablePanel(new MessagesTableModel(new ArrayList<>(), sync, module));
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -39,7 +40,7 @@ public class MessagesEditor extends AbstractEditor {
     }
 
     public void setMessages(Scenario.Messages messages) {
-        tablePanelMessages.setTableModel(new MessagesTableModel(messages.getMessage(), sync));
+        tablePanelMessages.setTableModel(new MessagesTableModel(messages.getMessage(), sync, module));
 
     }
 

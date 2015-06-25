@@ -1,8 +1,8 @@
 package org.perfcake.pc4idea.impl.editor.actions;
 
 import com.intellij.icons.AllIcons;
-import org.perfcake.pc4idea.api.editor.modelwrapper.Togglable;
-import org.perfcake.pc4idea.todo.Messages;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.Togglable;
+import org.perfcake.pc4idea.api.util.Messages;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -11,24 +11,23 @@ import java.awt.event.ActionEvent;
  * Created by Stanislav Kaleta on 4/6/15.
  */
 public class ToggleAction extends AbstractAction {
-    private final String disableCommandText = Messages.BUNDLE.getString("DISABLE") + " ";
-    private final String enableCommandText = Messages.BUNDLE.getString("ENABLE") + " ";
+    private final String disableCommandText = Messages.Command.DISABLE + " ";
+    private final String enableCommandText = Messages.Command.ENABLE + " ";
     private Togglable target;
     private String actionName;
     private String targetName;
     boolean toggle = false;
 
-    public ToggleAction(Togglable target, String targetName, boolean toggle) {
+    public ToggleAction(Togglable target, boolean toggle) {
         super((toggle) ?
-                        Messages.BUNDLE.getString("DISABLE") + " " + targetName :
-                        Messages.BUNDLE.getString("ENABLE") + " " + targetName,
+                        Messages.Command.DISABLE + " " + target.getName() :
+                        Messages.Command.ENABLE + " " + target.getName(),
                 (toggle) ?
                         AllIcons.Debugger.MuteBreakpoints :
                         AllIcons.Debugger.Db_muted_verified_breakpoint);
         this.target = target;
         this.toggle = toggle;
-        this.targetName = targetName;
-
+        targetName = target.getName();
         actionName = (toggle) ?
                 disableCommandText + targetName :
                 enableCommandText + targetName;
@@ -38,8 +37,8 @@ public class ToggleAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         toggle = !toggle;
         target.setToggle(toggle);
-        target.getGUI().commitChanges(actionName);
-        target.getGUI().updateGUI();
+        target.commit(actionName);
+        target.updateGui();
     }
 
     public void setCurrentState(boolean toggle) {

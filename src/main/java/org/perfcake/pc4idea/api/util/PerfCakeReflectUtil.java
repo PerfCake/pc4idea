@@ -67,7 +67,7 @@ public class PerfCakeReflectUtil {
     public List<Class> findSubclasses(@NotNull Class<?> superclass) {
         Set<String> pathToJars = new HashSet<>();
         if (module != null) {
-            VirtualFile libDir = PerfCakeModuleUtil.getPerfCakeModuleDirsUri(module)[2];
+            VirtualFile libDir = PerfCakeModuleUtil.findPerfCakeModuleDirs(module)[2];
             VirtualFile[] files = libDir.getChildren();
             for (VirtualFile file : files) {
                 if (file.getFileType().equals(FileTypeManager.getInstance().getFileTypeByExtension("jar"))) {

@@ -1,8 +1,9 @@
 package org.perfcake.pc4idea.impl.editor.actions;
 
 import com.intellij.icons.AllIcons;
-import org.perfcake.pc4idea.api.editor.modelwrapper.HasGUIChildren;
-import org.perfcake.pc4idea.api.editor.modelwrapper.ModelWrapper;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.AccessibleModel;
+import org.perfcake.pc4idea.api.editor.modelwrapper.component.HasGUIChildren;
+import org.perfcake.pc4idea.api.util.Messages;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -12,20 +13,18 @@ import java.awt.event.ActionEvent;
  */
 public class DeleteAction extends AbstractAction {
     private HasGUIChildren target;
-    private ModelWrapper childToDel;
-    private String actionName;
+    private AccessibleModel childToDel;
 
-    public DeleteAction(HasGUIChildren target, ModelWrapper childToDel, String actionName){
-        super(actionName, AllIcons.Actions.Delete);
+    public DeleteAction(HasGUIChildren target, AccessibleModel childToDel){
+        super(Messages.Command.DEL + " " + childToDel.getName() +" in " + target.getName(), AllIcons.Actions.Delete);
         this.target = target;
         this.childToDel = childToDel;
-        this.actionName = actionName;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         target.deleteChild(childToDel);
-        target.getGUI().commitChanges(actionName);
-        target.getGUI().updateGUI();
+        target.commit(Messages.Command.DEL + " " + childToDel.getName() + " in " + target.getName());
+        target.updateGui();
     }
 }

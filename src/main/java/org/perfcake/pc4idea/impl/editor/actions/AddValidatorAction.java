@@ -3,8 +3,9 @@ package org.perfcake.pc4idea.impl.editor.actions;
 import com.intellij.icons.AllIcons;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
+import org.perfcake.pc4idea.api.util.Messages;
 import org.perfcake.pc4idea.impl.editor.editor.component.ValidatorEditor;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.ValidationModelWrapper;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.ValidationModelWrapper;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -14,12 +15,10 @@ import java.awt.event.ActionEvent;
  */
 public class AddValidatorAction extends AbstractAction {
     private ValidationModelWrapper target;
-    private String actionName;
 
-    public AddValidatorAction(ValidationModelWrapper target, String actionName){
-        super(actionName, AllIcons.General.Add);
+    public AddValidatorAction(ValidationModelWrapper target){
+        super(Messages.Command.ADD + " " + Messages.Scenario.VALIDATOR, AllIcons.General.Add);
         this.target = target;
-        this.actionName = actionName;
     }
 
     @Override
@@ -28,7 +27,7 @@ public class AddValidatorAction extends AbstractAction {
     }
 
     public void actionPerformedWrapper(String validatorClass){
-        ValidatorEditor editor = new ValidatorEditor(target.getGUI().getUtil().getModule(), target.getSync());
+        ValidatorEditor editor = new ValidatorEditor(target.getContext().getModule(), target.getSync());
         if (validatorClass != null){
             Scenario.Validation.Validator validator = new Scenario.Validation.Validator();
             validator.setClazz(validatorClass);
@@ -39,8 +38,8 @@ public class AddValidatorAction extends AbstractAction {
         if (dialog.getExitCode() == 0) {
             Scenario.Validation.Validator validator = editor.getValidator();
             target.addValidator(validator);
-            target.getGUI().commitChanges(actionName);
-            target.getGUI().updateGUI();
+            target.commit(Messages.Command.ADD + " " + Messages.Scenario.VALIDATOR);
+            target.updateGui();
         }
     }
 }

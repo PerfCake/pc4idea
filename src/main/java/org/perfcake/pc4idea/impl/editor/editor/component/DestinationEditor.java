@@ -48,7 +48,7 @@ public class DestinationEditor extends AbstractEditor {
                 String className = (String) comboBoxDestinationType.getSelectedItem();
                 PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(module);
                 List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.DESTINATION, className);
-                panelProperties.setStructureProperties(structureProp);
+                panelProperties.setDefinedProperties(structureProp);
             }
         });
         checkBoxEnabled = new JCheckBox();
@@ -91,7 +91,7 @@ public class DestinationEditor extends AbstractEditor {
 
         PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(module);
         List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.DESTINATION, destination.getClazz());
-        panelProperties.setStructureProperties(structureProp);
+        panelProperties.setDefinedProperties(structureProp);
     }
 
     public Scenario.Reporting.Reporter.Destination getDestination(){

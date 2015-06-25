@@ -9,6 +9,7 @@ import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4idea.api.editor.editor.component.AbstractEditor;
+import org.perfcake.pc4idea.api.util.Messages;
 import org.perfcake.pc4idea.api.util.MessagesValidationSync;
 import org.perfcake.pc4idea.impl.editor.editor.component.*;
 
@@ -40,17 +41,17 @@ class WizardPanel extends JPanel {
     WizardPanel(String defaultURI, @NotNull Module module) {
         this.module = module;
         this.defaultURI = defaultURI;
-        sync = new MessagesValidationSync();
+        sync = new MessagesValidationSync(null);
         initComponents();
         this.setPreferredSize(new Dimension(480, 240));
     }
 
     private void initComponents() {
         editors = new HashMap<>();
-        editors.put(0, new URIEditor(defaultURI));
+        editors.put(0, new ScenarioDefinitionEditor(defaultURI));
         editors.put(1, new GeneratorEditor(module));
         editors.put(2, new SenderEditor(module));
-        editors.put(3, new MessagesEditor(sync));
+        editors.put(3, new MessagesEditor(sync, null));
         editors.put(4, new ReportingEditor(module));
         editors.put(5, new ValidationEditor(module, sync));
         editors.put(6, new PropertiesEditor());
@@ -61,8 +62,10 @@ class WizardPanel extends JPanel {
         panelEditors.add(editors.get(0));
 
         ListModel<String> model = new AbstractListModel<String>() {
-            private final String[] steps = new String[]{"Scenario", "Generator", "Sender", "Messages",
-                    "Reporting", "Validation", "Properties"};
+            private final String[] steps = new String[]{Messages.Scenario.SCENARIO,
+                    Messages.Scenario.GENERATOR, Messages.Scenario.SENDER,
+                    Messages.Scenario.MESSAGES, Messages.Scenario.REPORTING,
+                    Messages.Scenario.VALIDATION, Messages.Scenario.PROPERTIES};
 
             @Override
             public int getSize() {
@@ -206,11 +209,15 @@ class WizardPanel extends JPanel {
     }
 
     protected String getScenarioName() {
-        return ((URIEditor) editors.get(0)).getScenarioName();
+        return ((ScenarioDefinitionEditor) editors.get(0)).getScenarioName();
+    }
+
+    protected String getScenarioType() {
+        return ((ScenarioDefinitionEditor) editors.get(0)).getScenarioType();
     }
 
     protected VirtualFile getScenarioDirectory() {
-        return ((URIEditor) editors.get(0)).getScenarioDirectory();
+        return ((ScenarioDefinitionEditor) editors.get(0)).getScenarioDirectory();
     }
 
     protected Scenario getScenarioModel() {

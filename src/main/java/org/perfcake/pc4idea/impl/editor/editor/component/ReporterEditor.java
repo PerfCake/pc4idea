@@ -48,7 +48,7 @@ public class ReporterEditor extends AbstractEditor {
                 String className = (String) comboBoxReporterType.getSelectedItem();
                 PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(module);
                 List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.REPORTER, className);
-                panelProperties.setStructureProperties(structureProp);
+                panelProperties.setDefinedProperties(structureProp);
             }
         });
         checkBoxEnabled = new JCheckBox();
@@ -91,7 +91,7 @@ public class ReporterEditor extends AbstractEditor {
 
         PerfCakeReflectUtil reflectUtil = new PerfCakeReflectUtil(module);
         List<Property> structureProp = reflectUtil.findComponentProperties(PerfCakeReflectUtil.REPORTER, reporter.getClazz());
-        panelProperties.setStructureProperties(structureProp);
+        panelProperties.setDefinedProperties(structureProp);
     }
 
     public Scenario.Reporting.Reporter getReporter(){
