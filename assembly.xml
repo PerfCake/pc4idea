@@ -8,6 +8,9 @@
     <dependencySets>
         <dependencySet>
             <outputDirectory>/lib</outputDirectory>
+            <excludes>
+               <exclude>org.slf4j:slf4j-log4j12</exclude>
+            </excludes>
         </dependencySet>
     </dependencySets>
 </assembly>
