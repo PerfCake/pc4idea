@@ -58,7 +58,6 @@ public class GeneratorModelWrapper implements AccessibleModel, CanAddProperty {
         if (generatorModel == null){
             generatorModel = tempModel;
         } else {
-            generatorModel.setRun(tempModel.getRun());
             generatorModel.setThreads(tempModel.getThreads());
             generatorModel.setClazz(tempModel.getClazz());
             generatorModel.getProperty().clear();

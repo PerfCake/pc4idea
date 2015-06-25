@@ -5,9 +5,10 @@ import org.perfcake.pc4idea.api.editor.actions.ActionType;
 import org.perfcake.pc4idea.api.editor.color.ColorType;
 import org.perfcake.pc4idea.api.editor.gui.ComponentGui;
 import org.perfcake.pc4idea.api.editor.openapi.ui.EditorDialog;
+import org.perfcake.pc4idea.impl.editor.actions.AddPropertyAction;
 import org.perfcake.pc4idea.impl.editor.actions.EditAction;
-import org.perfcake.pc4idea.impl.editor.editor.component.GeneratorEditor;
-import org.perfcake.pc4idea.impl.editor.modelwrapper.component.GeneratorModelWrapper;
+import org.perfcake.pc4idea.impl.editor.editor.component.RunEditor;
+import org.perfcake.pc4idea.impl.editor.modelwrapper.component.RunModelWrapper;
 import org.perfcake.pc4idea.impl.settings.ColorComponents;
 
 import java.awt.Color;
@@ -23,14 +24,14 @@ import javax.swing.SpringLayout;
 /**
  * Created by Stanislav Kaleta on 3/7/15.
  */
-public class GeneratorGui extends ComponentGui {
-   private GeneratorModelWrapper modelWrapper;
+public class RunGui extends ComponentGui {
+   private RunModelWrapper modelWrapper;
 
-   private JLabel generatorAttr;
+   private JLabel runAttr;
 
    private int minimumWidth = 0;
 
-   public GeneratorGui(GeneratorModelWrapper modelWrapper) {
+   public RunGui(RunModelWrapper modelWrapper) {
       super(modelWrapper.getContext());
       this.modelWrapper = modelWrapper;
       initComponents();
@@ -38,20 +39,18 @@ public class GeneratorGui extends ComponentGui {
    }
 
    private void initComponents() {
-      generatorAttr = new JLabel("-");
-      generatorAttr.setFont(new Font(generatorAttr.getFont().getName(), 0, 15));
+      runAttr = new JLabel("-");
+      runAttr.setFont(new Font(runAttr.getFont().getName(), 0, 15));
 
       SpringLayout layout = new SpringLayout();
       this.setLayout(layout);
-      this.add(generatorAttr);
+      this.add(runAttr);
 
-      layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, generatorAttr,
-            0,
-            SpringLayout.HORIZONTAL_CENTER, this);
-      layout.putConstraint(SpringLayout.NORTH, generatorAttr,
-            10,
-            SpringLayout.NORTH, this);
+      layout.putConstraint(SpringLayout.WEST, runAttr,
+            15,
+            SpringLayout.WEST, this);
 
+      getActionMap().put(ActionType.ADDP, new AddPropertyAction(modelWrapper));
       getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.SHIFT_MASK), ActionType.ADDP);
 
       getActionMap().put(ActionType.EDIT, new EditAction(modelWrapper));
@@ -65,31 +64,31 @@ public class GeneratorGui extends ComponentGui {
 
    @Override
    public Object openEditorDialogAndGetResult() {
-      GeneratorEditor editor = new GeneratorEditor(modelWrapper.getContext().getModule());
-      editor.setGenerator((Scenario.Generator) modelWrapper.retrieveModel());
+      RunEditor editor = new RunEditor(modelWrapper.getContext().getModule());
+      editor.setRun((Scenario.Run) modelWrapper.retrieveModel());
       EditorDialog dialog = new EditorDialog(editor);
       dialog.show();
       if (dialog.getExitCode() == 0) {
-         return editor.getGenerator();
+         return editor.getRun();
       }
       return null;
    }
 
    @Override
    public void updateGui() {
-      Scenario.Generator generator = (Scenario.Generator) modelWrapper.retrieveModel();
-      generatorAttr.setText(generator.getClazz() + " (" + generator.getThreads() + ")");
+      Scenario.Run run = (Scenario.Run) modelWrapper.retrieveModel();
+      runAttr.setText(run.getType() + " : " + run.getValue());
 
-      FontMetrics fontMetrics = generatorAttr.getFontMetrics(generatorAttr.getFont());
-      minimumWidth = fontMetrics.stringWidth(generatorAttr.getText()) + 30;
+      FontMetrics fontMetrics = runAttr.getFontMetrics(runAttr.getFont());
+      minimumWidth = fontMetrics.stringWidth(runAttr.getText()) + 30;
    }
 
    @Override
    public void updateColors() {
-      setBackground(ColorComponents.getColor(ColorType.GENERATOR_BACKGROUND));
-      Color foregroundColor = ColorComponents.getColor(ColorType.GENERATOR_FOREGROUND);
+      setBackground(ColorComponents.getColor(ColorType.RUN_BACKGROUND));
+      Color foregroundColor = ColorComponents.getColor(ColorType.RUN_FOREGROUND);
       setForeground(foregroundColor);
-      generatorAttr.setForeground(foregroundColor);
+      runAttr.setForeground(foregroundColor);
    }
 
    @Override

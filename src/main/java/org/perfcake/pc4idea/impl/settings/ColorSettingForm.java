@@ -24,6 +24,8 @@ public class ColorSettingForm implements ChangeListener {
     private JButton propertiesBackground;
     private JButton propertyForeground;
     private JButton propertyBackground;
+    private JButton runForeground;
+    private JButton runBackground;
     private JButton generatorForeground;
     private JButton generatorBackground;
     private JButton senderForeground;
@@ -89,6 +91,8 @@ public class ColorSettingForm implements ChangeListener {
         propertiesBackground = new JColorButton("Background", this);
         propertyForeground = new JColorButton("Foreground", this);
         propertyBackground = new JColorButton("Background", this);
+        runForeground = new JColorButton("Foreground", this);
+        runBackground = new JColorButton("Background", this);
         generatorForeground = new JColorButton("Foreground", this);
         generatorBackground = new JColorButton("Background", this);
         senderForeground = new JColorButton("Foreground", this);
@@ -134,6 +138,8 @@ public class ColorSettingForm implements ChangeListener {
         colorButtons.put(ColorType.PROPERTIES_BACKGROUND, propertiesBackground);
         colorButtons.put(ColorType.PROPERTY_FOREGROUND, propertyForeground);
         colorButtons.put(ColorType.PROPERTY_BACKGROUND, propertyBackground);
+        colorButtons.put(ColorType.RUN_FOREGROUND, runForeground);
+        colorButtons.put(ColorType.RUN_BACKGROUND, runBackground);
         colorButtons.put(ColorType.GENERATOR_FOREGROUND, generatorForeground);
         colorButtons.put(ColorType.GENERATOR_BACKGROUND, generatorBackground);
         colorButtons.put(ColorType.SENDER_FOREGROUND, senderForeground);

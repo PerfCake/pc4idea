@@ -150,6 +150,10 @@ public class ColorComponents {
         switch (colorType) { /*TODO mine default coloring*/
             case SCENARIO_BACKGROUND:
                 return parseColor("255,255,255"); /*EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground();*/
+            case RUN_FOREGROUND:
+                return parseColor("12,188,0");
+            case RUN_BACKGROUND:
+                return parseColor("255,255,255");
             case GENERATOR_FOREGROUND:
                 return parseColor("12,188,0");
             case GENERATOR_BACKGROUND:

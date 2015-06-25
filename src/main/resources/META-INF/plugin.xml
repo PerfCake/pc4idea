@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>org.perfcake.pc4idea</id>
     <name>PerfCake Plugin for IDEA</name>
-    <version>4.1</version>
+    <version>5.0-${timestamp}</version>
     <vendor email="perfcake@gmail.com">PerfCake</vendor>
     <description>Plugin to create, edit and execute PerfCake scenarios by Stanislav Kaleta (kstanleykale@gmail.com).</description>
     <change-notes></change-notes>
