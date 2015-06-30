@@ -170,23 +170,25 @@ public class PerfCakeReflectUtil {
         for (Method possibleSetMethod : allMethods) {
             int possibleSetMethodModifiers = possibleSetMethod.getModifiers();
             String possibleSetMethodName = possibleSetMethod.getName();
-            if (possibleSetMethodModifiers == Modifier.PUBLIC && possibleSetMethodName.substring(0, 3).equals("set")) {
+            if (possibleSetMethodModifiers == Modifier.PUBLIC && possibleSetMethodName.startsWith("set")) {
                 String possiblePropertyNameFromSetMethod = possibleSetMethodName.substring(3);
                 for (Method possibleGetMethod : allMethods) {
                     int possibleGetMethodModifiers = possibleGetMethod.getModifiers();
                     String possibleGetMethodName = possibleGetMethod.getName();
                     String possiblePropertyNameFromGet = "";
                     if (possibleGetMethodModifiers == Modifier.PUBLIC) {
-                        if (possibleGetMethodName.substring(0, 3).equals("get")) {
+                        if (possibleGetMethodName.startsWith("get")) {
                             possiblePropertyNameFromGet = possibleGetMethodName.substring(3);
                         }
-                        if (possibleGetMethodName.substring(0, 2).equals("is")) {
+                        if (possibleGetMethodName.startsWith("is")) {
                             possiblePropertyNameFromGet = possibleGetMethodName.substring(2);
                         }
                     }
                     if (possiblePropertyNameFromSetMethod.equals(possiblePropertyNameFromGet)) {
-                        String propertyName = possiblePropertyNameFromGet;
-                        propertyName = propertyName.substring(0, 1).toLowerCase().concat(propertyName.substring(1));
+                        final String propertyName = possiblePropertyNameFromGet.substring(0, 1).toLowerCase().concat(possiblePropertyNameFromGet.substring(1));
+                        if(component == PerfCakeReflectUtil.GENERATOR && "threads".equals(propertyName)){
+                            continue;
+                        }
 
                         String propertyValue = "";
                         try {
